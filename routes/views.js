@@ -51,6 +51,25 @@ color:var(--texte);font-weight:650;font-size:14.5px;text-decoration:none}
 .rail-moi small{font-size:11px;color:var(--sourd);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 .rail-quitter{display:block;text-align:center;margin-top:9px;font-size:12.5px;color:var(--sourd)}
 
+/* ---- Barre supérieure façon portail EDUCA ---- */
+.topbar{height:76px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--ligne);
+display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 26px;
+position:sticky;top:0;z-index:35;backdrop-filter:saturate(160%) blur(10px)}
+.topbar .titre-page{display:flex;align-items:center;gap:12px;min-width:0}
+.topbar .titre-page img{width:40px;height:40px;object-fit:contain}
+.topbar .titre-page strong{display:block;color:var(--marine);font-size:16px;line-height:1.2}
+.topbar .titre-page span{display:block;color:var(--sourd);font-size:12px;font-weight:650}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.topbar-actions .btn{box-shadow:none}
+.avatar{width:38px;height:38px;border-radius:14px;color:#fff;display:inline-flex;align-items:center;
+justify-content:center;font-weight:800;font-size:13px;box-shadow:0 8px 18px rgba(0,28,74,.16);
+flex:0 0 auto}
+.page-head{background:#fff;border:1px solid var(--ligne);border-radius:18px;padding:22px 24px;
+box-shadow:var(--ombre);margin-bottom:18px;position:relative;overflow:hidden}
+.page-head::before{content:'';position:absolute;inset:0 auto 0 0;width:5px;background:var(--degrade-accent)}
+.page-head h1{font-size:28px}
+.page-head .sous{margin-bottom:0}
+
 /* ---- En-tête compacte sur mobile ---- */
 .barre-mobile{display:none;align-items:center;gap:12px;background:#fff;
 border-bottom:1px solid var(--ligne);padding:10px 14px;position:sticky;top:0;z-index:40}
@@ -124,6 +143,47 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 footer{text-align:center;color:var(--sourd);font-size:13px;padding:28px;border-top:1px solid var(--ligne);
 background:#fff}
 
+/* ---- Accueil : bannière maîtrisée + actions cliquables ---- */
+.banniere-bloc{background:linear-gradient(135deg,#EFF6FF 0%,#fff 58%,#FFF7EA 100%);
+border:1px solid var(--ligne);border-radius:24px;padding:18px;box-shadow:var(--ombre);
+margin-bottom:22px;position:relative;overflow:hidden}
+.banniere-wrap{position:relative;border-radius:18px;overflow:hidden;background:#fff;max-height:520px;
+display:flex;align-items:center;justify-content:center}
+.banniere{display:block;width:100%;height:auto;max-height:520px;object-fit:contain}
+.banniere-spot{position:absolute;border-radius:18px;outline:2px solid transparent;
+transition:background .15s,outline-color .15s,box-shadow .15s}
+.banniere-spot:hover,.banniere-spot:focus-visible{background:rgba(1,102,194,.12);
+outline-color:rgba(1,102,194,.45);box-shadow:0 0 0 6px rgba(255,255,255,.45);text-decoration:none}
+.spot-formations{left:11%;bottom:14%;width:14%;height:16%}
+.spot-certificats{left:28%;bottom:14%;width:14%;height:16%}
+.spot-ressources{left:45%;bottom:14%;width:14%;height:16%}
+.spot-flexible{left:61%;bottom:14%;width:14%;height:16%}
+.spot-developpement{left:77%;bottom:14%;width:14%;height:16%}
+.spot-apprendre{left:42%;bottom:1.5%;width:17%;height:9%}
+.spot-evoluer{left:61%;bottom:1.5%;width:17%;height:9%}
+.spot-construire{left:80%;bottom:1.5%;width:17%;height:9%}
+.banner-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:12px}
+.banner-actions a{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:11px 12px;
+color:var(--encre);box-shadow:0 8px 20px rgba(0,28,74,.06);display:flex;align-items:center;
+gap:9px;text-decoration:none;font-size:13.5px}
+.banner-actions a:hover{border-color:var(--bleu);transform:translateY(-1px);box-shadow:var(--ombre)}
+.banner-actions i{width:31px;height:31px;border-radius:11px;display:inline-flex;align-items:center;
+justify-content:center;background:var(--bleu-pale);font-style:normal;flex:0 0 auto}
+.formation-marquee{border:1px solid var(--ligne);background:#fff;border-radius:18px;box-shadow:var(--ombre);
+overflow:hidden;margin:0 0 24px;display:grid;grid-template-columns:auto 1fr;align-items:center}
+.formation-marquee .marquee-label{height:100%;background:var(--marine);color:#fff;padding:13px 16px;
+font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center}
+.marquee-window{overflow:hidden;min-width:0}
+.marquee-track{display:flex;gap:12px;width:max-content;animation:defilementOasis 32s linear infinite;
+padding:10px 12px}
+.formation-marquee:hover .marquee-track{animation-play-state:paused}
+.marquee-item{display:flex;align-items:center;gap:9px;min-width:260px;background:var(--fond);
+border:1px solid var(--ligne);border-radius:999px;padding:8px 12px;color:var(--encre);text-decoration:none}
+.marquee-item:hover{background:var(--bleu-pale);text-decoration:none}
+.marquee-item b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:176px}
+.marquee-item small{color:var(--sourd);font-weight:700;white-space:nowrap}
+@keyframes defilementOasis{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
 /* ---- Héros : signature « barre dégradée + titre dégradé » ---- */
 .hero{background:#fff;border:1px solid var(--ligne);border-radius:24px;padding:46px 42px;
 display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center;margin-bottom:28px;
@@ -161,7 +221,7 @@ box-shadow:0 2px 8px rgba(0,28,74,.16)}
 .cours .e-mod.atelier{background:var(--orange-pale);color:#9A5200}
 .cours .prix{margin-top:auto;font-weight:800;font-size:18px;color:var(--marine)}
 .cours .prix s{color:var(--sourd);font-weight:500;font-size:13px;margin-left:7px}
-.note{color:var(--ambre);font-weight:700;font-size:13px}
+.note{color:var(--orange);font-weight:700;font-size:13px}
 .catbox{display:flex;flex-direction:column;align-items:flex-start;gap:7px;background:#fff;
 border:1px solid var(--ligne);border-radius:var(--r-champ);padding:16px;box-shadow:var(--ombre);
 transition:transform .15s,box-shadow .15s}
@@ -248,12 +308,23 @@ border:1px solid var(--ligne);border-radius:var(--r-champ);margin:7px 0;backgrou
 
 @media(max-width:980px){
   .cadre{grid-template-columns:1fr}
+  .topbar{display:none}
   .rail{position:fixed;top:0;left:0;bottom:0;width:272px;z-index:50;transform:translateX(-100%);
   transition:transform .22s ease;box-shadow:0 0 40px rgba(0,28,74,.18)}
   .barre-mobile{display:flex}
   .shell{grid-template-columns:1fr}aside.side{position:static}
   .hero{grid-template-columns:1fr;padding:30px 22px}.hero h1{font-size:30px}
   main{padding:20px 16px 60px}
+  .banner-actions{grid-template-columns:1fr 1fr}
+  .formation-marquee{grid-template-columns:1fr}
+  .formation-marquee .marquee-label{justify-content:center}
+  .banniere-wrap{max-height:360px}.banniere{max-height:360px}
+  .banniere-spot{display:none}
+}
+@media(max-width:620px){
+  .banner-actions{grid-template-columns:1fr}
+  .marquee-item{min-width:230px}
+  .page-head{padding:18px}.page-head h1{font-size:24px}
 }
 @media(prefers-reduced-motion:reduce){.rail{transition:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -306,6 +377,19 @@ function layout(title, content, { user = null, active = '' } = {}) {
   </aside>
 
   <div class="colonne">
+    <header class="topbar">
+      <div class="titre-page">
+        <img src="/assets/logo-oasis.png" alt="">
+        <span><strong>OASIS Centre numérique</strong><span>Formation professionnelle · Portail en ligne</span></span>
+      </div>
+      <div class="topbar-actions">${user
+        ? `${avatarHtml(user.name, user.role === 'formateur' ? 'var(--violet)' : user.role === 'entreprise' ? 'var(--vert)' : 'var(--bleu)')}
+           <a class="btn petit" href="${roleDest[user.role] || '/'}">Mon espace</a>
+           <a class="btn ligne petit" href="/logout">Quitter</a>`
+        : `<a class="btn ligne petit" href="/login">Se connecter</a>
+           <a class="btn petit" href="/register">S'inscrire</a>`}
+      </div>
+    </header>
     <header class="barre-mobile">
       <label for="ouvrir-menu" class="burger" aria-label="Ouvrir le menu">☰</label>
       <a class="logo-mini" href="/"><img src="/assets/logo-oasis.png" alt=""><b>OASIS</b></a>
@@ -341,14 +425,49 @@ function carteCours(c) {
     </div></a>`;
 }
 
+function formationTicker(courses) {
+  const recentes = courses.filter(c => c.statut === 'publiee').slice(0, 8);
+  if (!recentes.length) return '';
+  const items = recentes.concat(recentes).map(c => {
+    const cat = categorie(c.categorie);
+    return `<a class="marquee-item" href="/formation/${esc(c.id)}">
+      <span>${cat.emoji}</span><b>${esc(c.titre)}</b><small>${c.prix === 0 ? 'Gratuit' : fmtHTG(c.prix)}</small></a>`;
+  }).join('');
+  return `<section class="formation-marquee" aria-label="Nouvelles formations disponibles">
+    <div class="marquee-label">Nouvelles formations</div>
+    <div class="marquee-window"><div class="marquee-track">${items}</div></div>
+  </section>`;
+}
+
 /* ---------- Accueil ---------- */
 function landing(courses, stats, user) {
   return layout('Accueil', `
   <div class="banniere-bloc">
-    <img class="banniere" src="/assets/banniere-oasis.png"
-      alt="Oasis, Centre Numérique de Formation Professionnelle — Des compétences aujourd'hui pour un meilleur demain. Formations en ligne, certifications reconnues, ressources numériques, apprentissage flexible, développement professionnel.">
-    <a class="banniere-cta" href="/formations" aria-label="Commencez dès maintenant : voir les formations"></a>
+    <div class="banniere-wrap">
+      <img class="banniere" src="/assets/banniere-oasis.png"
+        alt="Oasis, Centre Numérique de Formation Professionnelle — Des compétences aujourd'hui pour un meilleur demain. Formations en ligne, certifications reconnues, ressources numériques, apprentissage flexible, développement professionnel.">
+      <a class="banniere-spot spot-formations" href="/formations" aria-label="Formations en ligne"></a>
+      <a class="banniere-spot spot-certificats" href="/formations?format=certificat_pro" aria-label="Certifications reconnues"></a>
+      <a class="banniere-spot spot-ressources" href="/formations" aria-label="Ressources numériques"></a>
+      <a class="banniere-spot spot-flexible" href="/formations?modalite=en_ligne" aria-label="Apprentissage flexible"></a>
+      <a class="banniere-spot spot-developpement" href="/pour-les-entreprises" aria-label="Développement professionnel"></a>
+      <a class="banniere-spot spot-apprendre" href="/formations" aria-label="Apprendre partout"></a>
+      <a class="banniere-spot spot-evoluer" href="/formations?format=parcours_metier" aria-label="Évoluer durablement"></a>
+      <a class="banniere-spot spot-construire" href="/register" aria-label="Construire votre parcours"></a>
+    </div>
+    <div class="banner-actions">
+      <a href="/formations"><i>💻</i><span>Formations en ligne</span></a>
+      <a href="/formations?format=certificat_pro"><i>🏅</i><span>Certifications reconnues</span></a>
+      <a href="/formations"><i>📚</i><span>Ressources numériques</span></a>
+      <a href="/formations?modalite=en_ligne"><i>🌐</i><span>Apprentissage flexible</span></a>
+      <a href="/pour-les-entreprises"><i>📈</i><span>Développement professionnel</span></a>
+      <a href="/formations"><i>🎓</i><span>Apprendre partout</span></a>
+      <a href="/formations?format=parcours_metier"><i>⚙️</i><span>Évoluer durablement</span></a>
+      <a href="/register"><i>🤝</i><span>Construire votre parcours</span></a>
+    </div>
   </div>
+
+  ${formationTicker(courses)}
 
   <div class="hero">
     <div>
@@ -411,8 +530,11 @@ function nbParCat(courses, catId) {
 /* ---------- Catalogue ---------- */
 function catalogue(courses, { cat, q, fmt, mod }, user) {
   return layout('Les formations', `
-  <h1>Les formations</h1>
-  <p class="sous">${courses.length} formation(s)${cat ? ' — ' + esc(categorie(cat).label) : ''}${fmt ? ' · ' + esc(fmtDe(fmt).label) : ''}${mod ? ' · ' + esc(modDe(mod).label) : ''}</p>
+  <div class="page-head">
+    <span class="eyebrow">CATALOGUE</span>
+    <h1>Les formations</h1>
+    <p class="sous">${courses.length} formation(s)${cat ? ' — ' + esc(categorie(cat).label) : ''}${fmt ? ' · ' + esc(fmtDe(fmt).label) : ''}${mod ? ' · ' + esc(modDe(mod).label) : ''}</p>
+  </div>
   <form method="GET" action="/formations" class="carte" style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:18px">
     <div style="flex:2;min-width:190px"><label>Rechercher</label>
       <input name="q" value="${esc(q || '')}" placeholder="Un métier, une compétence…"></div>
@@ -619,9 +741,12 @@ function paiementAttente(c, order, urlPaiement, user) {
 /* ---------- Tarifs ---------- */
 function tarifs(user, planActuel) {
   return layout('Tarifs', `
-  <h1>Tarifs</h1>
-  <p class="sous">Choisissez le plan formateur qui correspond le mieux à vos besoins.
-  <span class="badge b-bleu">Garantie satisfait ou remboursé — 30 jours</span></p>
+  <div class="page-head">
+    <span class="eyebrow">ABONNEMENTS</span>
+    <h1>Tarifs</h1>
+    <p class="sous">Choisissez le plan formateur qui correspond le mieux à vos besoins.
+    <span class="badge b-bleu">Garantie satisfait ou remboursé — 30 jours</span></p>
+  </div>
   <div class="grille g4" style="align-items:stretch">
     ${PLANS.map(p => `<div class="plan ${p.reco ? 'reco' : ''}">
       ${p.reco ? '<span class="ruban">★ Recommandé</span>' : ''}
@@ -708,9 +833,12 @@ function pourEntreprises(user) {
 /* ---------- À propos ---------- */
 function aPropos(user, stats) {
   return layout('À propos', `
-  <h1>À propos d'Oasis</h1>
-  <p class="sous" style="max-width:640px">Oasis est une plateforme de formation en ligne qui connecte
-  formateurs, apprenants et entreprises pour développer les compétences de demain.</p>
+  <div class="page-head">
+    <span class="eyebrow">NOTRE MISSION</span>
+    <h1>À propos d'Oasis</h1>
+    <p class="sous" style="max-width:640px">Oasis est une plateforme de formation en ligne qui connecte
+    formateurs, apprenants et entreprises pour développer les compétences de demain.</p>
+  </div>
   <div class="grille g4">
     <div class="carte stat-carte"><span class="val">${stats.nbApprenants}+</span><span class="lib">Apprenants nous font confiance</span></div>
     <div class="carte stat-carte"><span class="val">${stats.nbFormateurs}+</span><span class="lib">Formateurs experts partagent leur savoir</span></div>
@@ -753,9 +881,12 @@ function aPropos(user, stats) {
 /* ---------- Contact ---------- */
 function contactPage(user, sent) {
   return layout('Contact', `
-  <h1>Contactez-nous</h1>
-  <p class="sous">Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner
-  dans votre expérience sur Oasis.</p>
+  <div class="page-head">
+    <span class="eyebrow">ASSISTANCE</span>
+    <h1>Contactez-nous</h1>
+    <p class="sous">Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner
+    dans votre expérience sur Oasis.</p>
+  </div>
   <div class="grille" style="grid-template-columns:.8fr 1.4fr;align-items:start">
     <div class="carte">
       <h2 style="margin-top:0">Nos coordonnées</h2>
