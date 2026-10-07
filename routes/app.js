@@ -204,6 +204,9 @@ function parametresCertificat(db) {
     villeCertificat: p.villeCertificat || 'Port-au-Prince, Haïti'
   };
 }
+function urlVerification(req, enrId) {
+  return U.baseUrl(req) + '/v/' + encodeURIComponent(enrId);
+}
 /* Accès aux espaces communautaires d'une formation (forum, annonces). */
 function accesCours(db, u, c) {
   return !!(u && c && (u.role === 'admin' || c.formateurId === u.id ||
@@ -1080,9 +1083,13 @@ async function handle(req, res) {
   }
 
   /* ---- Vérification publique d'un document (cible des QR codes) ---- */
-  m = path.match(/^\/verifier\/(enr_[a-z0-9]+)$/i);
+  m = path.match(/^\/(?:v|verifier|verify|verification)\/(enr_[a-z0-9]+)\/?$/i);
+  if (!m && path === '/verifier' && req.query.get('ref')) {
+    m = [null, req.query.get('ref')];
+  }
   if (m && method === 'GET') {
-    const enr = db.enrollments.find(e => e.id === m[1]);
+    const ref = String(m[1] || '').trim().toLowerCase();
+    const enr = db.enrollments.find(e => e.id.toLowerCase() === ref);
     const cours = enr && db.courses.find(c => c.id === enr.courseId);
     const titulaire = enr && db.users.find(x => x.id === enr.userId);
     if (!enr || !cours || !titulaire) {
@@ -1122,10 +1129,10 @@ async function handle(req, res) {
     if (!autorise || !cours) return notFound(res, u);
     const titulaire = db.users.find(x => x.id === enr.userId);
     const formateur = db.users.find(x => x.id === cours.formateurId) || { name: 'Oasis' };
-    const urlVerif = U.baseUrl(req) + '/verifier/' + enr.id;
+    const urlVerif = urlVerification(req, enr.id);
     return U.sendHTML(res, 200, E.releveNotes(enr, cours, titulaire, formateur,
       releveDeNotes(enr, cours), parametresCertificat(db),
-      { svg: QR.qrSvg(urlVerif, { taille: 118 }), url: urlVerif }));
+      { svg: QR.qrSvg(urlVerif, { taille: 132, couleur: '#000000' }), url: urlVerif }));
   }
 
   m = path.match(/^\/certificat\/(enr_[a-z0-9]+)$/i);
@@ -1136,10 +1143,10 @@ async function handle(req, res) {
     const titulaire = db.users.find(u2 => u2.id === enr.userId);
     const formateur = db.users.find(u2 => u2.id === (cours || {}).formateurId) || { name: 'Oasis' };
     if (!cours || !titulaire) return notFound(res, user);
-    const urlV = U.baseUrl(req) + '/verifier/' + enr.id;
+    const urlV = urlVerification(req, enr.id);
     return U.sendHTML(res, 200, E.certificat(enr, cours, titulaire, formateur,
       bilanNotes(enr, cours), parametresCertificat(db),
-      { svg: QR.qrSvg(urlV, { taille: 108 }), url: urlV }));
+      { svg: QR.qrSvg(urlV, { taille: 132, couleur: '#000000' }), url: urlV }));
   }
 
   /* ================= ESPACE FORMATEUR ================= */

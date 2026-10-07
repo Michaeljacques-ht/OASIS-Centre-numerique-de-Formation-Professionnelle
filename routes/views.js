@@ -22,9 +22,10 @@ const CSS = `
 --degrade:linear-gradient(90deg,#001C4A 0%,#0166C2 100%);
 --degrade-accent:linear-gradient(90deg,#001C4A 0%,#0166C2 42%,#06C994 76%,#FC9F1E 100%)}
 *{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden}
 body{font-family:'Inter','Segoe UI',Roboto,-apple-system,BlinkMacSystemFont,Arial,sans-serif;
 background:var(--fond);color:var(--texte);font-size:15px;line-height:1.6;
--webkit-font-smoothing:antialiased}
+-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:var(--bleu);text-decoration:none;font-weight:600}a:hover{text-decoration:underline}
 
 /* ---- Barre latérale verticale (navigation principale) ---- */
@@ -154,14 +155,15 @@ display:flex;align-items:center;justify-content:center}
 transition:background .15s,outline-color .15s,box-shadow .15s}
 .banniere-spot:hover,.banniere-spot:focus-visible{background:rgba(1,102,194,.12);
 outline-color:rgba(1,102,194,.45);box-shadow:0 0 0 6px rgba(255,255,255,.45);text-decoration:none}
-.spot-formations{left:11%;bottom:14%;width:14%;height:16%}
-.spot-certificats{left:28%;bottom:14%;width:14%;height:16%}
-.spot-ressources{left:45%;bottom:14%;width:14%;height:16%}
-.spot-flexible{left:61%;bottom:14%;width:14%;height:16%}
-.spot-developpement{left:77%;bottom:14%;width:14%;height:16%}
-.spot-apprendre{left:42%;bottom:1.5%;width:17%;height:9%}
-.spot-evoluer{left:61%;bottom:1.5%;width:17%;height:9%}
-.spot-construire{left:80%;bottom:1.5%;width:17%;height:9%}
+.spot-formations{left:6.4%;top:58%;width:7.7%;height:19%}
+.spot-certificats{left:16.4%;top:58%;width:7.2%;height:19%}
+.spot-ressources{left:25.9%;top:58%;width:7.2%;height:19%}
+.spot-flexible{left:35.1%;top:58%;width:7.4%;height:19%}
+.spot-developpement{left:44.6%;top:58%;width:7.5%;height:19%}
+.spot-apprendre{left:21%;top:85%;width:13.2%;height:10.5%}
+.spot-evoluer{left:38.3%;top:85%;width:11.8%;height:10.5%}
+.spot-construire{left:57%;top:85%;width:14.6%;height:10.5%}
+.spot-commencer{left:75.8%;top:85.6%;width:20.5%;height:9.2%;border-radius:999px}
 .banner-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:12px}
 .banner-actions a{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:11px 12px;
 color:var(--encre);box-shadow:0 8px 20px rgba(0,28,74,.06);display:flex;align-items:center;
@@ -222,6 +224,19 @@ box-shadow:0 2px 8px rgba(0,28,74,.16)}
 .cours .prix{margin-top:auto;font-weight:800;font-size:18px;color:var(--marine)}
 .cours .prix s{color:var(--sourd);font-weight:500;font-size:13px;margin-left:7px}
 .note{color:var(--orange);font-weight:700;font-size:13px}
+.fiche-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.9fr);gap:24px;
+align-items:start}
+.fiche-layout>div{min-width:0}
+.fiche-cover{height:190px;display:flex;align-items:center;justify-content:center;font-size:68px}
+.fiche-body{padding:22px}
+.fiche-title{margin:8px 0 4px;overflow-wrap:anywhere}
+.fiche-meta{font-size:13.5px;color:var(--sourd)}
+.fiche-share{margin:10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fiche-share .btn{white-space:nowrap}
+.fiche-achat{position:sticky;top:94px}
+.fiche-prix{font-size:30px;font-weight:800;line-height:1.2}
+.formateur-mini{display:flex;gap:10px;align-items:center;margin-top:8px}
+.formateur-mini span{min-width:0}.formateur-mini a,.formateur-mini small{overflow-wrap:anywhere}
 .catbox{display:flex;flex-direction:column;align-items:flex-start;gap:7px;background:#fff;
 border:1px solid var(--ligne);border-radius:var(--r-champ);padding:16px;box-shadow:var(--ombre);
 transition:transform .15s,box-shadow .15s}
@@ -313,6 +328,8 @@ border:1px solid var(--ligne);border-radius:var(--r-champ);margin:7px 0;backgrou
   transition:transform .22s ease;box-shadow:0 0 40px rgba(0,28,74,.18)}
   .barre-mobile{display:flex}
   .shell{grid-template-columns:1fr}aside.side{position:static}
+  .fiche-layout{display:block}
+  .fiche-achat{position:static;margin-top:18px}
   .hero{grid-template-columns:1fr;padding:30px 22px}.hero h1{font-size:30px}
   main{padding:20px 16px 60px}
   .banner-actions{grid-template-columns:1fr 1fr}
@@ -322,9 +339,20 @@ border:1px solid var(--ligne);border-radius:var(--r-champ);margin:7px 0;backgrou
   .banniere-spot{display:none}
 }
 @media(max-width:620px){
+  .grille{grid-template-columns:1fr!important}
   .banner-actions{grid-template-columns:1fr}
   .marquee-item{min-width:230px}
   .page-head{padding:18px}.page-head h1{font-size:24px}
+  .fiche-cover{height:150px;font-size:52px}
+  .fiche-body{padding:16px}
+  .fiche-title{font-size:25px;line-height:1.16}
+  .fiche-meta{font-size:12.5px;line-height:1.55}
+  .parcours-info{grid-template-columns:1fr}
+  .parcours-info>div{padding:11px}
+  .fiche-share .btn{flex:1 1 135px;text-align:center}
+  .fiche-achat .btn{padding:12px 14px}
+  .fiche-prix{font-size:28px}
+  .lecon-row{align-items:flex-start;flex-direction:column}
 }
 @media(prefers-reduced-motion:reduce){.rail{transition:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -454,6 +482,7 @@ function landing(courses, stats, user) {
       <a class="banniere-spot spot-apprendre" href="/formations" aria-label="Apprendre partout"></a>
       <a class="banniere-spot spot-evoluer" href="/formations?format=parcours_metier" aria-label="Évoluer durablement"></a>
       <a class="banniere-spot spot-construire" href="/register" aria-label="Construire votre parcours"></a>
+      <a class="banniere-spot spot-commencer" href="/formations" aria-label="Commencez dès maintenant"></a>
     </div>
     <div class="banner-actions">
       <a href="/formations"><i>💻</i><span>Formations en ligne</span></a>
@@ -564,15 +593,15 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
   const epreuves = epreuvesDe(c);
   const aExamen = epreuves.length;
   return layout(c.titre, `
-  <div class="grille" style="grid-template-columns:1.6fr .9fr;align-items:start">
+  <div class="fiche-layout">
     <div>
       <div class="carte" style="padding:0;overflow:hidden">
-        <div style="height:190px;background:linear-gradient(135deg,${cat.deg})${c.image ? `;background-image:url('${esc(c.image)}');background-size:cover;background-position:center` : ''};display:flex;align-items:center;justify-content:center;font-size:68px">${c.image ? '' : cat.emoji}</div>
-        <div style="padding:22px">
+        <div class="fiche-cover" style="background:linear-gradient(135deg,${cat.deg})${c.image ? `;background-image:url('${esc(c.image)}');background-size:cover;background-position:center` : ''}">${c.image ? '' : cat.emoji}</div>
+        <div class="fiche-body">
           ${c.badge ? `<span class="badge b-orange">${esc(c.badge)}</span>` : ''}
-          <h1 style="margin:8px 0 4px">${esc(c.titre)}</h1>
+          <h1 class="fiche-title">${esc(c.titre)}</h1>
           <p class="sous" style="margin-bottom:8px">${esc(c.sousTitre || '')}</p>
-          <p style="font-size:13.5px;color:var(--sourd)">${esc(cat.label)} · Niveau ${esc(c.niveau)} · ${esc(c.langue)} · ${esc(c.duree)}
+          <p class="fiche-meta">${esc(cat.label)} · Niveau ${esc(c.niveau)} · ${esc(c.langue)} · ${esc(c.duree)}
           ${note ? ` · <span class="note">${etoiles(note)} ${note} (${count} avis)</span>` : ''} · ${nbInscrits(c.id)} inscrit(s)</p>
 
           <div class="parcours-info">
@@ -583,7 +612,7 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
             ${c.lieuPratique ? `<div><span class="pi-em">📍</span>
               <b>Lieu de pratique</b><small>${esc(c.lieuPratique)}</small></div>` : ''}
           </div>
-          <div style="margin:10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div class="fiche-share">
             <span style="font-size:13px;color:var(--sourd);font-weight:700">PARTAGER :</span>
             <a class="btn petit" style="background:#25D366" target="_blank" rel="noopener"
               href="https://wa.me/?text=${texte}%20${lien}">WhatsApp</a>
@@ -623,8 +652,8 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
       </div>
     </div>
     <div>
-      <div class="carte" style="position:sticky;top:80px">
-        <div style="font-size:30px;font-weight:800;color:${c.prix === 0 ? 'var(--vert)' : 'var(--encre)'}">${c.prix === 0 ? 'Gratuit' : fmtHTG(c.prix)}
+      <div class="carte fiche-achat">
+        <div class="fiche-prix" style="color:${c.prix === 0 ? 'var(--vert)' : 'var(--encre)'}">${c.prix === 0 ? 'Gratuit' : fmtHTG(c.prix)}
           ${c.prixBarre ? `<s style="font-size:16px;color:var(--sourd);font-weight:500">${fmtHTG(c.prixBarre)}</s>` : ''}</div>
         <p class="aide" style="margin:6px 0 14px">Accès illimité · Certificat de réussite · Support formateur</p>
         ${dejaInscrit
@@ -637,7 +666,7 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
         <p class="aide" style="text-align:center;margin-top:10px">🔒 Paiement MonCash · NatCash · Kashpaw</p>
         <hr style="border:none;border-top:1px solid var(--ligne);margin:16px 0">
         <b>Formateur</b>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+        <div class="formateur-mini">
           ${formateur.photo ? `<img src="${esc(formateur.photo)}" alt="" style="width:44px;height:44px;border-radius:99px;object-fit:cover">` : avatarHtml(formateur.name, 'var(--violet)')}
           <span><b><a href="/formateurs/${esc(formateur.id || '')}">${esc(formateur.name)}</a></b>${formateur.verified ? ' <span class="badge b-violet">Vérifié ✓</span>' : ''}
           <br><small style="color:var(--sourd)">${esc(formateur.titrePro || formateur.bio || '')}</small>
