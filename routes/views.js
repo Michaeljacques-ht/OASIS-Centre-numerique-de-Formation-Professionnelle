@@ -30,23 +30,32 @@ a{color:var(--bleu);text-decoration:none;font-weight:600}a:hover{text-decoration
 
 /* ---- Barre latérale verticale (navigation principale) ---- */
 .cadre{display:grid;grid-template-columns:262px 1fr;min-height:100vh;position:relative;z-index:1}
-.rail{background:#fff;border-right:1px solid var(--ligne);padding:20px 14px 18px;
-display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail{background:linear-gradient(180deg,#fff 0%,#F8FBFF 100%);border-right:1px solid var(--ligne);
+padding:18px 14px 18px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;
+height:100vh;overflow-y:auto}
 .colonne{display:flex;flex-direction:column;min-width:0}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;padding:0 6px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;padding:10px;border:1px solid var(--ligne);
+border-radius:18px;background:linear-gradient(135deg,#fff 0%,#EFF6FF 100%);box-shadow:0 8px 24px rgba(0,28,74,.06)}
 .logo:hover{text-decoration:none}
 .logo-img{width:44px;height:44px;object-fit:contain;display:block;flex:0 0 auto}
 .logo-txt{line-height:1.12;min-width:0}
 .logo .l1{color:var(--marine);font-weight:800;font-size:19px;letter-spacing:.01em;display:block}
 .logo .l2{color:var(--bleu);font-size:8.4px;letter-spacing:.04em;display:block;font-weight:700;
 text-transform:uppercase}
-.rail-nav{display:flex;flex-direction:column;gap:3px;flex:1}
-.rail-nav a{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:var(--r-pilule);
-color:var(--texte);font-weight:650;font-size:14.5px;text-decoration:none}
-.rail-nav a .ic{font-size:16px;width:20px;text-align:center;flex:0 0 auto}
-.rail-nav a:hover{background:var(--bleu-pale);color:var(--marine);text-decoration:none}
-.rail-nav a.on{background:var(--marine);color:#fff;box-shadow:0 6px 16px rgba(0,28,74,.26)}
-.rail-bas{border-top:1px solid var(--ligne);padding-top:14px}
+.rail-nav{display:flex;flex-direction:column;gap:13px;flex:1}
+.nav-group{display:flex;flex-direction:column;gap:5px}
+.nav-title{font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#7A8AA0;
+padding:0 10px 2px}
+.rail-nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:15px;color:var(--texte);
+font-weight:700;font-size:13.8px;text-decoration:none;position:relative;transition:background .15s,box-shadow .15s,transform .15s,color .15s}
+.rail-nav a .ic{font-size:15px;width:30px;height:30px;border-radius:12px;text-align:center;flex:0 0 auto;
+display:inline-flex;align-items:center;justify-content:center;background:#F0F6FF;box-shadow:inset 0 0 0 1px rgba(1,102,194,.06)}
+.rail-nav a:hover{background:#fff;color:var(--marine);text-decoration:none;box-shadow:0 8px 20px rgba(0,28,74,.08);
+transform:translateX(2px)}
+.rail-nav a.on{background:var(--degrade);color:#fff;box-shadow:0 12px 26px rgba(0,28,74,.24)}
+.rail-nav a.on .ic{background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.24)}
+.rail-bas{border-top:1px solid var(--ligne);padding-top:14px;background:#fff;border-radius:18px;padding:14px;
+box-shadow:0 8px 22px rgba(0,28,74,.06)}
 .rail-moi{display:flex;align-items:center;gap:10px;margin-bottom:11px}
 .rail-moi b{font-size:14px;color:var(--encre);display:block;line-height:1.25}
 .rail-moi small{font-size:11px;color:var(--sourd);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
@@ -120,6 +129,31 @@ letter-spacing:.01em}
 .b-orange{background:var(--orange-pale);color:#C4520E}
 .b-violet{background:#EDEAFB;color:#3C2F8F}
 .b-rouge{background:#FDEBEB;color:#B02121}
+.concept-hero{background:linear-gradient(135deg,#fff 0%,#EFF6FF 54%,#FFF4E3 100%);border:1px solid var(--ligne);
+border-radius:24px;padding:34px;box-shadow:var(--ombre);display:grid;grid-template-columns:1.15fr .85fr;
+gap:24px;align-items:center;overflow:hidden;position:relative}
+.concept-hero::after{content:'';position:absolute;right:-70px;bottom:-90px;width:240px;height:240px;border-radius:50%;
+background:radial-gradient(circle,rgba(6,201,148,.18),rgba(1,102,194,0));pointer-events:none}
+.concept-card{background:#fff;border:1px solid var(--ligne);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(0,28,74,.06)}
+.concept-card b{color:var(--encre)}
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
+.doc-preview{background:#fff;border:1px solid #D9E4F2;border-radius:18px;padding:24px;box-shadow:var(--ombre);position:relative;overflow:hidden}
+.doc-preview::before{content:'';position:absolute;inset:0 auto 0 0;width:6px;background:var(--degrade-accent)}
+.doc-watermark{position:absolute;right:18px;top:16px;color:rgba(0,28,74,.07);font-size:62px;font-weight:900;line-height:1}
+.doc-head{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--ligne);padding-bottom:12px;margin-bottom:16px}
+.doc-head img{width:48px;height:48px;object-fit:contain}
+.doc-title{font-size:22px;color:var(--marine);font-weight:900;letter-spacing:.04em;text-transform:uppercase}
+.doc-line{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed #EDF2F7;font-size:13px}
+.doc-line span:first-child{color:var(--sourd);font-weight:700}
+.qr-demo{width:76px;height:76px;border:9px solid #111;background:linear-gradient(90deg,#111 18%,transparent 18% 36%,#111 36% 54%,transparent 54% 72%,#111 72%);
+border-radius:8px}
+.faq-list{display:grid;gap:10px}
+.faq-item{background:#fff;border:1px solid var(--ligne);border-radius:16px;box-shadow:0 8px 22px rgba(0,28,74,.05);overflow:hidden}
+.faq-item summary{cursor:pointer;padding:16px 18px;font-weight:800;color:var(--encre);list-style:none}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'+';float:right;color:var(--bleu);font-size:20px;line-height:1}
+.faq-item[open] summary::after{content:'–'}
+.faq-item p{padding:0 18px 18px;color:var(--texte)}
 .b-gris{background:#F1F4F9;color:var(--sourd)}
 
 /* ---- Formulaires ---- */
@@ -331,18 +365,29 @@ border:1px solid var(--ligne);border-radius:var(--r-champ);margin:7px 0;backgrou
   .fiche-layout{display:block}
   .fiche-achat{position:static;margin-top:18px}
   .hero{grid-template-columns:1fr;padding:30px 22px}.hero h1{font-size:30px}
+  .concept-hero{grid-template-columns:1fr;padding:24px}
+  .doc-grid{grid-template-columns:1fr}
   main{padding:20px 16px 60px}
   .banner-actions{grid-template-columns:1fr 1fr}
   .formation-marquee{grid-template-columns:1fr}
   .formation-marquee .marquee-label{justify-content:center}
-  .banniere-wrap{max-height:360px}.banniere{max-height:360px}
+  .banniere-wrap{max-height:none;aspect-ratio:2.45}
+  .banniere{height:100%;max-height:none;object-fit:cover;object-position:center bottom}
   .banniere-spot{display:none}
 }
 @media(max-width:620px){
   .grille{grid-template-columns:1fr!important}
-  .banner-actions{grid-template-columns:1fr}
+  .banniere-bloc{padding:14px;border-radius:22px;margin-bottom:18px}
+  .banniere-wrap{aspect-ratio:2.22;border-radius:16px}
+  .banner-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+  .banner-actions a{min-height:56px;padding:9px 8px;border-radius:14px;gap:7px;font-size:12.2px;line-height:1.18}
+  .banner-actions i{width:28px;height:28px;border-radius:10px;font-size:14px}
   .marquee-item{min-width:230px}
   .page-head{padding:18px}.page-head h1{font-size:24px}
+  .concept-hero{padding:20px;border-radius:20px}
+  .doc-preview{padding:18px}
+  .doc-title{font-size:18px}
+  .doc-line{grid-template-columns:1fr;gap:2px}
   .fiche-cover{height:150px;font-size:52px}
   .fiche-body{padding:16px}
   .fiche-title{font-size:25px;line-height:1.16}
@@ -369,16 +414,25 @@ function etoiles(n) {
 }
 
 function layout(title, content, { user = null, active = '' } = {}) {
-  const roleDest = { formateur: '/formateur', entreprise: '/entreprise', apprenant: '/apprenant', admin: '/formateur' };
-  const liens = [
-    ['/', '🏠', 'Accueil'],
-    ['/formations', '📚', 'Les formations'],
-    ['/pour-les-formateurs', '🎓', 'Pour les formateurs'],
-    ['/pour-les-entreprises', '🏢', 'Pour les entreprises'],
-    ['/tarifs', '💳', 'Tarifs'],
-    ['/a-propos', 'ℹ️', 'À propos'],
-    ['/recrutement', '📬', 'Recrutement'],
-    ['/contact', '✉️', 'Contact']
+  const roleDest = { formateur: '/formateur', entreprise: '/entreprise', apprenant: '/apprenant', admin: '/admin/candidatures' };
+  const groupes = [
+    { titre: 'Plateforme', liens: [
+      ['/', '🏠', 'Accueil'],
+      ['/formations', '📚', 'Formations'],
+      ['/certifications', '🏅', 'Certificats'],
+      ['/ressources-numeriques', '🧰', 'Ressources numériques']
+    ] },
+    { titre: 'Espaces', liens: [
+      ['/pour-les-formateurs', '🎓', 'Formateurs'],
+      ['/pour-les-entreprises', '🏢', 'Entreprises'],
+      ['/tarifs', '💳', 'Tarifs']
+    ] },
+    { titre: 'Institution & aide', liens: [
+      ['/a-propos', 'ℹ️', 'À propos'],
+      ['/recrutement', '📬', 'Recrutement'],
+      ['/faq', '❔', 'FAQ'],
+      ['/contact', '✉️', 'Contact']
+    ] }
   ];
   return `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -390,8 +444,11 @@ function layout(title, content, { user = null, active = '' } = {}) {
       <img src="/assets/logo-oasis.png" alt="" class="logo-img">
       <span class="logo-txt"><span class="l1">OASIS</span><span class="l2">Centre numérique de formation professionnelle</span></span></a>
 
-    <nav class="rail-nav">${liens.map(([h, ic, l]) =>
-      `<a href="${h}" class="${active === h ? 'on' : ''}"><span class="ic">${ic}</span>${l}</a>`).join('')}</nav>
+    <nav class="rail-nav">${groupes.map(g => `<div class="nav-group">
+      <span class="nav-title">${esc(g.titre)}</span>
+      ${g.liens.map(([h, ic, l]) =>
+        `<a href="${h}" class="${active === h ? 'on' : ''}"><span class="ic">${ic}</span>${l}</a>`).join('')}
+    </div>`).join('')}</nav>
 
     <div class="rail-bas">${user
       ? `<div class="rail-moi">
@@ -475,24 +532,24 @@ function landing(courses, stats, user) {
       <img class="banniere" src="/assets/banniere-oasis.png"
         alt="Oasis, Centre Numérique de Formation Professionnelle — Des compétences aujourd'hui pour un meilleur demain. Formations en ligne, certifications reconnues, ressources numériques, apprentissage flexible, développement professionnel.">
       <a class="banniere-spot spot-formations" href="/formations" aria-label="Formations en ligne"></a>
-      <a class="banniere-spot spot-certificats" href="/formations?format=certificat_pro" aria-label="Certifications reconnues"></a>
-      <a class="banniere-spot spot-ressources" href="/formations" aria-label="Ressources numériques"></a>
-      <a class="banniere-spot spot-flexible" href="/formations?modalite=en_ligne" aria-label="Apprentissage flexible"></a>
-      <a class="banniere-spot spot-developpement" href="/pour-les-entreprises" aria-label="Développement professionnel"></a>
-      <a class="banniere-spot spot-apprendre" href="/formations" aria-label="Apprendre partout"></a>
-      <a class="banniere-spot spot-evoluer" href="/formations?format=parcours_metier" aria-label="Évoluer durablement"></a>
-      <a class="banniere-spot spot-construire" href="/register" aria-label="Construire votre parcours"></a>
+      <a class="banniere-spot spot-certificats" href="/certifications" aria-label="Certifications reconnues"></a>
+      <a class="banniere-spot spot-ressources" href="/ressources-numeriques" aria-label="Ressources numériques"></a>
+      <a class="banniere-spot spot-flexible" href="/apprentissage-professionnel" aria-label="Apprentissage professionnel"></a>
+      <a class="banniere-spot spot-developpement" href="/developpement-professionnel" aria-label="Développement professionnel"></a>
+      <a class="banniere-spot spot-apprendre" href="/apprendre-partout" aria-label="Apprendre partout"></a>
+      <a class="banniere-spot spot-evoluer" href="/evoluer-durablement" aria-label="Évoluer durablement"></a>
+      <a class="banniere-spot spot-construire" href="/construire-parcours" aria-label="Construire votre parcours"></a>
       <a class="banniere-spot spot-commencer" href="/formations" aria-label="Commencez dès maintenant"></a>
     </div>
     <div class="banner-actions">
       <a href="/formations"><i>💻</i><span>Formations en ligne</span></a>
-      <a href="/formations?format=certificat_pro"><i>🏅</i><span>Certifications reconnues</span></a>
-      <a href="/formations"><i>📚</i><span>Ressources numériques</span></a>
-      <a href="/formations?modalite=en_ligne"><i>🌐</i><span>Apprentissage flexible</span></a>
-      <a href="/pour-les-entreprises"><i>📈</i><span>Développement professionnel</span></a>
-      <a href="/formations"><i>🎓</i><span>Apprendre partout</span></a>
-      <a href="/formations?format=parcours_metier"><i>⚙️</i><span>Évoluer durablement</span></a>
-      <a href="/register"><i>🤝</i><span>Construire votre parcours</span></a>
+      <a href="/certifications"><i>🏅</i><span>Certifications reconnues</span></a>
+      <a href="/ressources-numeriques"><i>📚</i><span>Ressources numériques</span></a>
+      <a href="/apprentissage-professionnel"><i>🌐</i><span>Apprentissage professionnel</span></a>
+      <a href="/developpement-professionnel"><i>📈</i><span>Développement professionnel</span></a>
+      <a href="/apprendre-partout"><i>🎓</i><span>Apprendre partout</span></a>
+      <a href="/evoluer-durablement"><i>⚙️</i><span>Évoluer durablement</span></a>
+      <a href="/construire-parcours"><i>🤝</i><span>Construire votre parcours</span></a>
     </div>
   </div>
 
@@ -859,6 +916,194 @@ function pourEntreprises(user) {
   </div>`, { user, active: '/pour-les-entreprises' });
 }
 
+/* ---------- Pages de concepts publics ---------- */
+function certificationsPage(user) {
+  return layout('Certifications reconnues', `
+  <div class="page-head">
+    <span class="eyebrow">DOCUMENTS OFFICIELS</span>
+    <h1>Certificat et relevé de notes Oasis</h1>
+    <p class="sous" style="max-width:720px">Chaque parcours réussi peut générer deux documents officiels :
+    un certificat de réussite et un relevé de notes vérifiable par QR code.</p>
+  </div>
+  <div class="doc-grid">
+    <div class="doc-preview">
+      <div class="doc-watermark">OASIS</div>
+      <div class="doc-head">
+        <img src="/assets/logo-oasis.png" alt="">
+        <div><b>OASIS</b><br><small class="aide">Centre numérique de formation professionnelle</small></div>
+      </div>
+      <div class="doc-title">Certificat de réussite</div>
+      <p class="sous">Ce modèle atteste officiellement qu'un apprenant a complété un parcours de formation.</p>
+      <div class="doc-line"><span>Titulaire</span><b>Nom de l'apprenant</b></div>
+      <div class="doc-line"><span>Formation</span><b>Mécanique moto et automobile</b></div>
+      <div class="doc-line"><span>Mention</span><b>Très bien</b></div>
+      <div class="doc-line"><span>Référence</span><code>ENR-OASIS-2026</code></div>
+      <div style="display:flex;justify-content:space-between;gap:16px;align-items:end;margin-top:18px">
+        <div><small class="aide">Signature, sceau, date de délivrance et code de vérification.</small></div>
+        <div class="qr-demo" aria-label="Exemple de QR code"></div>
+      </div>
+    </div>
+    <div class="doc-preview">
+      <div class="doc-watermark">NOTES</div>
+      <div class="doc-head">
+        <img src="/assets/sceau-oasis.png" alt="">
+        <div><b>Registre académique</b><br><small class="aide">Relevé officiel des modules et évaluations</small></div>
+      </div>
+      <div class="doc-title">Relevé de notes</div>
+      <p class="sous">Le relevé détaille les modules suivis, les évaluations et les compétences validées.</p>
+      <table>
+        <tr><th>Élément</th><th>Note</th><th>Statut</th></tr>
+        <tr><td>Module 1 · Fondamentaux</td><td>86 %</td><td>Acquis</td></tr>
+        <tr><td>Module 2 · Pratique guidée</td><td>91 %</td><td>Acquis</td></tr>
+        <tr><td>Examen final</td><td>88 %</td><td>Réussi</td></tr>
+      </table>
+      <p class="aide" style="margin-top:14px">Chaque relevé est relié au même registre de vérification que le certificat.</p>
+    </div>
+  </div>
+  <div class="grille g3" style="margin-top:18px">
+    <div class="concept-card"><b>QR code vérifiable</b><p class="aide">Le scan ouvre une page publique indiquant si le document est authentique.</p></div>
+    <div class="concept-card"><b>Signature et sceau</b><p class="aide">Les documents utilisent l'identité officielle du centre et les paramètres administratifs.</p></div>
+    <div class="concept-card"><b>Traçabilité</b><p class="aide">La référence relie le document à l'inscription, aux notes et à la progression réelle.</p></div>
+  </div>`, { user, active: '/certifications' });
+}
+
+function ressourcesNumeriques(user) {
+  return layout('Ressources numériques', `
+  <div class="concept-hero">
+    <div>
+      <span class="eyebrow">PLATEFORME EN CONSTRUCTION</span>
+      <h1>Oasis Centre numérique d'apprentissage</h1>
+      <p class="sous" style="font-size:16px;margin-top:12px">Cette nouvelle plateforme regroupera les ressources
+      numériques utiles aux apprenants, formateurs et institutions : documents, guides, médias éducatifs,
+      exercices, fiches métiers et outils pratiques.</p>
+      <a class="btn" href="/formations">Voir les formations actuelles</a>
+      <a class="btn ligne" href="/contact" style="margin-left:8px">Être informé du lancement</a>
+    </div>
+    <div class="concept-card">
+      <b>Ce qui sera disponible</b>
+      <ul style="margin-top:10px;padding-left:18px">
+        <li>Bibliothèque de documents professionnels</li>
+        <li>Vidéothèque et audiothèque pédagogiques</li>
+        <li>Fiches pratiques par métier</li>
+        <li>Banque d'exercices et mini-évaluations</li>
+        <li>Ressources adaptées aux usages mobiles</li>
+      </ul>
+    </div>
+  </div>`, { user, active: '/ressources-numeriques' });
+}
+
+const CONCEPTS = {
+  apprentissageProfessionnel: {
+    titre: 'Apprentissage professionnel',
+    accroche: 'Apprendre un métier avec des contenus structurés, des tâches pratiques et des preuves de compétence.',
+    emoji: '🧭',
+    cta: '/formations',
+    items: [
+      ['Compétences métier', 'Chaque parcours vise des savoir-faire concrets reliés à un emploi ou une activité professionnelle.'],
+      ['Preuves de progression', 'Les leçons, quiz, travaux et évaluations permettent de suivre ce qui est réellement acquis.'],
+      ['Accompagnement', 'Le formateur peut guider, corriger et orienter l’apprenant vers la pratique.']
+    ]
+  },
+  developpementProfessionnel: {
+    titre: 'Développement professionnel',
+    accroche: 'Actualiser ses compétences pour rester utile, performant et prêt pour de nouvelles responsabilités.',
+    emoji: '📈',
+    cta: '/formations',
+    items: [
+      ['Montée en compétence', 'Les formations courtes aident à améliorer un poste, une activité ou un projet.'],
+      ['Culture de formation continue', 'L’apprenant peut revenir régulièrement pour compléter son profil professionnel.'],
+      ['Valeur pour les entreprises', 'Les organisations peuvent former leurs équipes et suivre leur progression.']
+    ]
+  },
+  apprendrePartout: {
+    titre: 'Apprendre partout',
+    accroche: 'Rendre la formation accessible depuis un téléphone, à la maison, au travail ou en déplacement.',
+    emoji: '🎓',
+    cta: '/formations',
+    items: [
+      ['Mobile d’abord', 'Les parcours sont pensés pour être consultés facilement sur téléphone.'],
+      ['Rythme flexible', 'L’apprenant avance selon ses disponibilités et peut reprendre son parcours.'],
+      ['Accessibilité', 'L’objectif est de réduire les barrières de distance, de temps et de lieu.']
+    ]
+  },
+  evoluerDurablement: {
+    titre: 'Évoluer durablement',
+    accroche: 'Construire des compétences solides, utiles aujourd’hui et adaptables aux changements de demain.',
+    emoji: '⚙️',
+    cta: '/formations',
+    items: [
+      ['Progression continue', 'Les parcours encouragent une évolution par étapes, pas seulement une formation isolée.'],
+      ['Employabilité', 'Les compétences validées renforcent le profil de l’apprenant sur le marché du travail.'],
+      ['Autonomie', 'L’apprenant développe des méthodes pour continuer à apprendre après la formation.']
+    ]
+  },
+  construireParcours: {
+    titre: 'Construire votre parcours',
+    accroche: 'Choisir une trajectoire claire : découvrir, apprendre, pratiquer, certifier et valoriser ses compétences.',
+    emoji: '🤝',
+    cta: '/register',
+    items: [
+      ['Orientation', 'Identifier le domaine, le niveau et le type de formation qui correspondent au projet.'],
+      ['Plan personnel', 'Assembler plusieurs formations pour construire un vrai parcours métier.'],
+      ['Valorisation', 'Utiliser les certificats, relevés et compétences acquises pour avancer professionnellement.']
+    ]
+  }
+};
+
+function conceptPage(user, key) {
+  const c = CONCEPTS[key] || CONCEPTS.apprentissageProfessionnel;
+  return layout(c.titre, `
+  <div class="concept-hero">
+    <div>
+      <span class="eyebrow">CONCEPT OASIS</span>
+      <h1>${esc(c.titre)}</h1>
+      <p class="sous" style="font-size:16px;margin-top:12px">${esc(c.accroche)}</p>
+      <a class="btn" href="${esc(c.cta)}">${key === 'construireParcours' ? 'Créer mon compte' : 'Explorer les formations'}</a>
+      <a class="btn ligne" href="/contact" style="margin-left:8px">Demander conseil</a>
+    </div>
+    <div class="concept-card" style="text-align:center">
+      <div style="font-size:68px;line-height:1">${c.emoji}</div>
+      <h2 style="margin-top:10px">${esc(c.titre)}</h2>
+      <p class="aide">Une approche pensée pour relier apprentissage, compétence et projet professionnel.</p>
+    </div>
+  </div>
+  <div class="grille g3" style="margin-top:18px">
+    ${c.items.map(([t, p]) => `<div class="concept-card"><b>${esc(t)}</b><p class="aide">${esc(p)}</p></div>`).join('')}
+  </div>
+  <div class="carte" style="margin-top:18px">
+    <h2 style="margin-top:0">Comment Oasis l'applique</h2>
+    <p>Le concept se traduit par des formations modulaires, des évaluations progressives, un suivi de la
+    progression et des documents de certification vérifiables. L’objectif est de rendre chaque parcours
+    compréhensible, mesurable et utile pour la vie professionnelle.</p>
+  </div>`, { user });
+}
+
+function faqPage(user) {
+  const questions = [
+    ['Comment s’inscrire sur Oasis ?', 'Cliquez sur S’inscrire, choisissez votre profil puis complétez le formulaire. Après connexion, vous pourrez accéder à votre espace personnel.'],
+    ['Comment acheter une formation ?', 'Ouvrez la fiche d’une formation, cliquez sur le bouton d’achat ou d’inscription, puis choisissez le moyen de paiement disponible.'],
+    ['Les certificats sont-ils vérifiables ?', 'Oui. Les certificats et relevés de notes contiennent une référence et un QR code qui renvoient vers le registre public de vérification.'],
+    ['À quoi sert le relevé de notes ?', 'Il présente les modules suivis, les évaluations, la note globale, la mention et les compétences acquises pendant le parcours.'],
+    ['Puis-je apprendre depuis mon téléphone ?', 'Oui. L’interface est pensée pour les usages mobiles afin de permettre l’apprentissage à distance et selon le rythme de chacun.'],
+    ['Une entreprise peut-elle former ses employés ?', 'Oui. L’espace entreprise permet de suivre les collaborateurs, les formations assignées et la progression.']
+  ];
+  return layout('FAQ', `
+  <div class="page-head">
+    <span class="eyebrow">AIDE RAPIDE</span>
+    <h1>Questions fréquentes</h1>
+    <p class="sous">Les réponses essentielles pour comprendre le fonctionnement d'Oasis.</p>
+  </div>
+  <div class="faq-list">
+    ${questions.map(([q, r], i) => `<details class="faq-item" ${i === 0 ? 'open' : ''}>
+      <summary>${esc(q)}</summary><p>${esc(r)}</p>
+    </details>`).join('')}
+  </div>
+  <div class="carte" style="margin-top:18px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap">
+    <span>Vous avez une autre question ?</span>
+    <a class="btn" href="/contact">Contacter Oasis</a>
+  </div>`, { user, active: '/faq' });
+}
+
 /* ---------- À propos ---------- */
 function aPropos(user, stats) {
   return layout('À propos', `
@@ -1181,6 +1426,7 @@ function verification(d) {
 module.exports = {
   CSS, layout, avatarHtml, etoiles, carteCours,
   landing, catalogue, ficheCours, checkoutCours, paiementAttente, tarifs,
-  pourFormateurs, pourEntreprises, aPropos, contactPage, authForm,
+  pourFormateurs, pourEntreprises, certificationsPage, ressourcesNumeriques, conceptPage,
+  faqPage, aPropos, contactPage, authForm,
   profilFormateurPublic, candidatureForm, candidatureStatut, verification
 };

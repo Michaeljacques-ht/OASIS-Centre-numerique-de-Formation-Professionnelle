@@ -314,9 +314,17 @@ async function handle(req, res) {
     return U.redirect(res, dest + '?ok=' + encodeURIComponent('Votre plan a été mis à jour : ' + data.plan + '.'));
   }
 
-  if (path === '/pour-les-formateurs') return U.sendHTML(res, 200, V.pourFormateurs(user));
-  if (path === '/pour-les-entreprises') return U.sendHTML(res, 200, V.pourEntreprises(user));
-  if (path === '/a-propos') return U.sendHTML(res, 200, V.aPropos(user, statsPubliques(db)));
+  if (path === '/pour-les-formateurs' && method === 'GET') return U.sendHTML(res, 200, V.pourFormateurs(user));
+  if (path === '/pour-les-entreprises' && method === 'GET') return U.sendHTML(res, 200, V.pourEntreprises(user));
+  if (path === '/certifications' && method === 'GET') return U.sendHTML(res, 200, V.certificationsPage(user));
+  if (path === '/ressources-numeriques' && method === 'GET') return U.sendHTML(res, 200, V.ressourcesNumeriques(user));
+  if (path === '/apprentissage-professionnel' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'apprentissageProfessionnel'));
+  if (path === '/developpement-professionnel' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'developpementProfessionnel'));
+  if (path === '/apprendre-partout' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'apprendrePartout'));
+  if (path === '/evoluer-durablement' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'evoluerDurablement'));
+  if (path === '/construire-parcours' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'construireParcours'));
+  if (path === '/faq' && method === 'GET') return U.sendHTML(res, 200, V.faqPage(user));
+  if (path === '/a-propos' && method === 'GET') return U.sendHTML(res, 200, V.aPropos(user, statsPubliques(db)));
 
   if (path === '/contact') {
     if (method === 'POST') {
