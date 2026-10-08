@@ -420,7 +420,7 @@ function layout(title, content, { user = null, active = '' } = {}) {
       ['/', '🏠', 'Accueil'],
       ['/formations', '📚', 'Formations'],
       ['/certifications', '🏅', 'Certificats'],
-      ['/ressources-numeriques', '🧰', 'Ressources numériques']
+      ['/ressources-numeriques', '🧰', 'Ressources']
     ] },
     { titre: 'Espaces', liens: [
       ['/pour-les-formateurs', '🎓', 'Formateurs'],
@@ -542,8 +542,6 @@ function landing(courses, stats, user) {
       <a class="banniere-spot spot-commencer" href="/formations" aria-label="Commencez dès maintenant"></a>
     </div>
     <div class="banner-actions">
-      <a href="/formations"><i>💻</i><span>Formations en ligne</span></a>
-      <a href="/certifications"><i>🏅</i><span>Certifications reconnues</span></a>
       <a href="/ressources-numeriques"><i>📚</i><span>Ressources numériques</span></a>
       <a href="/apprentissage-professionnel"><i>🌐</i><span>Apprentissage professionnel</span></a>
       <a href="/developpement-professionnel"><i>📈</i><span>Développement professionnel</span></a>
@@ -1055,7 +1053,6 @@ function conceptPage(user, key) {
   return layout(c.titre, `
   <div class="concept-hero">
     <div>
-      <span class="eyebrow">CONCEPT OASIS</span>
       <h1>${esc(c.titre)}</h1>
       <p class="sous" style="font-size:16px;margin-top:12px">${esc(c.accroche)}</p>
       <a class="btn" href="${esc(c.cta)}">${key === 'construireParcours' ? 'Créer mon compte' : 'Explorer les formations'}</a>
