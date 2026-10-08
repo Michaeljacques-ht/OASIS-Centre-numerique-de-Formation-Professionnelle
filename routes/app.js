@@ -255,6 +255,8 @@ function statsPubliques(db) {
   };
 }
 
+function socialHead(c, base){const title=c?c.titre:'OASIS — Centre numérique de formation professionnelle';const description=c?(c.description||c.sousTitre||''):'Découvrez nos formations professionnelles et développez vos compétences avec OASIS.';const url=base+(c?'/formation/'+c.id:'/');const image=new URL(c&&c.image||'/assets/banniere-oasis.png',base).href;return `<meta property="og:title" content="${U.esc(title)}"><meta property="og:description" content="${U.esc(description)}"><meta property="og:image" content="${U.esc(image)}"><meta property="og:url" content="${U.esc(url)}"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${U.esc(title)}"><meta name="twitter:description" content="${U.esc(description)}"><meta name="twitter:image" content="${U.esc(image)}">`;}
+
 async function handle(req, res) {
   const db = get();
   const path = req.pathname;
@@ -263,12 +265,53 @@ async function handle(req, res) {
   const flash = req.query.get('ok');
   let m;
 
+  const S = require('../lib/security');
+  const page = (title, content, status=200) => {res.setHeader('Cache-Control','no-store');return U.sendHTML(res,status,V.securityPage(title,content,user));};
+  const form = (action, fields, label) => `<form method="POST" action="${action}">${fields}<button class="btn" style="margin-top:16px">${label}</button></form>`;
+  if(path === '/assets/social.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript; charset=utf-8');return res.end(require('fs').readFileSync(require('path').join(__dirname,'../assets/social.js')));}
+  if(path === '/manifest.webmanifest' && method === 'GET') {res.setHeader('Content-Type','application/manifest+json');return res.end(JSON.stringify({name:'OASIS Centre numérique de formation professionnelle',short_name:'OASIS',start_url:'/',scope:'/',display:'standalone',background_color:'#ffffff',theme_color:'#145da0',icons:[{src:'/assets/logo-oasis.png',sizes:'any',type:'image/png',purpose:'any'}]}));}
+  if(path === '/sw.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript');res.setHeader('Cache-Control','no-cache');return res.end("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',()=>{});");}
+  if(path === '/mot-de-passe-oublie') {
+    if(method==='GET')return page('Mot de passe oublié',form(path,'<label>Adresse email</label><input type="email" name="email" required autocomplete="email">','Envoyer le lien de réinitialisation'));
+    if(method!=='POST')return page('Méthode non autorisée','',405);
+    if(S.limited('reset:'+req.socket.remoteAddress,5))return page('Veuillez patienter','<p>Réessayez dans 10 minutes.</p>',429);
+    if(!process.env.BREVO_API_KEY||!process.env.MAIL_FROM)return page('Envoi de courriel indisponible','<p>Contactez le support. Le service de réinitialisation par courriel doit être configuré.</p><a href="/contact">Contacter OASIS</a>',503);
+    const {data}=await U.readBody(req);const u=db.users.find(x=>x.email===String(data.email||'').trim().toLowerCase());
+    if(u){const t=S.token();u.reset={hash:S.digest(t),expires:Date.now()+1800000};save();try{await S.sendReset(u.email,U.baseUrl(req)+'/reinitialiser?token='+t);}catch(e){delete u.reset;save();console.error('[OASIS] Échec envoi réinitialisation');return page('Envoi indisponible','<p>Réessayez plus tard ou contactez le support.</p>',503);}}
+    return page('Vérifiez votre messagerie','<p>Si cette adresse correspond à un compte, un lien de réinitialisation vous a été envoyé. Vérifiez aussi vos courriels indésirables.</p>');
+  }
+  if(path === '/reinitialiser') {
+    res.setHeader('Referrer-Policy','no-referrer');
+    const data=method==='POST'?(await U.readBody(req)).data:{};const t=String(data.token||req.query.get('token')||'');
+    const u=db.users.find(x=>x.reset&&x.reset.expires>Date.now()&&x.reset.hash===S.digest(t));
+    if(!u)return page('Lien expiré ou invalide','<a href="/mot-de-passe-oublie">Demander un nouveau lien</a>',400);
+    if(method==='GET')return page('Nouveau mot de passe',form(path,`<input type="hidden" name="token" value="${U.esc(t)}"><label>Nouveau mot de passe</label><input type="password" name="password" minlength="8" required autocomplete="new-password"><label>Confirmer</label><input type="password" name="confirm" minlength="8" required autocomplete="new-password">`,'Enregistrer'));
+    if(method!=='POST')return page('Méthode non autorisée','',405);
+    if(String(data.password||'').length<8||data.password!==data.confirm)return page('Mot de passe invalide','<p>Utilisez au moins 8 caractères et deux valeurs identiques.</p>',400);
+    u.pass=U.hashPassword(data.password);delete u.reset;db.sessions=db.sessions.filter(s=>s.userId!==u.id);save();return page('Mot de passe modifié','<a class="btn" href="/login">Se connecter</a>');
+  }
+  if(path === '/securite/2fa') {
+    if(!user)return U.redirect(res,'/login?suite='+encodeURIComponent(path));
+    if(user.totpSecret)return page('Authentification à deux facteurs','<p>La double authentification est activée. Saisissez le code de votre application à chaque connexion.</p>');
+    if(method==='GET'){
+      if(!user.totpPending||user.totpPending.expires<Date.now()){user.totpPending={secret:S.secret(),csrf:S.token(),expires:Date.now()+600000};save();}
+      const key=user.totpPending.secret;const uri='otpauth://totp/'+encodeURIComponent('OASIS:'+user.email)+'?secret='+key+'&issuer=OASIS&digits=6&period=30';
+      return page('Activer l’authentification à deux facteurs',`<p>Scannez ce QR code avec Google Authenticator, Microsoft Authenticator ou une application compatible.</p>${QR.qrSvg(uri,{taille:220})}<p>Clé manuelle : <code>${key}</code></p><p>Conservez cette clé dans un endroit sûr pour récupérer l’accès en cas de perte du téléphone.</p>`+form(path,`<input type="hidden" name="csrf" value="${user.totpPending.csrf}"><label>Mot de passe actuel</label><input name="password" type="password" required autocomplete="current-password"><label>Code à six chiffres</label><input name="otp" inputmode="numeric" pattern="[0-9]{6}" required autocomplete="one-time-code">`,'Confirmer l’activation'));
+    }
+    if(method!=='POST')return page('Méthode non autorisée','',405);
+    if(S.limited('setup:'+user.id))return page('Veuillez patienter','<p>Réessayez dans 10 minutes.</p>',429);
+    const {data}=await U.readBody(req);const pending=user.totpPending;
+    const step=pending&&pending.expires>Date.now()&&data.csrf===pending.csrf&&U.verifyPassword(data.password||'',user.pass)?S.verify(pending.secret,data.otp):null;
+    if(step===null||step===false||step===undefined)return page('Activation non confirmée','<p>Vérifiez votre mot de passe et votre code.</p><a href="/securite/2fa">Réessayer</a>',400);
+    user.totpSecret=pending.secret;user.totpLastStep=step;delete user.totpPending;db.sessions=db.sessions.filter(s=>s.userId!==user.id);save();return openSession(res,user.id,'/securite/2fa');
+  }
+
   /* ================= PUBLIC ================= */
   m = path.match(/^\/fichiers\/([a-z0-9_.-]+)$/i);
   if (m && method === 'GET') return F.serve(req, res, m[1]);
 
   if (path === '/' && method === 'GET') {
-    return U.sendHTML(res, 200, V.landing(db.courses, statsPubliques(db), user));
+    return U.sendHTML(res, 200, V.landing(db.courses, statsPubliques(db), user).replace('</head>', socialHead(null, U.baseUrl(req)) + '</head>'));
   }
 
   if (path === '/formations' && method === 'GET') {
@@ -378,12 +421,15 @@ async function handle(req, res) {
   if (path === '/login') {
     if (method === 'GET') return U.sendHTML(res, 200, V.authForm('login', { suite: req.query.get('suite') }));
     const { data } = await U.readBody(req);
+    if(S.limited('login:'+req.socket.remoteAddress)) return U.sendHTML(res,429,V.authForm('login',{error:'Trop de tentatives. Réessayez dans 10 minutes.'}));
     const u = db.users.find(x => x.email === String(data.email || '').trim().toLowerCase());
     if (!u || !U.verifyPassword(data.password || '', u.pass)) {
       return U.sendHTML(res, 401, V.authForm('login', { error: 'Email ou mot de passe incorrect.' }));
     }
+    if(u.totpSecret){const step=S.verify(u.totpSecret,data.otp,u.totpLastStep);if(step===null)return U.sendHTML(res,401,V.authForm('login',{error:'Code de double authentification incorrect, expiré ou déjà utilisé.'}));u.totpLastStep=step;save();}
     let dest = req.query.get('suite') ||
-      ({ formateur: '/formateur', entreprise: '/entreprise', admin: '/admin/candidatures' }[u.role] || '/apprenant');
+      ({ formateur: '/formateur', entreprise: '/entreprise', admin: '/admin' }[u.role] || '/apprenant');
+    if(!dest.startsWith('/')||dest.startsWith('//')||dest.includes('\\'))dest='/';
     // Formateur dont la candidature n'est pas encore validée → page d'attente
     if (u.role === 'formateur' && u.candidature && u.candidature.statut !== 'approuvee') {
       dest = '/candidature/statut';
@@ -574,6 +620,11 @@ async function handle(req, res) {
     const traite = await GEST.handle(req, res,
       { need, notFound, flash, user, parametresCertificat });
     if (traite) return;
+  }
+
+  if ((path === '/admin' || path === '/admin/') && method === 'GET') {
+    const a = need(req, res, ['admin']); if (!a) return;
+    return U.sendHTML(res, 200, E.dashAdmin(a, db));
   }
 
   /* ---- Administration : paramètres du certificat (sceau, signature) ---- */

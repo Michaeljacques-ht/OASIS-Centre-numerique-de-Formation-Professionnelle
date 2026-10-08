@@ -413,8 +413,8 @@ function etoiles(n) {
   return '★'.repeat(v) + '☆'.repeat(5 - v);
 }
 
-function layout(title, content, { user = null, active = '' } = {}) {
-  const roleDest = { formateur: '/formateur', entreprise: '/entreprise', apprenant: '/apprenant', admin: '/admin/candidatures' };
+function layout(title, content, { user = null, active = '', social = null } = {}) {
+  const roleDest = { formateur: '/formateur', entreprise: '/entreprise', apprenant: '/apprenant', admin: '/admin' };
   const groupes = [
     { titre: 'Plateforme', liens: [
       ['/', '🏠', 'Accueil'],
@@ -436,7 +436,12 @@ function layout(title, content, { user = null, active = '' } = {}) {
   ];
   return `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)} — Oasis</title><style>${CSS}</style></head><body>
+<title>${esc(title)} — Oasis</title>
+<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#145da0">
+${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
+<style>${CSS}
+.social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
+</style></head><body>
 <div class="cadre">
   <input type="checkbox" id="ouvrir-menu" class="bascule-menu" hidden>
   <aside class="rail">
@@ -455,7 +460,7 @@ function layout(title, content, { user = null, active = '' } = {}) {
            ${avatarHtml(user.name, user.role === 'formateur' ? 'var(--violet)' : user.role === 'entreprise' ? 'var(--vert)' : 'var(--bleu)')}
            <span><b>${esc(user.name)}</b><br><small>${esc(user.role === 'apprenant' ? 'Apprenant' : user.role === 'formateur' ? 'Formateur' : user.role === 'entreprise' ? 'Entreprise' : 'Administration')}</small></span></div>
          <a class="btn petit" style="width:100%;text-align:center" href="${roleDest[user.role] || '/'}">Mon espace</a>
-         <a class="rail-quitter" href="/logout">Quitter la session</a>`
+         <a class="rail-quitter" href="/securite/2fa">Sécurité · Double authentification</a><a class="rail-quitter" href="/logout">Quitter la session</a>`
       : `<a class="btn petit" style="width:100%;text-align:center" href="/register">S'inscrire</a>
          <a class="btn ligne petit" style="width:100%;text-align:center;margin-top:7px" href="/login">Se connecter</a>`}
     </div>
@@ -467,7 +472,7 @@ function layout(title, content, { user = null, active = '' } = {}) {
         <img src="/assets/logo-oasis.png" alt="">
         <span><strong>OASIS Centre numérique</strong><span>Formation professionnelle · Portail en ligne</span></span>
       </div>
-      <div class="topbar-actions">${user
+      <div class="topbar-actions">${active === '/' ? partage('/', 'OASIS — Centre numérique de formation professionnelle', true) : ''}${user
         ? `${avatarHtml(user.name, user.role === 'formateur' ? 'var(--violet)' : user.role === 'entreprise' ? 'var(--vert)' : 'var(--bleu)')}
            <a class="btn petit" href="${roleDest[user.role] || '/'}">Mon espace</a>
            <a class="btn ligne petit" href="/logout">Quitter</a>`
@@ -481,20 +486,30 @@ function layout(title, content, { user = null, active = '' } = {}) {
       ${user ? `<a class="btn petit" href="${roleDest[user.role] || '/'}">Mon espace</a>`
              : `<a class="btn petit" href="/login">Se connecter</a>`}
     </header>
+    ${active === '/' ? `<div class="mobile-share">${partage('/', 'OASIS — Centre numérique de formation professionnelle', true)}</div>` : ''}
     <label for="ouvrir-menu" class="voile"></label>
     <main>${content}</main>
     <footer>© 2026 <b>Oasis</b> · Centre Numérique de Formation Professionnelle — Port-au-Prince, Haïti<br>
     Paiement mobile sécurisé (MonCash · NatCash · Kashpaw) · Certificats vérifiés · Support 24/7</footer>
   </div>
 </div>
-</body></html>`;
+<script src="/assets/social.js" defer></script></body></html>`;
 }
 
 /* ---------- Carte formation ---------- */
+function partage(path, title, install = false) {
+ return `<div class="social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}" aria-label="Partager">
+ <a data-network="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur Facebook">Facebook</a>
+ <a data-network="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur WhatsApp">WhatsApp</a>
+ ${install ? '<button type="button" data-install>Installer</button>' : ''}
+ <a data-network="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur X">X</a>
+ ${install ? '' : '<button type="button" data-copy>Copier le lien</button>'}</div>`;
+}
+
 function carteCours(c) {
   const cat = categorie(c.categorie);
   const { note, count } = noteCours(c.id);
-  return `<a class="cours" href="/formation/${esc(c.id)}" style="text-decoration:none">
+  return `<article class="cours"><a class="cours-link" href="/formation/${esc(c.id)}">
     <div class="visuel" style="background:linear-gradient(135deg,${cat.deg})${c.image ? `;background-image:url('${esc(c.image)}');background-size:cover;background-position:center` : ''}">
       ${c.badge ? `<span class="badge ${c.badge === 'Bestseller' ? 'b-orange' : c.badge === 'Nouveau' ? 'b-vert' : 'b-violet'}">${esc(c.badge)}</span>` : ''}
       ${c.image ? '' : cat.emoji}</div>
@@ -507,7 +522,7 @@ function carteCours(c) {
       </div>
       ${note ? `<div class="note">${etoiles(note)} ${note} <span style="color:var(--sourd);font-weight:500">(${count})</span></div>` : ''}
       <div class="prix">${c.prix === 0 ? '<span style="color:var(--vert)">Gratuit</span>' : fmtHTG(c.prix)}${c.prixBarre ? `<s>${fmtHTG(c.prixBarre)}</s>` : ''}</div>
-    </div></a>`;
+    </div></a><div class="course-share">${partage('/formation/' + c.id, c.titre + ' — ' + (c.description || c.sousTitre || '').slice(0, 200))}</div></article>`;
 }
 
 function formationTicker(courses) {
@@ -728,7 +743,7 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
           <br><a href="/formateurs/${esc(formateur.id || '')}" style="font-size:12.5px">Voir le profil complet →</a></span></div>
       </div>
     </div>
-  </div>`, { user, active: '/formations' });
+  </div>`, { user, active: '/formations', social: { title: c.titre, description: c.description || c.sousTitre || '', url: shareUrl, image: new URL(c.image || '/assets/banniere-oasis.png', shareUrl).href } });
 }
 
 /* ---------- Checkout d'achat (passerelle PLOP PLOP) ---------- */
@@ -1254,13 +1269,13 @@ function authForm(kind, { error, role, suite } = {}) {
           document.getElementById('champsEntreprise').style.display = this.value === 'entreprise' ? 'block' : 'none';});</script>` : ''}
         <label>Adresse email</label><input name="email" type="email" required>
         <label>Mot de passe</label><input name="password" type="password" required minlength="8">
-        ${isReg ? '<p class="aide">8 caractères minimum.</p>' : ''}
+        ${isReg ? '<p class="aide">8 caractères minimum.</p>' : '<label>Code de double authentification (si activée)</label><input name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code"><div class="actions-h" style="margin-top:14px"><a class="btn ligne petit" href="/mot-de-passe-oublie">Mot de passe oublié</a><a class="btn ligne petit" href="/securite/2fa">Activer l’authentification à deux facteurs</a></div>'}
         <div style="margin-top:18px"><button class="btn" style="width:100%">${isReg ? "S'inscrire" : 'Se connecter'}</button></div>
       </form>
     </div>
     <p style="text-align:center">${isReg
       ? 'Déjà inscrit ? <a href="/login">Se connecter</a>'
-      : `Pas de compte ? <a href="/register">S'inscrire</a> · Démo : jean@oasis.ht / marie@oasis.ht / academie@digicel.ht`}</p>
+      : `Pas de compte ? <a href="/register">S'inscrire</a>`}</p>
   </div>`, { });
 }
 
@@ -1427,3 +1442,5 @@ module.exports = {
   faqPage, aPropos, contactPage, authForm,
   profilFormateurPublic, candidatureForm, candidatureStatut, verification
 };
+
+module.exports.securityPage = (title, content, user) => layout(title, '<div class="carte" style="max-width:560px;margin:24px auto"><h1>' + esc(title) + '</h1>' + content + '</div>', {user});

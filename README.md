@@ -322,3 +322,36 @@ Pour simuler le paiement de l'apprenant :
 
 ---
 © Oasis Centre Numérique de Formation Professionnelle — Port-au-Prince, Haïti.
+
+## Partage, installation et sécurité (mise à jour)
+
+Les vignettes proposent Facebook, WhatsApp, X et la copie du lien. L’accueil propose Facebook, WhatsApp, Installer et X avant la connexion, avec une version mobile. Les fiches incluent Open Graph et Twitter Card (titre, description, image et URL). Les réseaux sociaux décident du rendu et peuvent garder un aperçu en cache ; ils ne reproduisent pas exactement la carte HTML.
+
+Définir `BASE_URL` avec l’adresse HTTPS publique réelle, sans slash final. Les images des formations doivent être publiques. La bannière OASIS sert d’image de remplacement. L’installation utilise un manifeste et un service worker sans mise en cache des pages privées ; sur un navigateur non compatible, le bouton donne les instructions d’ajout à l’écran d’accueil.
+
+### Réinitialisation par courriel
+
+Configurer dans les variables d’environnement du serveur :
+
+| Variable | Valeur |
+| --- | --- |
+| `BASE_URL` | Adresse HTTPS publique du site |
+| `BREVO_API_KEY` | Clé API privée Brevo pour les courriels transactionnels |
+| `MAIL_FROM` | Adresse d’expéditeur validée dans Brevo |
+
+Aucune clé n’est incluse. Sans configuration, la page signale l’indisponibilité du service. Les liens expirent après 30 minutes et sont à usage unique. Changer le mot de passe ferme les sessions sans désactiver le second facteur.
+
+### Double authentification
+
+Cliquer sur « Activer l’authentification à deux facteurs », se connecter, scanner le QR code avec une application TOTP (Google Authenticator, Microsoft Authenticator ou équivalent), puis confirmer avec le mot de passe et un code à six chiffres. Une clé manuelle est disponible. L’activation prend effet après confirmation et ferme les sessions précédentes. Les connexions suivantes exigent un code ; les codes déjà utilisés sont refusés.
+
+Conserver la clé manuelle en lieu sûr pour récupérer l’accès en cas de perte du téléphone. Il n’existe pas de contournement automatique du second facteur. Protéger et sauvegarder la base JSON qui contient les clés. Les limites de tentatives sont en mémoire par processus. Les informations démo sont retirées de la page de connexion uniquement ; les comptes et données existants sont conservés.
+
+### Remplacement du projet
+
+Remplacer le code et les ressources puis redémarrer. Conserver la base et les fichiers utilisateurs sur le disque persistant (`DATA_DIR`). Ne pas écraser la base de production avec le fichier `data/db.json` fourni dans le ZIP.
+
+
+## Correctif « Mon espace » administrateur
+
+Le bouton « Mon espace » et la connexion administrateur ouvrent désormais `/admin`, un tableau de bord avec les accès à tous les modules. Auparavant ils ouvraient uniquement la page des candidatures. Les pages des candidatures et de gestion restent accessibles dans les menus. L’accès au tableau de bord est réservé aux administrateurs. Ce correctif ne modifie pas les comptes ni la base de données.

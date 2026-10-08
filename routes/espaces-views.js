@@ -38,6 +38,7 @@ const MENU_A = [
   ['/apprenant/certificats', '🎖️', 'Mes certificats']
 ];
 const MENU_ADMIN = [
+  ['/admin', '📊', 'Tableau de bord'],
   ['/admin/candidatures', '📝', 'Candidatures formateurs'],
   ['/admin/moderation', '🔎', 'Formations à vérifier'],
   ['/admin/parametres', '🎖️', 'Paramètres certificat'],
@@ -1398,3 +1399,32 @@ module.exports = {
   pageExamen, pageEpreuve, pageCorrections, adminCandidatures, adminParametres, adminModeration,
   dashEntreprise, collaborateursE, formationsE, rapportsE
 };
+
+/* Accueil de l’administration : destination de « Mon espace ». */
+function dashAdmin(user, db) {
+  const pending = db.users.filter(u => u.role === 'formateur' && u.candidature && u.candidature.statut === 'en_attente').length;
+  const review = db.courses.filter(c => c.statut === 'en_verification').length;
+  const published = db.courses.filter(c => c.statut === 'publiee').length;
+  const learners = db.users.filter(u => u.role === 'apprenant').length;
+  const modules = [
+    ['/admin/candidatures', '📝', 'Candidatures formateurs', 'Examiner les demandes et gérer les décisions.'],
+    ['/admin/moderation', '🔎', 'Formations à vérifier', 'Contrôler les formations avant leur publication.'],
+    ['/admin/parametres', '🎖️', 'Paramètres des certificats', 'Configurer le sceau, la signature et les certificats.'],
+    ['/gestion', '🏛️', 'Gestion de l’institution', 'Consulter les indicateurs de scolarité, de personnel et de comptabilité.'],
+    ['/gestion/etudiants', '🎓', 'Dossiers étudiants', 'Suivre les inscriptions et les dossiers étudiants.'],
+    ['/gestion/rh', '👔', 'Personnel et ressources humaines', 'Consulter et gérer les membres du personnel.'],
+    ['/gestion/rh/paie', '💵', 'Paie', 'Accéder aux salaires et aux opérations de paie.'],
+    ['/gestion/compta', '📘', 'Comptabilité', 'Accéder aux écritures et aux états financiers.'],
+    ['/formations', '📚', 'Catalogue des formations', 'Consulter les formations disponibles sur la plateforme.']
+  ];
+  return shell('Tableau de bord administrateur', user, MENU_ADMIN, '/admin', `
+    <h1>Mon espace administrateur</h1>
+    <p class="sous">Bienvenue, ${esc(user.name)}. Accédez aux modules d’administration et de gestion d’OASIS.</p>
+    <div class="grille g4">
+      ${[[pending,'Candidatures en attente'],[review,'Formations à vérifier'],[published,'Formations publiées'],[learners,'Comptes apprenants']].map(([n,l])=>`<div class="carte stat-carte"><span class="lib">${esc(l)}</span><span class="val">${n}</span></div>`).join('')}
+    </div>
+    <div class="grille g3" style="margin-top:20px">
+      ${modules.map(([h,icon,label,desc])=>`<div class="carte"><h2 style="margin-top:0">${icon} ${esc(label)}</h2><p>${esc(desc)}</p><a class="btn petit" href="${h}">Ouvrir</a></div>`).join('')}
+    </div>`, {sombre:true,sousTitre:'Administration'});
+}
+module.exports.dashAdmin = dashAdmin;
