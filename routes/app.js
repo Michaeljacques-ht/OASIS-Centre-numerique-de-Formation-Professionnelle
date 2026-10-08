@@ -428,7 +428,7 @@ async function handle(req, res) {
     }
     if(u.totpSecret){const step=S.verify(u.totpSecret,data.otp,u.totpLastStep);if(step===null)return U.sendHTML(res,401,V.authForm('login',{error:'Code de double authentification incorrect, expiré ou déjà utilisé.'}));u.totpLastStep=step;save();}
     let dest = req.query.get('suite') ||
-      ({ formateur: '/formateur', entreprise: '/entreprise', admin: '/admin' }[u.role] || '/apprenant');
+      ({ formateur: '/formateur', entreprise: '/entreprise', admin: '/formateur' }[u.role] || '/apprenant');
     if(!dest.startsWith('/')||dest.startsWith('//')||dest.includes('\\'))dest='/';
     // Formateur dont la candidature n'est pas encore validée → page d'attente
     if (u.role === 'formateur' && u.candidature && u.candidature.statut !== 'approuvee') {

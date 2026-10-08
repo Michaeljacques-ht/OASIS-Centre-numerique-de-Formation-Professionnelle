@@ -414,7 +414,7 @@ function etoiles(n) {
 }
 
 function layout(title, content, { user = null, active = '', social = null } = {}) {
-  const roleDest = { formateur: '/formateur', entreprise: '/entreprise', apprenant: '/apprenant', admin: '/admin' };
+  const roleDest = { formateur: '/formateur', entreprise: '/entreprise', apprenant: '/apprenant', admin: '/formateur' };
   const groupes = [
     { titre: 'Plateforme', liens: [
       ['/', '🏠', 'Accueil'],

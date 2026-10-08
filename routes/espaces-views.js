@@ -9,12 +9,15 @@ const { layout, avatarHtml, etoiles } = require('./views');
 
 /* ---------- Coquille à barre latérale ---------- */
 function shell(title, user, menu, activeHref, content, { sombre = false, sousTitre = '' } = {}) {
+  const espaceMenu = user.role === 'admin' && menu === MENU_F
+    ? [...MENU_F, ['/admin', '⚙️', 'Administration générale'], ['/gestion', '🏛️', 'Gestion de l’institution']]
+    : menu;
   const inner = `
   <div class="shell">
     <aside class="side ${sombre ? 'sombre' : ''}">
       <div class="qui">${avatarHtml(user.name, sombre ? 'var(--vert)' : 'var(--violet)')}
         <span><b>${esc(user.name)}</b><small>${esc(sousTitre)}</small></span></div>
-      <nav>${menu.map(([href, icon, label]) =>
+      <nav>${espaceMenu.map(([href, icon, label]) =>
         `<a href="${href}" class="${href === activeHref ? 'on' : ''}">${icon} ${label}</a>`).join('')}</nav>
     </aside>
     <section>${content}</section>
@@ -38,6 +41,8 @@ const MENU_A = [
   ['/apprenant/certificats', '🎖️', 'Mes certificats']
 ];
 const MENU_ADMIN = [
+  ['/formateur', '🎓', 'Mon espace formations'],
+  ['/formateur/creer', '➕', 'Créer une formation'],
   ['/admin', '📊', 'Tableau de bord'],
   ['/admin/candidatures', '📝', 'Candidatures formateurs'],
   ['/admin/moderation', '🔎', 'Formations à vérifier'],

@@ -352,6 +352,6 @@ Conserver la clé manuelle en lieu sûr pour récupérer l’accès en cas de pe
 Remplacer le code et les ressources puis redémarrer. Conserver la base et les fichiers utilisateurs sur le disque persistant (`DATA_DIR`). Ne pas écraser la base de production avec le fichier `data/db.json` fourni dans le ZIP.
 
 
-## Correctif « Mon espace » administrateur
+## Restauration de « Mon espace » formations
 
-Le bouton « Mon espace » et la connexion administrateur ouvrent désormais `/admin`, un tableau de bord avec les accès à tous les modules. Auparavant ils ouvraient uniquement la page des candidatures. Les pages des candidatures et de gestion restent accessibles dans les menus. L’accès au tableau de bord est réservé aux administrateurs. Ce correctif ne modifie pas les comptes ni la base de données.
+Pour les administrateurs, le bouton « Mon espace » (bureau, mobile et menu latéral) et la connexion ouvrent `/formateur`, l’espace existant de création et d’administration des formations : tableau de bord, mes formations, création, modules, leçons, ressources, quiz, évaluations et publication. Les droits administrateur existants sont conservés. L’administration générale et la gestion institutionnelle restent accessibles par les liens du menu de cet espace. Aucun compte ou cours existant n’est modifié.
