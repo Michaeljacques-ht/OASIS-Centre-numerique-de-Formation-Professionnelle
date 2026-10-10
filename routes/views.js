@@ -1468,3 +1468,5 @@ module.exports = {
 };
 
 module.exports.securityPage = (title, content, user) => layout(title, '<div class="carte" style="max-width:560px;margin:24px auto"><h1>' + esc(title) + '</h1>' + content + '</div>', {user});
+
+module.exports.carteCours=carteCours;

@@ -132,10 +132,10 @@ function mesFormationsF(user, courses, flash) {
 }
 
 /* ---- Assistant de création (étape 1 : informations) ---- */
-function creerFormation(user, error) {
-  return shell('Créer une formation', user, MENU_F, '/formateur/creer', `
+function creerFormation(user, error, programmeLong=false) {
+  return shell(programmeLong?'Créer un programme long':'Créer une formation', user, MENU_F, programmeLong?'/formateur/programmes':'/formateur/creer', `
   <a href="/formateur/formations" style="font-size:13.5px">← Retour</a>
-  <h1>Créer une nouvelle formation</h1>
+  <h1>${programmeLong?'Créer un programme long':'Créer une nouvelle formation'}</h1>
   <p class="sous">Suivez les étapes pour créer et publier votre formation sur Oasis.</p>
   <div class="etapes">
     <span class="et on"><i>1</i> Informations</span><span class="tiret"></span>
@@ -147,7 +147,8 @@ function creerFormation(user, error) {
     <div class="carte">
       <h2 style="margin-top:0">Informations générales</h2>
       <p class="aide">Commencez par renseigner les informations de base de votre formation.</p>
-      <form method="POST" action="/formateur/creer" id="f" enctype="multipart/form-data">
+      <form method="POST" action="/formateur/creer${programmeLong?'?type=programme_long':''}" id="f" enctype="multipart/form-data">
+        ${programmeLong?'<input type="hidden" name="parcoursType" value="programme_long">':''}
         <label>Titre de la formation *</label>
         <input name="titre" required maxlength="100" placeholder="Ex : Développement Web complet avec Laravel" oninput="ap()">
         <label>Sous-titre</label>

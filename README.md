@@ -445,3 +445,11 @@ Les programmes importés EDUCA et ceux créés à partir du modèle Bureautique 
 Pour préserver les données existantes, les programmes retirés et les inscriptions correspondantes sont conservés dans les collections internes `programmesArchives` et `programmeEnrollmentsArchives`. Ils ne sont accessibles ni par le catalogue ni par leurs anciennes fiches. Les associations de formations vers ces programmes retirés sont désactivées. Conservez DATA_DIR au déploiement ; le nettoyage s’applique aussi à votre base existante, sans réinitialisation.
 
 Validation : tests de retrait et d’absence de réimport, préservation des programmes manuels, des formations et des traces de suivi, filtres du catalogue, restriction des brouillons, état vide et création sans modèle. Syntaxe JavaScript vérifiée.
+
+## Création des programmes longs : processus des formations
+
+Le bouton Créer un programme ouvre désormais le formulaire existant des formations avec les mêmes champs, le même aperçu et les mêmes détails. Après enregistrement, le programme utilise la gestion habituelle : modules, leçons, documents, médias, liens, quiz, évaluations et publication. L’ancien formulaire spécifique n’est plus utilisé pour créer un programme.
+
+Les nouveaux programmes sont des formations identifiées par `parcoursType: programme_long`, affichées aussi dans le catalogue Programmes longs. Ils utilisent les mêmes règles de droits, limites de plan, inscription, achat et progression que les formations. Les anciens programmes manuels restent conservés ; les imports restent retirés comme précédemment. Aucun dossier DATA_DIR ne doit être réinitialisé.
+
+Validation HTTP : comparaison des champs des deux formulaires, création commune, conservation des informations pédagogiques, gestion de la formation, catalogue formateur et visibilité publique après publication.

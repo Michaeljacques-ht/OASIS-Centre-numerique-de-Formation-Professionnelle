@@ -1246,19 +1246,21 @@ async function handle(req, res) {
   }
 
   if (path === '/formateur/creer') {
+    const programmeLong=req.query.get('type')==='programme_long';
+    const creation=(u,error)=>E.creerFormation(u,error,programmeLong);
     const u = need(req, res, ['formateur', 'admin']); if (!u) return;
-    if (method === 'GET') return U.sendHTML(res, 200, E.creerFormation(u));
+    if (method === 'GET') return U.sendHTML(res, 200, creation(u));
 
     // Le formulaire envoie du multipart (image de couverture facultative)
     let data, imageMeta = null;
     if ((req.headers['content-type'] || '').startsWith('multipart/')) {
       const mp = await U.parseMultipart(req).catch(() => null);
-      if (!mp) return U.sendHTML(res, 422, E.creerFormation(u, 'Envoi invalide ou fichier trop volumineux.'));
+      if (!mp) return U.sendHTML(res, 422, creation(u, 'Envoi invalide ou fichier trop volumineux.'));
       data = mp.fields;
       const img = mp.files.find(f => f.field === 'image' && f.filename);
       if (img) {
         const r = F.saveUpload(img, ['image']);
-        if (!r.ok) return U.sendHTML(res, 422, E.creerFormation(u, r.error));
+        if (!r.ok) return U.sendHTML(res, 422, creation(u, r.error));
         imageMeta = r.fichier;
       }
     } else {
@@ -1268,16 +1270,16 @@ async function handle(req, res) {
     const plan = DB.PLANS.find(p => p.id === (u.plan || 'gratuit')) || DB.PLANS[0];
     const nb = db.courses.filter(c => c.formateurId === u.id).length;
     if (nb >= plan.maxFormations) {
-      return U.sendHTML(res, 403, E.creerFormation(u,
+      return U.sendHTML(res, 403, creation(u,
         `Votre plan « ${plan.label} » est limité à ${plan.maxFormations} formation(s). Passez à un plan supérieur dans « Tarifs ».`));
     }
     const prix = Number(data.prix);
     if (!data.titre || !data.categorie || !data.niveau || !data.description ||
         !Number.isFinite(prix) || prix < 0) {
-      return U.sendHTML(res, 422, E.creerFormation(u, 'Veuillez remplir tous les champs obligatoires (*).'));
+      return U.sendHTML(res, 422, creation(u, 'Veuillez remplir tous les champs obligatoires (*).'));
     }
     const c = {
-      id: U.rid('crs', 6), formateurId: u.id,
+      id: U.rid('crs', 6), formateurId: u.id, parcoursType:programmeLong?'programme_long':'formation',
       titre: String(data.titre).slice(0, 100), sousTitre: String(data.sousTitre || '').slice(0, 150),
       categorie: DB.CATEGORIES.some(x => x.id === data.categorie) ? data.categorie : 'numerique',
       format: DB.FORMATS.some(f => f.id === data.format) ? data.format : 'certificat_pro',
