@@ -402,3 +402,28 @@ Cliquer sur **Configurer** pour adapter les informations puis choisir **Publié*
 Chaque import possède une identité stable : redémarrer ou redéployer n’ajoute pas de doublon et ne remplace pas vos modifications. Les programmes et formations déjà enregistrés sont conservés. Une formation peut être rattachée à l’un de ces programmes depuis **Mes formations → Gérer → Programme long et diplôme technique**.
 
 Conserver `DATA_DIR` sur le disque persistant et ne pas remplacer `data/db.json` en production. Les nouveaux imports sont ajoutés dans la base existante au démarrage, sans réinitialiser celle-ci. Les programmes restent des contenus pédagogiques configurables ; l’ajout ne délivre pas automatiquement de diplômes aux apprenants.
+
+## Programmes longs : tableaux et pédagogie par module
+
+La présentation des programmes utilise désormais des tableaux modernes : identité et diplôme, admissions et objectifs, organisation, stage et diplomation, puis parcours détaillé. Les tableaux restent consultables sur mobile par défilement horizontal. Les styles sont limités aux pages des programmes.
+
+1. Dans **Mon espace → Programmes longs / diplômes**, ouvrir **Configurer** et enregistrer le programme.
+2. Dans chaque module, ouvrir **Gérer les unités et la grille de compétences** (également accessible depuis l’aperçu).
+3. Créer ou modifier les unités : titre, objectifs, temps estimé, texte de leçon, documents et médias, liens externes et quiz à quatre réponses. La première unité des modules existants reprend leur contenu importé ; elle reste modifiable.
+4. Compléter la grille du module : code, compétence observable, critères de réussite et épreuve/preuve attendue. La trame initiale reprend le titre du module ; elle n’est pas une validation automatique des compétences du document source.
+5. Dans **Apprenants et relevés**, inscrire un compte apprenant ou retrouver les apprenants inscrits à une formation associée au programme. Le programme doit être publié pour que l’apprenant puisse suivre ses unités. Les comptes se créent par les procédures existantes.
+6. L’apprenant retrouve ses programmes dans **Mon espace → Mes formations**. Il termine les leçons, consulte les documents et répond aux quiz. Un quiz est réussi à partir de 60 %. Le résultat est recalculé côté serveur. Modifier le quiz oblige à le repasser.
+7. Le formateur renseigne le statut de chaque compétence : non évaluée, en cours d’acquisition, acquise ou non acquise, avec une note facultative, la preuve observée et une appréciation. Les critères doivent être complétés et une preuve renseignée pour valider l’acquisition. Une modification de la compétence archive l’évaluation précédente et demande une nouvelle validation.
+8. Le **relevé individuel de compétences** regroupe tous les modules, les résultats, les appréciations, le validateur et les dates, ainsi que le suivi des unités. L’apprenant consulte uniquement son relevé. L’impression permet un enregistrement en PDF ; ce document pédagogique ne remplace pas le diplôme.
+
+Formats : PDF (20 Mo), Word DOC/DOCX, Excel XLS/XLSX, PowerPoint PPT/PPTX et OpenDocument (15 Mo), TXT (2 Mo), ZIP (25 Mo), images (5 Mo), audio MP3 (20 Mo), vidéos MP4/WebM (80 Mo). Les fichiers bureautiques se téléchargent ; les PDF s’ouvrent dans le lecteur du navigateur. Les documents de programme sont conservés dans `DATA_DIR/programme-documents`, servis par une route contrôlant l’inscription ou les droits du formateur, et ne sont pas exposés par `/fichiers`.
+
+Conserver **tout le dossier DATA_DIR** lors du redéploiement : base JSON, uploads existants et programme-documents. Les identifiants stables des modules, unités et compétences permettent de préserver les contenus et le suivi lors d’un changement de configuration. Retirer une unité ou un module retire ses éléments du parcours actif ; les traces d’évaluations déjà enregistrées restent dans la base. Les nouvelles fonctions n’altèrent ni le lien Mon espace vers la création de formations ni l’ancienne bannière.
+
+Validation : vérifications HTTP des dix programmes importés, de la conservation des unités pendant la configuration, de l’inscription et des accès, de la protection des fichiers PDF/DOC/DOCX, des quiz, de la protection CSRF, des grilles et relevés, et de leur sauvegarde dans la base JSON. Vérification syntaxique JavaScript. La mise en page n’a pas été vérifiée dans un navigateur graphique dans cet environnement.
+
+## Fiche publique des programmes longs
+
+La fiche reprend maintenant la disposition des formations classiques : couverture et titre à gauche, badge diplôme et métadonnées, partage WhatsApp/Facebook/X/LinkedIn, description enrichie, tableaux d’informations et modules, aperçu des unités. Un encadré à droite affiche les frais réels renseignés, les admissions, le responsable, le diplôme et la cohorte. Le bouton « Contacter pour s’inscrire » ouvre le formulaire de contact prérempli avec le programme concerné. Les apprenants déjà inscrits accèdent à leur parcours et à leur relevé ; l’accès aux ressources privées reste contrôlé. Aucun tarif ni achat de programme n’est créé automatiquement.
+
+Dans Configurer → Identité et diplôme, une URL de couverture HTTP(S) ou un chemin /assets/ ou une image /fichiers/ existante peut être renseigné. Sans image, la fiche affiche un visuel dégradé avec un symbole de diplôme. Les programmes publiés fournissent des métadonnées de partage avec titre, description et image. Les brouillons n’affichent pas les actions de partage.

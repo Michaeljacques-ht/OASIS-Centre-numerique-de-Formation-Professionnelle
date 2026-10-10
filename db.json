@@ -1,0 +1,3178 @@
+{
+  "users": [
+    {
+      "id": "usr_admin",
+      "role": "admin",
+      "name": "Administration Oasis",
+      "email": "admin@oasis.ht",
+      "pass": "0061e58f0252177de54c06ca80754abf:ce49ce5839acb64e39ba6c2ccdbdc283b1634d227097521ed5d15355f01f3464fb8d377d8781e5f34b0a014bd2cb7489bff951d2a58773dc68393625287792ff",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    },
+    {
+      "id": "usr_jean",
+      "role": "formateur",
+      "name": "Jean Marc Louis",
+      "email": "jean@oasis.ht",
+      "pass": "c3ebebcf0f15dff8249cae398c26835f:b5a50a133ce88a34658f097a67163ae761af1150de05a23894878eafb2c6b79531ce1efa6b671b57e1486ccb7561cb694f02f0220c5c9f2913552bbdd5bf7a1a",
+      "plan": "pro",
+      "verified": true,
+      "balance": 41250,
+      "titrePro": "Ingénieur logiciel & formateur certifié",
+      "bio": "Dix ans d’expérience en développement web et bureautique professionnelle. J’accompagne étudiants et entreprises haïtiennes dans leur montée en compétences numériques.",
+      "expertises": [
+        "Laravel",
+        "Excel avancé",
+        "Marketing digital",
+        "Python"
+      ],
+      "siteWeb": "https://jeanbaptiste-formation.ht",
+      "whatsapp": "50937001111",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    },
+    {
+      "id": "usr_sophia",
+      "role": "formateur",
+      "name": "Sophia B. Morin",
+      "email": "sophia@oasis.ht",
+      "pass": "750f6e9b55ce031b95226c58727955f9:118e76751a03b070fb3139a70becd6c9dbfd4cf638745e03fc7761610e88bfa91ed2626c36698a296918cf0c85f99cbf2829d863b5db0480b54140b0a864b3ba",
+      "plan": "starter",
+      "verified": true,
+      "balance": 12800,
+      "bio": "Enseignante d’anglais professionnel.",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    },
+    {
+      "id": "usr_cand",
+      "role": "formateur",
+      "name": "Stevens François",
+      "email": "stevens.f@oasis.ht",
+      "pass": "6969ed2dbb871dc66a8813b7868a4255:ffca666a546d5246b4ee8dc53d0643190fc11a10d77fba6225c14498fc4a127577d0e12bf165dd07d167da0d8597393f3ba7699cd0916667ad8c818c32fe75a3",
+      "plan": "gratuit",
+      "verified": false,
+      "balance": 0,
+      "candidature": {
+        "statut": "en_attente",
+        "soumiseLe": "2026-10-07T22:35:53.500Z",
+        "titrePro": "Comptable agréé CPA",
+        "expertises": [
+          "Comptabilité",
+          "QuickBooks"
+        ],
+        "experience": "8 ans en cabinet comptable à Port-au-Prince, formateur occasionnel en entreprise.",
+        "motivation": "Je souhaite rendre la comptabilité accessible aux petites entreprises haïtiennes.",
+        "portfolio": "https://linkedin.com/in/stevensf"
+      }
+    },
+    {
+      "id": "usr_marie",
+      "role": "apprenant",
+      "name": "Marie L. Pierre",
+      "email": "marie@oasis.ht",
+      "pass": "640ca92ee7ba922752cc8c2c61c7bd70:43a31f7ff7de29012132ec0390f9fa46fb8fd0fd04f798c32610d9880f4b982919bd68a082867af44c330983f24f0c47924d3e531c3d8daffde138e2d24efc77",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    },
+    {
+      "id": "usr_digicel",
+      "role": "entreprise",
+      "name": "Digicel SA",
+      "email": "academie@digicel.ht",
+      "pass": "3abcbb0b8895601b0151cb2b6dab3206:d5c739fb5ec06b45342580d5d51b44d71bf54353e3d9687454ef4ac6ac7b7247e4bcbfba2870f23be639e73468e944006a4bd812f92aa074e1ecc929a3e05026",
+      "companyName": "Digicel Academy",
+      "plan": "entreprise",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    }
+  ],
+  "courses": [
+    {
+      "id": "crs_laravel",
+      "formateurId": "usr_jean",
+      "titre": "Développement Web complet avec Laravel",
+      "sousTitre": "Du premier contrôleur au déploiement en production",
+      "categorie": "numerique",
+      "format": "certificat_pro",
+      "modalite": "en_ligne",
+      "niveau": "Intermédiaire",
+      "langue": "Français",
+      "duree": "12h",
+      "prix": 4900,
+      "prixBarre": 7900,
+      "statut": "publiee",
+      "badge": "Bestseller",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Maîtrisez Laravel de A à Z : routes, Eloquent, authentification, API REST et déploiement. Projet fil rouge : une plateforme de gestion scolaire adaptée au contexte haïtien.",
+      "evaluation": {
+        "poidsQuiz": 30,
+        "poidsExamen": 70,
+        "seuil": 60,
+        "melanger": true
+      },
+      "examenFinal": {
+        "epreuves": [
+          {
+            "id": "ep_1b25f10d",
+            "type": "projet_final",
+            "titre": "Projet : mini-plateforme scolaire",
+            "poids": 100,
+            "consigne": "Développez une application Laravel de gestion des notes (élèves, matières, bulletins). Déposez le lien GitHub et une courte présentation de votre architecture."
+          }
+        ]
+      },
+      "modules": [
+        {
+          "id": "mod_99dd0f2f",
+          "titre": "Introduction et installation",
+          "lecons": [
+            {
+              "id": "lec_1e88bcbe",
+              "titre": "Bienvenue dans la formation",
+              "contenu": "Présentation des objectifs, du projet fil rouge et des prérequis. Installation de PHP, Composer et Laravel sur Windows.",
+              "duree": 8
+            },
+            {
+              "id": "lec_59604477",
+              "titre": "Structure d’un projet Laravel",
+              "contenu": "Découverte des dossiers app/, routes/, resources/ et du cycle de vie d’une requête.",
+              "duree": 12
+            }
+          ]
+        },
+        {
+          "id": "mod_91ea83f8",
+          "titre": "Routes, contrôleurs et vues",
+          "lecons": [
+            {
+              "id": "lec_626262e6",
+              "titre": "Le routage",
+              "contenu": "Routes GET/POST, paramètres, groupes et middleware.",
+              "duree": 15
+            },
+            {
+              "id": "lec_c1460b90",
+              "titre": "Blade, le moteur de templates",
+              "contenu": "Layouts, composants, boucles et directives Blade.",
+              "duree": 14
+            }
+          ]
+        },
+        {
+          "id": "mod_919486cf",
+          "titre": "Base de données avec Eloquent",
+          "lecons": [
+            {
+              "id": "lec_522d03a8",
+              "titre": "Migrations et modèles",
+              "contenu": "Créer le schéma de la base et les modèles Eloquent.",
+              "duree": 16
+            },
+            {
+              "id": "lec_8028d543",
+              "titre": "Relations entre modèles",
+              "contenu": "hasMany, belongsTo, belongsToMany avec exemples concrets.",
+              "duree": 18
+            }
+          ]
+        },
+        {
+          "id": "mod_2da8145a",
+          "titre": "Projet final et déploiement",
+          "lecons": [
+            {
+              "id": "lec_faf15921",
+              "titre": "Authentification et rôles",
+              "contenu": "Inscription, connexion et autorisations par rôle.",
+              "duree": 15
+            },
+            {
+              "id": "lec_59f0bff1",
+              "titre": "Déployer sur un hébergeur cPanel",
+              "contenu": "Mise en production pas à pas sur un hébergement mutualisé.",
+              "duree": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_excel",
+      "formateurId": "usr_jean",
+      "titre": "Excel avancé pour les professionnels",
+      "sousTitre": "Tableaux croisés, formules et automatisation",
+      "categorie": "administration",
+      "format": "certificat_court",
+      "modalite": "en_ligne",
+      "niveau": "Avancé",
+      "langue": "Français",
+      "duree": "8h",
+      "prix": 2900,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Nouveau",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "RECHERCHEX, tableaux croisés dynamiques, Power Query et macros : gagnez des heures chaque semaine dans vos rapports.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "examenFinal": {
+        "epreuves": [
+          {
+            "id": "ep_55e5d86b",
+            "type": "qcm",
+            "titre": "QCM de synthèse",
+            "poids": 60,
+            "consigne": "Répondez à toutes les questions.",
+            "questions": [
+              {
+                "id": "qst_8a7d000b",
+                "question": "Quelle fonction moderne remplace RECHERCHEV ?",
+                "options": [
+                  "RECHERCHEX",
+                  "SOMME.SI",
+                  "CONCAT",
+                  "INDIRECT"
+                ],
+                "bonne": 0
+              },
+              {
+                "id": "qst_de3bb5d1",
+                "question": "Un tableau croisé dynamique sert principalement à…",
+                "options": [
+                  "Dessiner des formes",
+                  "Synthétiser et analyser des données",
+                  "Envoyer des emails",
+                  "Protéger un classeur"
+                ],
+                "bonne": 1
+              }
+            ]
+          },
+          {
+            "id": "ep_08e49812",
+            "type": "trous",
+            "titre": "Vocabulaire Excel",
+            "poids": 40,
+            "consigne": "Complétez les mots manquants.",
+            "texte": "Pour croiser des données, on utilise un tableau {{croisé}} dynamique. La fonction {{RECHERCHEX}} remplace RECHERCHEV."
+          }
+        ]
+      },
+      "modules": [
+        {
+          "id": "mod_15cb2174",
+          "titre": "Formules avancées",
+          "lecons": [
+            {
+              "id": "lec_4cd26d5f",
+              "titre": "RECHERCHEX et INDEX/EQUIV",
+              "contenu": "Les recherches modernes qui remplacent RECHERCHEV.",
+              "duree": 14
+            },
+            {
+              "id": "lec_1f7cd17d",
+              "titre": "Formules matricielles dynamiques",
+              "contenu": "FILTRE, TRIER, UNIQUE et leurs combinaisons.",
+              "duree": 12
+            }
+          ],
+          "competences": [
+            "Maîtriser RECHERCHEX",
+            "Construire des formules matricielles dynamiques"
+          ],
+          "quiz": {
+            "questions": [
+              {
+                "id": "qst_0c221e5a",
+                "question": "RECHERCHEX peut chercher…",
+                "options": [
+                  "Uniquement vers la droite",
+                  "Dans les deux sens",
+                  "Uniquement des nombres",
+                  "Une seule colonne à la fois"
+                ],
+                "bonne": 1
+              }
+            ]
+          }
+        },
+        {
+          "id": "mod_f100983d",
+          "titre": "Tableaux croisés dynamiques",
+          "lecons": [
+            {
+              "id": "lec_581fedb2",
+              "titre": "Construire un TCD efficace",
+              "contenu": "Sources, champs calculés et segments.",
+              "duree": 16
+            },
+            {
+              "id": "lec_b5fab749",
+              "titre": "Tableaux de bord",
+              "contenu": "Construire un tableau de bord de suivi budgétaire en gourdes.",
+              "duree": 15
+            }
+          ],
+          "competences": [
+            "Analyser des données avec les TCD",
+            "Concevoir un tableau de bord budgétaire"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_marketing",
+      "formateurId": "usr_jean",
+      "titre": "Stratégies Marketing Digital 2026",
+      "sousTitre": "Réseaux sociaux, WhatsApp Business et contenu local",
+      "categorie": "creation",
+      "format": "certificat_court",
+      "modalite": "en_ligne",
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "6h",
+      "prix": 3900,
+      "prixBarre": 5900,
+      "statut": "publiee",
+      "badge": "Populaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Une stratégie digitale adaptée au marché haïtien : Facebook, Instagram, WhatsApp Business, contenu en créole et mesure des résultats.",
+      "modules": [
+        {
+          "id": "mod_68c4415f",
+          "titre": "Fondations",
+          "lecons": [
+            {
+              "id": "lec_c0e821cd",
+              "titre": "Définir sa cible et son offre",
+              "contenu": "Personas et proposition de valeur pour le marché local.",
+              "duree": 12
+            },
+            {
+              "id": "lec_5ef6bd1b",
+              "titre": "WhatsApp Business pour vendre",
+              "contenu": "Catalogue, réponses rapides et diffusion.",
+              "duree": 14
+            }
+          ]
+        },
+        {
+          "id": "mod_f19c1829",
+          "titre": "Contenu et mesure",
+          "lecons": [
+            {
+              "id": "lec_cab8948b",
+              "titre": "Calendrier éditorial bilingue",
+              "contenu": "Planifier un mois de contenu français/créole.",
+              "duree": 13
+            },
+            {
+              "id": "lec_3bba4795",
+              "titre": "Mesurer avec Meta Business Suite",
+              "contenu": "Les indicateurs qui comptent vraiment.",
+              "duree": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_anglais",
+      "formateurId": "usr_sophia",
+      "titre": "Anglais professionnel : de débutant à avancé",
+      "sousTitre": "Communiquer avec assurance au travail",
+      "categorie": "administration",
+      "format": "certificat_pro",
+      "modalite": "en_ligne",
+      "niveau": "Tous niveaux",
+      "langue": "Français",
+      "duree": "15h",
+      "prix": 2400,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": null,
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Emails, réunions, appels et entretiens d’embauche : un anglais professionnel solide, avec exercices audio et mises en situation.",
+      "modules": [
+        {
+          "id": "mod_02a15d7b",
+          "titre": "Les bases professionnelles",
+          "lecons": [
+            {
+              "id": "lec_05be9e75",
+              "titre": "Se présenter et présenter son entreprise",
+              "contenu": "Vocabulaire et structures essentielles.",
+              "duree": 12
+            },
+            {
+              "id": "lec_9212e47e",
+              "titre": "Écrire un email professionnel",
+              "contenu": "Formules, ton et modèles réutilisables.",
+              "duree": 14
+            }
+          ]
+        },
+        {
+          "id": "mod_5aa36964",
+          "titre": "Réunions et appels",
+          "lecons": [
+            {
+              "id": "lec_5b25ddde",
+              "titre": "Participer à une réunion",
+              "contenu": "Exprimer un avis, poser des questions, reformuler.",
+              "duree": 15
+            },
+            {
+              "id": "lec_95163df6",
+              "titre": "Appels et visioconférences",
+              "contenu": "Gérer un appel difficile avec calme et clarté.",
+              "duree": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_python",
+      "formateurId": "usr_jean",
+      "titre": "Initiation à Python",
+      "sousTitre": "Vos premiers programmes pas à pas — ouvert à tous",
+      "categorie": "numerique",
+      "format": "certificat_court",
+      "modalite": "en_ligne",
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "5h",
+      "prix": 0,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Gratuit",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Variables, boucles, fonctions et petits projets pratiques pour bien démarrer en programmation.",
+      "modules": [
+        {
+          "id": "mod_225bf3a3",
+          "titre": "Premiers pas",
+          "lecons": [
+            {
+              "id": "lec_1dbf61f9",
+              "titre": "Installer Python",
+              "contenu": "Installation et premier script.",
+              "duree": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_solaire",
+      "formateurId": "usr_jean",
+      "titre": "Installation et maintenance de systèmes solaires",
+      "sousTitre": "Dimensionner, installer et entretenir une installation photovoltaïque.",
+      "categorie": "energie",
+      "format": "parcours_metier",
+      "modalite": "hybride",
+      "lieuPratique": "Atelier Oasis — Port-au-Prince",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "6 mois",
+      "prix": 18500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Dimensionner, installer et entretenir une installation photovoltaïque. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_66619c73",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_ab4b73bb",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_149f25ef",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_electricite",
+      "formateurId": "usr_jean",
+      "titre": "Électricité résidentielle",
+      "sousTitre": "Câblage, tableaux, mises aux normes et dépannage en habitation.",
+      "categorie": "energie",
+      "format": "certificat_pro",
+      "modalite": "hybride",
+      "lieuPratique": "Atelier Oasis — Port-au-Prince",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "4 mois",
+      "prix": 12500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Câblage, tableaux, mises aux normes et dépannage en habitation. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_8aa23f61",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_2977929e",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_834a107c",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_plomberie",
+      "formateurId": "usr_jean",
+      "titre": "Plomberie",
+      "sousTitre": "Installation sanitaire, réseaux d’eau, réparation de fuites.",
+      "categorie": "batiment",
+      "format": "certificat_pro",
+      "modalite": "hybride",
+      "lieuPratique": "Atelier partenaire — Delmas",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "4 mois",
+      "prix": 11500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Installation sanitaire, réseaux d’eau, réparation de fuites. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_ed011e21",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_4082f2e3",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_3c2c27b5",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_froid",
+      "formateurId": "usr_jean",
+      "titre": "Froid et climatisation",
+      "sousTitre": "Installation, entretien et réparation de climatiseurs et réfrigérateurs.",
+      "categorie": "froid",
+      "format": "parcours_metier",
+      "modalite": "hybride",
+      "lieuPratique": "Atelier Oasis — Port-au-Prince",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "6 mois",
+      "prix": 16500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Installation, entretien et réparation de climatiseurs et réfrigérateurs. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_c44ca9e5",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_f809aa19",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_a244f954",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_smartphone",
+      "formateurId": "usr_jean",
+      "titre": "Réparation de smartphones",
+      "sousTitre": "Diagnostic, remplacement d’écrans et de batteries, micro-soudure d’initiation.",
+      "categorie": "electronique",
+      "format": "certificat_pro",
+      "modalite": "hybride",
+      "lieuPratique": "Atelier Oasis — Port-au-Prince",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "3 mois",
+      "prix": 9500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Diagnostic, remplacement d’écrans et de batteries, micro-soudure d’initiation. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_da4d8312",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_3f1b5ad8",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_ce10a6cb",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_maintenance",
+      "formateurId": "usr_jean",
+      "titre": "Maintenance informatique et réseaux",
+      "sousTitre": "Dépannage, montage, installation de réseaux et Wi-Fi.",
+      "categorie": "numerique",
+      "format": "certificat_pro",
+      "modalite": "hybride",
+      "lieuPratique": "Atelier Oasis — Port-au-Prince",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "4 mois",
+      "prix": 13500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Dépannage, montage, installation de réseaux et Wi-Fi. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_3e706256",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_e1a1fc85",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_9f33a802",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_camera",
+      "formateurId": "usr_jean",
+      "titre": "Installation de caméras et systèmes de sécurité",
+      "sousTitre": "Vidéosurveillance, alarmes, configuration et accès à distance.",
+      "categorie": "electronique",
+      "format": "certificat_pro",
+      "modalite": "hybride",
+      "lieuPratique": "Atelier partenaire — Pétion-Ville",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "3 mois",
+      "prix": 11000,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Vidéosurveillance, alarmes, configuration et accès à distance. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_7c729770",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_5041b56f",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_95aeab1b",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_mecanique",
+      "formateurId": "usr_jean",
+      "titre": "Mécanique moto et automobile",
+      "sousTitre": "Entretien, diagnostic et réparation courante des deux et quatre roues.",
+      "categorie": "automobile",
+      "format": "parcours_metier",
+      "modalite": "hybride",
+      "lieuPratique": "Garage partenaire — Carrefour",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "8 mois",
+      "prix": 19500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Entretien, diagnostic et réparation courante des deux et quatre roues. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_6f081d67",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_4d943457",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_f7a02e6d",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_webdev",
+      "formateurId": "usr_jean",
+      "titre": "Développement web",
+      "sousTitre": "Sites et applications : HTML, CSS, JavaScript et mise en ligne.",
+      "categorie": "numerique",
+      "format": "parcours_metier",
+      "modalite": "en_ligne",
+      "lieuPratique": null,
+      "socle": [
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "6 mois",
+      "prix": 15500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Sites et applications : HTML, CSS, JavaScript et mise en ligne. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_977b9bb7",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_856437e2",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_8d42b20c",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_infographie",
+      "formateurId": "usr_jean",
+      "titre": "Infographie et création de contenu numérique",
+      "sousTitre": "Identité visuelle, affiches, retouche et contenus pour les réseaux.",
+      "categorie": "creation",
+      "format": "certificat_pro",
+      "modalite": "en_ligne",
+      "lieuPratique": null,
+      "socle": [
+        "client",
+        "devis",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "4 mois",
+      "prix": 11500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Identité visuelle, affiches, retouche et contenus pour les réseaux. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_aedb9e42",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_697958f0",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_a7e5cdd3",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_compta",
+      "formateurId": "usr_jean",
+      "titre": "Comptabilité informatisée",
+      "sousTitre": "Tenue de comptes, états financiers et logiciels de gestion.",
+      "categorie": "administration",
+      "format": "certificat_pro",
+      "modalite": "en_ligne",
+      "lieuPratique": null,
+      "socle": [
+        "client",
+        "gestion",
+        "numerique"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "4 mois",
+      "prix": 12000,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Tenue de comptes, états financiers et logiciels de gestion. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_eecb41dd",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_c52fe839",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_d99ff878",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_credit",
+      "formateurId": "usr_jean",
+      "titre": "Agent de crédit et microfinance",
+      "sousTitre": "Montage de dossier, analyse de risque, suivi et recouvrement.",
+      "categorie": "finance",
+      "format": "certificat_pro",
+      "modalite": "hybride",
+      "lieuPratique": "Institution partenaire — Port-au-Prince",
+      "socle": [
+        "client",
+        "gestion",
+        "numerique"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "4 mois",
+      "prix": 12500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Montage de dossier, analyse de risque, suivi et recouvrement. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_a4c4df90",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_d16e0c32",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_7d86d6a2",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_cuisine",
+      "formateurId": "usr_jean",
+      "titre": "Cuisine, pâtisserie et boulangerie",
+      "sousTitre": "Techniques de base, hygiène alimentaire et production en atelier.",
+      "categorie": "hotellerie",
+      "format": "parcours_metier",
+      "modalite": "hybride",
+      "lieuPratique": "Cuisine-école Oasis — Port-au-Prince",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "6 mois",
+      "prix": 14500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Techniques de base, hygiène alimentaire et production en atelier. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_4caada39",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_828bb766",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_5f74df8c",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_couture",
+      "formateurId": "usr_jean",
+      "titre": "Couture et confection",
+      "sousTitre": "Prise de mesures, patronage, assemblage et finitions.",
+      "categorie": "mode",
+      "format": "parcours_metier",
+      "modalite": "hybride",
+      "lieuPratique": "Atelier partenaire — Croix-des-Bouquets",
+      "socle": [
+        "securite",
+        "devis",
+        "client",
+        "gestion",
+        "marketing"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "6 mois",
+      "prix": 12500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Prise de mesures, patronage, assemblage et finitions. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_46d9632f",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_6a369645",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_512e3318",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crs_entrepreneuriat",
+      "formateurId": "usr_jean",
+      "titre": "Entrepreneuriat et gestion d’une petite entreprise",
+      "sousTitre": "Du projet à la première vente : modèle, chiffrage, clients et suivi.",
+      "categorie": "administration",
+      "format": "certificat_court",
+      "modalite": "en_ligne",
+      "lieuPratique": null,
+      "socle": [
+        "devis",
+        "client",
+        "gestion",
+        "marketing",
+        "numerique"
+      ],
+      "niveau": "Débutant",
+      "langue": "Français",
+      "duree": "2 mois",
+      "prix": 6500,
+      "prixBarre": null,
+      "statut": "publiee",
+      "badge": "Prioritaire",
+      "createdAt": "2026-10-07T22:35:53.500Z",
+      "description": "Du projet à la première vente : modèle, chiffrage, clients et suivi. Formation structurée en théorie à distance, travaux pratiques encadrés et évaluation par compétences, avec certification Oasis à la clé.",
+      "evaluation": {
+        "poidsQuiz": 40,
+        "poidsExamen": 60,
+        "seuil": 60,
+        "melanger": true
+      },
+      "modules": [
+        {
+          "id": "mod_81ba337d",
+          "titre": "Fondamentaux du métier",
+          "lecons": [
+            {
+              "id": "lec_9352f8ee",
+              "titre": "Le métier et son marché",
+              "contenu": "Débouchés, clients types, revenus attendus en Haïti.",
+              "duree": 25
+            },
+            {
+              "id": "lec_4b33f621",
+              "titre": "Outils et équipement de base",
+              "contenu": "Matériel indispensable, coûts, où s’approvisionner.",
+              "duree": 30
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "enrollments": [
+    {
+      "id": "enr_2f7cbf3073f2",
+      "userId": "usr_marie",
+      "courseId": "crs_laravel",
+      "source": "achat",
+      "progress": [],
+      "completedAt": null,
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord_af5b2ba91a80",
+      "userId": "usr_marie",
+      "courseId": "crs_laravel",
+      "amount": 4900,
+      "commission": 735,
+      "net": 4165,
+      "method": "moncash",
+      "status": "payee",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    }
+  ],
+  "avis": [
+    {
+      "id": "avi_4e514c909a",
+      "courseId": "crs_laravel",
+      "userId": "usr_marie",
+      "note": 5,
+      "commentaire": "Excellente formation ! Très bien expliquée et facile à suivre.",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    },
+    {
+      "id": "avi_f1a45182bc",
+      "courseId": "crs_excel",
+      "userId": "usr_marie",
+      "note": 5,
+      "commentaire": "Contenu très riche et formateur très disponible.",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    },
+    {
+      "id": "avi_91d1a410ce",
+      "courseId": "crs_anglais",
+      "userId": "usr_marie",
+      "note": 4,
+      "commentaire": "Bonne formation, merci beaucoup !",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    }
+  ],
+  "retraits": [],
+  "sessions": [],
+  "messagesContact": [],
+  "auditLog": [],
+  "sujetsForum": [
+    {
+      "id": "suj_a357839c94",
+      "courseId": "crs_laravel",
+      "userId": "usr_marie",
+      "titre": "Erreur lors de l’installation de Composer",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    }
+  ],
+  "messagesForum": [
+    {
+      "id": "mfr_0f5b8c8109",
+      "sujetId": "suj_a357839c94",
+      "userId": "usr_marie",
+      "contenu": "Bonjour, j’obtiens une erreur SSL en installant Composer sur Windows 10. Une idée ?",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    },
+    {
+      "id": "mfr_b1767515f3",
+      "sujetId": "suj_a357839c94",
+      "userId": "usr_jean",
+      "contenu": "Bonjour Marie ! Téléchargez le certificat cacert.pem et indiquez son chemin dans php.ini (openssl.cafile). Je détaille cela dans la leçon 1 du module 1.",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    }
+  ],
+  "annonces": [
+    {
+      "id": "ann_3dd8941ad2",
+      "courseId": "crs_laravel",
+      "formateurId": "usr_jean",
+      "titre": "Bienvenue dans la formation !",
+      "contenu": "Session de questions-réponses en direct chaque vendredi à 18 h sur le forum. Pensez à télécharger les ressources du module 1 avant de commencer.",
+      "createdAt": "2026-10-07T22:35:53.500Z"
+    }
+  ],
+  "parametres": {
+    "paie": {
+      "ona": {
+        "salarie": 0.06,
+        "employeur": 0.06
+      },
+      "ofatmaMaladie": {
+        "employeur": 0.03
+      },
+      "ofatmaAccident": {
+        "employeur": 0.02
+      },
+      "iri": [
+        {
+          "jusqua": 120000,
+          "taux": 0
+        },
+        {
+          "jusqua": 240000,
+          "taux": 0.1
+        },
+        {
+          "jusqua": 480000,
+          "taux": 0.15
+        },
+        {
+          "jusqua": 1000000,
+          "taux": 0.25
+        },
+        {
+          "jusqua": null,
+          "taux": 0.3
+        }
+      ],
+      "congesAnnuelsJours": 15,
+      "boniMois": 1,
+      "devise": "HTG"
+    }
+  },
+  "etudiants": [
+    {
+      "id": "etu_11186bf63eeeb1e4",
+      "matricule": "OAS-2026-0001",
+      "prenom": "Rosemie",
+      "nom": "Baptiste",
+      "sexe": "F",
+      "telephone": "+509 3456 7890",
+      "email": "rosemie.baptiste@exemple.ht",
+      "niveauScolaire": "Philo",
+      "adresse": "Port-au-Prince",
+      "statut": "actif",
+      "inscriptions": [
+        {
+          "id": "ins_f6ac6c500d28db72",
+          "courseId": null,
+          "intitule": "Installation électrique résidentielle",
+          "periode": "2026",
+          "dateInscription": "2026-06-07T00:00:00.000Z",
+          "statut": "en_cours",
+          "echeancier": [
+            {
+              "rang": 1,
+              "echeance": "2026-06-06",
+              "montant": 8000,
+              "regle": 8000
+            },
+            {
+              "rang": 2,
+              "echeance": "2026-07-06",
+              "montant": 8000,
+              "regle": 8000
+            },
+            {
+              "rang": 3,
+              "echeance": "2026-08-06",
+              "montant": 8000,
+              "regle": 0
+            }
+          ]
+        }
+      ],
+      "paiements": [
+        {
+          "id": "pay_3e8adb5e3aefd2be",
+          "recu": "REC-2026-00001",
+          "date": "2026-06-06",
+          "montant": 8000,
+          "mode": "moncash",
+          "imputations": [
+            {
+              "echeance": "2026-06-06",
+              "rang": 1,
+              "montant": 8000
+            }
+          ],
+          "note": "Versement 1/3",
+          "encaissePar": "usr_admin",
+          "encaisseLe": "2026-10-07T22:35:53.734Z"
+        },
+        {
+          "id": "pay_d57d4d3004355a73",
+          "recu": "REC-2026-00002",
+          "date": "2026-07-06",
+          "montant": 8000,
+          "mode": "caisse",
+          "imputations": [
+            {
+              "echeance": "2026-07-06",
+              "rang": 2,
+              "montant": 8000
+            }
+          ],
+          "note": "Versement 2/3",
+          "encaissePar": "usr_admin",
+          "encaisseLe": "2026-10-07T22:35:53.734Z"
+        }
+      ],
+      "ouvertLe": "2026-10-07T22:35:53.734Z",
+      "ouvertPar": "usr_admin"
+    },
+    {
+      "id": "etu_1a5853ff37446176",
+      "matricule": "OAS-2026-0002",
+      "prenom": "Widmar",
+      "nom": "Célestin",
+      "sexe": "M",
+      "telephone": "+509 3712 4408",
+      "email": "widmar.celestin@exemple.ht",
+      "niveauScolaire": "9e année fondamentale",
+      "adresse": "Port-au-Prince",
+      "statut": "actif",
+      "inscriptions": [
+        {
+          "id": "ins_aecdb254f68c360a",
+          "courseId": null,
+          "intitule": "Plomberie sanitaire",
+          "periode": "2026",
+          "dateInscription": "2026-06-07T00:00:00.000Z",
+          "statut": "en_cours",
+          "echeancier": [
+            {
+              "rang": 1,
+              "echeance": "2026-06-06",
+              "montant": 6000,
+              "regle": 6000
+            },
+            {
+              "rang": 2,
+              "echeance": "2026-07-06",
+              "montant": 6000,
+              "regle": 6000
+            },
+            {
+              "rang": 3,
+              "echeance": "2026-08-06",
+              "montant": 6000,
+              "regle": 6000
+            }
+          ]
+        }
+      ],
+      "paiements": [
+        {
+          "id": "pay_7c20c973c2183cf7",
+          "recu": "REC-2026-00003",
+          "date": "2026-06-06",
+          "montant": 6000,
+          "mode": "moncash",
+          "imputations": [
+            {
+              "echeance": "2026-06-06",
+              "rang": 1,
+              "montant": 6000
+            }
+          ],
+          "note": "Versement 1/3",
+          "encaissePar": "usr_admin",
+          "encaisseLe": "2026-10-07T22:35:53.734Z"
+        },
+        {
+          "id": "pay_92c1a3492a62b3b2",
+          "recu": "REC-2026-00004",
+          "date": "2026-07-06",
+          "montant": 6000,
+          "mode": "caisse",
+          "imputations": [
+            {
+              "echeance": "2026-07-06",
+              "rang": 2,
+              "montant": 6000
+            }
+          ],
+          "note": "Versement 2/3",
+          "encaissePar": "usr_admin",
+          "encaisseLe": "2026-10-07T22:35:53.734Z"
+        },
+        {
+          "id": "pay_ce08cf476fd4afd0",
+          "recu": "REC-2026-00005",
+          "date": "2026-08-06",
+          "montant": 6000,
+          "mode": "moncash",
+          "imputations": [
+            {
+              "echeance": "2026-08-06",
+              "rang": 3,
+              "montant": 6000
+            }
+          ],
+          "note": "Versement 3/3",
+          "encaissePar": "usr_admin",
+          "encaisseLe": "2026-10-07T22:35:53.734Z"
+        }
+      ],
+      "ouvertLe": "2026-10-07T22:35:53.734Z",
+      "ouvertPar": "usr_admin"
+    },
+    {
+      "id": "etu_1e5f4d561054eca9",
+      "matricule": "OAS-2026-0003",
+      "prenom": "Nadège",
+      "nom": "Jean-Baptiste",
+      "sexe": "F",
+      "telephone": "+509 3890 1177",
+      "email": "nadege.jeanbaptiste@exemple.ht",
+      "niveauScolaire": "Bac I",
+      "adresse": "Port-au-Prince",
+      "statut": "actif",
+      "inscriptions": [
+        {
+          "id": "ins_9ff13e8797861c7f",
+          "courseId": null,
+          "intitule": "Couture industrielle",
+          "periode": "2026",
+          "dateInscription": "2026-06-07T00:00:00.000Z",
+          "statut": "en_cours",
+          "echeancier": [
+            {
+              "rang": 1,
+              "echeance": "2026-06-06",
+              "montant": 7500,
+              "regle": 7500
+            },
+            {
+              "rang": 2,
+              "echeance": "2026-07-06",
+              "montant": 7500,
+              "regle": 0
+            }
+          ]
+        }
+      ],
+      "paiements": [
+        {
+          "id": "pay_80ec25543dc06f21",
+          "recu": "REC-2026-00006",
+          "date": "2026-06-06",
+          "montant": 7500,
+          "mode": "moncash",
+          "imputations": [
+            {
+              "echeance": "2026-06-06",
+              "rang": 1,
+              "montant": 7500
+            }
+          ],
+          "note": "Versement 1/2",
+          "encaissePar": "usr_admin",
+          "encaisseLe": "2026-10-07T22:35:53.734Z"
+        }
+      ],
+      "ouvertLe": "2026-10-07T22:35:53.734Z",
+      "ouvertPar": "usr_admin"
+    },
+    {
+      "id": "etu_2f0b8b828b4b31e4",
+      "matricule": "OAS-2026-0004",
+      "prenom": "Ernst",
+      "nom": "Dorvilier",
+      "sexe": "M",
+      "telephone": "+509 4411 0932",
+      "email": "ernst.dorvilier@exemple.ht",
+      "niveauScolaire": "CAP mécanique",
+      "adresse": "Port-au-Prince",
+      "statut": "actif",
+      "inscriptions": [
+        {
+          "id": "ins_7341d2444e6eeb87",
+          "courseId": null,
+          "intitule": "Froid et climatisation",
+          "periode": "2026",
+          "dateInscription": "2026-06-07T00:00:00.000Z",
+          "statut": "en_cours",
+          "echeancier": [
+            {
+              "rang": 1,
+              "echeance": "2026-06-06",
+              "montant": 9000,
+              "regle": 0
+            },
+            {
+              "rang": 2,
+              "echeance": "2026-07-06",
+              "montant": 9000,
+              "regle": 0
+            },
+            {
+              "rang": 3,
+              "echeance": "2026-08-06",
+              "montant": 9000,
+              "regle": 0
+            }
+          ]
+        }
+      ],
+      "paiements": [],
+      "ouvertLe": "2026-10-07T22:35:53.734Z",
+      "ouvertPar": "usr_admin"
+    }
+  ],
+  "employes": [
+    {
+      "id": "emp_b8820c558be9465c",
+      "matricule": "EMP-2026-001",
+      "nom": "Jacques Pierre-Louis",
+      "poste": "Coordonnateur pédagogique",
+      "departement": "Pédagogie",
+      "typeContrat": "indetermine",
+      "dateEmbauche": "2024-10-07",
+      "dateFin": null,
+      "salaireBase": 48000,
+      "telephone": "+509 3201 0011",
+      "email": "jacques.pierre.louis@oasis.ht",
+      "adresse": "Rue Capois 42, Port-au-Prince",
+      "naissance": "1986-03-14",
+      "sexe": "M",
+      "nationalite": "Haïtienne",
+      "etatCivil": "marie",
+      "cin": "004-107-1981-01",
+      "numeroLivret": "LT-52013",
+      "nif": "00111-7-0",
+      "numeroOna": "ONA41001",
+      "statut": "actif",
+      "congesPris": 2,
+      "contrat": {
+        "type": "indetermine",
+        "dateDebut": "2024-10-07",
+        "dateFin": null,
+        "nature": "Coordination des programmes de formation, suivi pédagogique des formateurs et des apprenants, organisation des évaluations.",
+        "lieuTravail": "Siège d’OASIS, Port-au-Prince",
+        "heuresJour": 8,
+        "heuresSemaine": 48,
+        "horaire": "Du lundi au vendredi, de 8 h à 16 h, et le samedi de 8 h à 12 h",
+        "salaire": 48000,
+        "periodicite": "mensuelle",
+        "avantages": "",
+        "clausesParticulieres": "",
+        "lieuSignature": "Port-au-Prince",
+        "dateSignature": "2024-10-07",
+        "statut": "actif",
+        "majLe": "2026-10-07T22:35:53.735Z"
+      },
+      "ouvertLe": "2026-10-07T22:35:53.735Z"
+    },
+    {
+      "id": "emp_867eb363417b7515",
+      "matricule": "EMP-2026-002",
+      "nom": "Marlène Édouard",
+      "poste": "Responsable administrative",
+      "departement": "Administration",
+      "typeContrat": "indetermine",
+      "dateEmbauche": "2024-10-07",
+      "dateFin": null,
+      "salaireBase": 36000,
+      "telephone": "+509 3202 0022",
+      "email": "marlene.edouard@oasis.ht",
+      "adresse": "Rue Capois 42, Port-au-Prince",
+      "naissance": "1991-11-02",
+      "sexe": "F",
+      "nationalite": "Haïtienne",
+      "etatCivil": "celibataire",
+      "cin": "005-114-1982-02",
+      "numeroLivret": "LT-52026",
+      "nif": "00222-14-0",
+      "numeroOna": "ONA41002",
+      "statut": "actif",
+      "congesPris": 4,
+      "contrat": {
+        "type": "indetermine",
+        "dateDebut": "2024-10-07",
+        "dateFin": null,
+        "nature": "Gestion administrative du centre, dossiers étudiants, correspondance et archivage.",
+        "lieuTravail": "Siège d’OASIS, Port-au-Prince",
+        "heuresJour": 8,
+        "heuresSemaine": 48,
+        "horaire": "Du lundi au vendredi, de 8 h à 16 h, et le samedi de 8 h à 12 h",
+        "salaire": 36000,
+        "periodicite": "mensuelle",
+        "avantages": "",
+        "clausesParticulieres": "",
+        "lieuSignature": "Port-au-Prince",
+        "dateSignature": "2024-10-07",
+        "statut": "actif",
+        "majLe": "2026-10-07T22:35:53.735Z"
+      },
+      "ouvertLe": "2026-10-07T22:35:53.735Z"
+    },
+    {
+      "id": "emp_fffb61bbf564ec61",
+      "matricule": "EMP-2026-003",
+      "nom": "Fritznel Augustin",
+      "poste": "Chef d’atelier électricité",
+      "departement": "Ateliers",
+      "typeContrat": "indetermine",
+      "dateEmbauche": "2024-10-07",
+      "dateFin": null,
+      "salaireBase": 32000,
+      "telephone": "+509 3203 0033",
+      "email": "fritznel.augustin@oasis.ht",
+      "adresse": "Rue Capois 42, Port-au-Prince",
+      "naissance": "1983-07-28",
+      "sexe": "M",
+      "nationalite": "Haïtienne",
+      "etatCivil": "marie",
+      "cin": "006-121-1983-03",
+      "numeroLivret": "LT-52039",
+      "nif": "00333-21-0",
+      "numeroOna": "ONA41003",
+      "statut": "actif",
+      "congesPris": 6,
+      "contrat": {
+        "type": "indetermine",
+        "dateDebut": "2024-10-07",
+        "dateFin": null,
+        "nature": "Encadrement de l’atelier d’électricité, sécurité des postes de travail, entretien de l’outillage.",
+        "lieuTravail": "Siège d’OASIS, Port-au-Prince",
+        "heuresJour": 8,
+        "heuresSemaine": 48,
+        "horaire": "Du lundi au vendredi, de 8 h à 16 h, et le samedi de 8 h à 12 h",
+        "salaire": 32000,
+        "periodicite": "mensuelle",
+        "avantages": "",
+        "clausesParticulieres": "",
+        "lieuSignature": "Port-au-Prince",
+        "dateSignature": "2024-10-07",
+        "statut": "actif",
+        "majLe": "2026-10-07T22:35:53.735Z"
+      },
+      "ouvertLe": "2026-10-07T22:35:53.735Z"
+    },
+    {
+      "id": "emp_60eb578f7943b7e5",
+      "matricule": "EMP-2026-004",
+      "nom": "Carline Moïse",
+      "poste": "Secrétaire-comptable",
+      "departement": "Administration",
+      "typeContrat": "indetermine",
+      "dateEmbauche": "2024-10-07",
+      "dateFin": null,
+      "salaireBase": 22000,
+      "telephone": "+509 3204 0044",
+      "email": "carline.moise@oasis.ht",
+      "adresse": "Rue Capois 42, Port-au-Prince",
+      "naissance": "1995-01-19",
+      "sexe": "F",
+      "nationalite": "Haïtienne",
+      "etatCivil": "celibataire",
+      "cin": "007-128-1984-04",
+      "numeroLivret": "LT-52052",
+      "nif": "00444-28-0",
+      "numeroOna": "ONA41004",
+      "statut": "actif",
+      "congesPris": 8,
+      "contrat": {
+        "type": "indetermine",
+        "dateDebut": "2024-10-07",
+        "dateFin": null,
+        "nature": "Accueil, secrétariat, saisie comptable et suivi des encaissements.",
+        "lieuTravail": "Siège d’OASIS, Port-au-Prince",
+        "heuresJour": 8,
+        "heuresSemaine": 48,
+        "horaire": "Du lundi au vendredi, de 8 h à 16 h, et le samedi de 8 h à 12 h",
+        "salaire": 22000,
+        "periodicite": "mensuelle",
+        "avantages": "",
+        "clausesParticulieres": "",
+        "lieuSignature": "Port-au-Prince",
+        "dateSignature": "2024-10-07",
+        "statut": "actif",
+        "majLe": "2026-10-07T22:35:53.735Z"
+      },
+      "ouvertLe": "2026-10-07T22:35:53.735Z"
+    }
+  ],
+  "paies": [
+    {
+      "id": "pai_08c35de5ccd45a9e",
+      "employeId": "emp_b8820c558be9465c",
+      "periode": "2026-09",
+      "calcul": {
+        "base": 48000,
+        "prime": 0,
+        "avantage": 0,
+        "brut": 48000,
+        "salariales": {
+          "ona": 2880,
+          "total": 2880
+        },
+        "imposable": 45120,
+        "iri": 5280,
+        "iriAnnuelProjete": 63360,
+        "iriDetail": [
+          {
+            "de": 0,
+            "a": 120000,
+            "taux": 0,
+            "assiette": 120000,
+            "impot": 0
+          },
+          {
+            "de": 120000,
+            "a": 240000,
+            "taux": 0.1,
+            "assiette": 120000,
+            "impot": 12000
+          },
+          {
+            "de": 240000,
+            "a": 480000,
+            "taux": 0.15,
+            "assiette": 240000,
+            "impot": 36000
+          },
+          {
+            "de": 480000,
+            "a": 1000000,
+            "taux": 0.25,
+            "assiette": 61440,
+            "impot": 15360
+          }
+        ],
+        "autresRetenues": 0,
+        "net": 39840,
+        "patronales": {
+          "ona": 2880,
+          "ofatmaMaladie": 1440,
+          "ofatmaAccident": 960,
+          "total": 5280
+        },
+        "coutEmployeur": 53280
+      },
+      "parametresUtilises": {
+        "ona": {
+          "salarie": 0.06,
+          "employeur": 0.06
+        },
+        "ofatmaMaladie": {
+          "employeur": 0.03
+        },
+        "ofatmaAccident": {
+          "employeur": 0.02
+        },
+        "iri": [
+          {
+            "jusqua": 120000,
+            "taux": 0
+          },
+          {
+            "jusqua": 240000,
+            "taux": 0.1
+          },
+          {
+            "jusqua": 480000,
+            "taux": 0.15
+          },
+          {
+            "jusqua": 1000000,
+            "taux": 0.25
+          },
+          {
+            "jusqua": null,
+            "taux": 0.3
+          }
+        ],
+        "congesAnnuelsJours": 15,
+        "boniMois": 1
+      },
+      "statut": "validee",
+      "creeeLe": "2026-10-07T22:35:53.735Z",
+      "creeePar": "usr_admin",
+      "valideeLe": "2026-10-07T22:35:53.735Z",
+      "valideePar": "usr_admin",
+      "ecritureId": "ecr_fcfc4de4782cd393"
+    },
+    {
+      "id": "pai_05f6f78119eccca5",
+      "employeId": "emp_867eb363417b7515",
+      "periode": "2026-09",
+      "calcul": {
+        "base": 36000,
+        "prime": 0,
+        "avantage": 0,
+        "brut": 36000,
+        "salariales": {
+          "ona": 2160,
+          "total": 2160
+        },
+        "imposable": 33840,
+        "iri": 3076,
+        "iriAnnuelProjete": 36912,
+        "iriDetail": [
+          {
+            "de": 0,
+            "a": 120000,
+            "taux": 0,
+            "assiette": 120000,
+            "impot": 0
+          },
+          {
+            "de": 120000,
+            "a": 240000,
+            "taux": 0.1,
+            "assiette": 120000,
+            "impot": 12000
+          },
+          {
+            "de": 240000,
+            "a": 480000,
+            "taux": 0.15,
+            "assiette": 166080,
+            "impot": 24912
+          }
+        ],
+        "autresRetenues": 0,
+        "net": 30764,
+        "patronales": {
+          "ona": 2160,
+          "ofatmaMaladie": 1080,
+          "ofatmaAccident": 720,
+          "total": 3960
+        },
+        "coutEmployeur": 39960
+      },
+      "parametresUtilises": {
+        "ona": {
+          "salarie": 0.06,
+          "employeur": 0.06
+        },
+        "ofatmaMaladie": {
+          "employeur": 0.03
+        },
+        "ofatmaAccident": {
+          "employeur": 0.02
+        },
+        "iri": [
+          {
+            "jusqua": 120000,
+            "taux": 0
+          },
+          {
+            "jusqua": 240000,
+            "taux": 0.1
+          },
+          {
+            "jusqua": 480000,
+            "taux": 0.15
+          },
+          {
+            "jusqua": 1000000,
+            "taux": 0.25
+          },
+          {
+            "jusqua": null,
+            "taux": 0.3
+          }
+        ],
+        "congesAnnuelsJours": 15,
+        "boniMois": 1
+      },
+      "statut": "validee",
+      "creeeLe": "2026-10-07T22:35:53.735Z",
+      "creeePar": "usr_admin",
+      "valideeLe": "2026-10-07T22:35:53.735Z",
+      "valideePar": "usr_admin",
+      "ecritureId": "ecr_10f78ad39629d4ab"
+    },
+    {
+      "id": "pai_b82884d684d1e932",
+      "employeId": "emp_fffb61bbf564ec61",
+      "periode": "2026-09",
+      "calcul": {
+        "base": 32000,
+        "prime": 0,
+        "avantage": 0,
+        "brut": 32000,
+        "salariales": {
+          "ona": 1920,
+          "total": 1920
+        },
+        "imposable": 30080,
+        "iri": 2512,
+        "iriAnnuelProjete": 30144,
+        "iriDetail": [
+          {
+            "de": 0,
+            "a": 120000,
+            "taux": 0,
+            "assiette": 120000,
+            "impot": 0
+          },
+          {
+            "de": 120000,
+            "a": 240000,
+            "taux": 0.1,
+            "assiette": 120000,
+            "impot": 12000
+          },
+          {
+            "de": 240000,
+            "a": 480000,
+            "taux": 0.15,
+            "assiette": 120960,
+            "impot": 18144
+          }
+        ],
+        "autresRetenues": 0,
+        "net": 27568,
+        "patronales": {
+          "ona": 1920,
+          "ofatmaMaladie": 960,
+          "ofatmaAccident": 640,
+          "total": 3520
+        },
+        "coutEmployeur": 35520
+      },
+      "parametresUtilises": {
+        "ona": {
+          "salarie": 0.06,
+          "employeur": 0.06
+        },
+        "ofatmaMaladie": {
+          "employeur": 0.03
+        },
+        "ofatmaAccident": {
+          "employeur": 0.02
+        },
+        "iri": [
+          {
+            "jusqua": 120000,
+            "taux": 0
+          },
+          {
+            "jusqua": 240000,
+            "taux": 0.1
+          },
+          {
+            "jusqua": 480000,
+            "taux": 0.15
+          },
+          {
+            "jusqua": 1000000,
+            "taux": 0.25
+          },
+          {
+            "jusqua": null,
+            "taux": 0.3
+          }
+        ],
+        "congesAnnuelsJours": 15,
+        "boniMois": 1
+      },
+      "statut": "validee",
+      "creeeLe": "2026-10-07T22:35:53.735Z",
+      "creeePar": "usr_admin",
+      "valideeLe": "2026-10-07T22:35:53.735Z",
+      "valideePar": "usr_admin",
+      "ecritureId": "ecr_90e77621837d7952"
+    },
+    {
+      "id": "pai_231da856fb2e65a7",
+      "employeId": "emp_60eb578f7943b7e5",
+      "periode": "2026-09",
+      "calcul": {
+        "base": 22000,
+        "prime": 0,
+        "avantage": 0,
+        "brut": 22000,
+        "salariales": {
+          "ona": 1320,
+          "total": 1320
+        },
+        "imposable": 20680,
+        "iri": 1102,
+        "iriAnnuelProjete": 13224,
+        "iriDetail": [
+          {
+            "de": 0,
+            "a": 120000,
+            "taux": 0,
+            "assiette": 120000,
+            "impot": 0
+          },
+          {
+            "de": 120000,
+            "a": 240000,
+            "taux": 0.1,
+            "assiette": 120000,
+            "impot": 12000
+          },
+          {
+            "de": 240000,
+            "a": 480000,
+            "taux": 0.15,
+            "assiette": 8160,
+            "impot": 1224
+          }
+        ],
+        "autresRetenues": 0,
+        "net": 19578,
+        "patronales": {
+          "ona": 1320,
+          "ofatmaMaladie": 660,
+          "ofatmaAccident": 440,
+          "total": 2420
+        },
+        "coutEmployeur": 24420
+      },
+      "parametresUtilises": {
+        "ona": {
+          "salarie": 0.06,
+          "employeur": 0.06
+        },
+        "ofatmaMaladie": {
+          "employeur": 0.03
+        },
+        "ofatmaAccident": {
+          "employeur": 0.02
+        },
+        "iri": [
+          {
+            "jusqua": 120000,
+            "taux": 0
+          },
+          {
+            "jusqua": 240000,
+            "taux": 0.1
+          },
+          {
+            "jusqua": 480000,
+            "taux": 0.15
+          },
+          {
+            "jusqua": 1000000,
+            "taux": 0.25
+          },
+          {
+            "jusqua": null,
+            "taux": 0.3
+          }
+        ],
+        "congesAnnuelsJours": 15,
+        "boniMois": 1
+      },
+      "statut": "validee",
+      "creeeLe": "2026-10-07T22:35:53.735Z",
+      "creeePar": "usr_admin",
+      "valideeLe": "2026-10-07T22:35:53.735Z",
+      "valideePar": "usr_admin",
+      "ecritureId": "ecr_b0c8ade5a95a431c"
+    }
+  ],
+  "conges": [
+    {
+      "id": "cng_4071c02710cfdb00",
+      "employeId": "emp_fffb61bbf564ec61",
+      "type": "annuel",
+      "debut": "2026-10-21",
+      "jours": 5,
+      "motif": "Congé annuel — fête patronale",
+      "statut": "demande",
+      "demandeLe": "2026-10-07T22:35:53.735Z"
+    }
+  ],
+  "postes": [
+    {
+      "id": "pos_93782cd91c8f01e1",
+      "reference": "OAS-REC-001",
+      "titre": "Formateur en froid et climatisation",
+      "departement": "Ateliers",
+      "typeContrat": "determine",
+      "lieu": "Port-au-Prince",
+      "description": "Animer les modules pratiques de froid et climatisation, encadrer les travaux d’atelier et évaluer les apprenants selon le référentiel du centre.",
+      "profil": "CAP ou BT en froid et climatisation, trois ans d’expérience sur installations domestiques et commerciales. Expérience de formation appréciée.",
+      "salaireIndicatif": "Entre 28 000 et 34 000 HTG selon profil",
+      "dateLimite": "2026-11-06",
+      "statut": "ouvert",
+      "creeLe": "2026-10-07T22:35:53.735Z",
+      "creePar": "usr_admin"
+    },
+    {
+      "id": "pos_9fdf84bf8d16ba3c",
+      "reference": "OAS-REC-002",
+      "titre": "Agent de recouvrement et accueil",
+      "departement": "Administration",
+      "typeContrat": "indetermine",
+      "lieu": "Port-au-Prince",
+      "description": "Accueillir les étudiants et les familles, suivre les échéanciers de frais de scolarité et relancer les impayés.",
+      "profil": "Niveau Philo minimum, aisance relationnelle, maîtrise des outils bureautiques. La connaissance du créole et du français est exigée.",
+      "salaireIndicatif": "À partir de 20 000 HTG",
+      "dateLimite": "2026-11-06",
+      "statut": "ouvert",
+      "creeLe": "2026-10-07T22:35:53.735Z",
+      "creePar": "usr_admin"
+    }
+  ],
+  "candidaturesEmploi": [
+    {
+      "id": "cde_4f9168773b1d28ef",
+      "posteId": "pos_93782cd91c8f01e1",
+      "posteSouhaite": "Formateur en froid et climatisation",
+      "nom": "Wisly Delva",
+      "email": "wisly.delva@exemple.ht",
+      "telephone": "+509 3311 7788",
+      "adresse": "Port-au-Prince",
+      "niveauEtudes": "BT froid et climatisation",
+      "experienceAnnees": 5,
+      "disponibilite": "Immédiate",
+      "pretentionSalariale": 32000,
+      "lettre": "Technicien frigoriste depuis cinq ans, j’ai encadré deux apprentis et je souhaite transmettre ce métier dans un cadre structuré.",
+      "cvUrl": null,
+      "statut": "preselection",
+      "decisions": [],
+      "recueLe": "2026-10-02T22:35:53.735Z"
+    },
+    {
+      "id": "cde_3b24c84ee3201eff",
+      "posteId": "pos_9fdf84bf8d16ba3c",
+      "posteSouhaite": "Agent de recouvrement et accueil",
+      "nom": "Guerline Saintil",
+      "email": "guerline.saintil@exemple.ht",
+      "telephone": "+509 3644 2091",
+      "adresse": "Port-au-Prince",
+      "niveauEtudes": "Licence en gestion",
+      "experienceAnnees": 3,
+      "disponibilite": "Sous quinzaine",
+      "pretentionSalariale": 24000,
+      "lettre": "Trois ans de suivi de recouvrement dans une coopérative de crédit, habituée aux relances et au contact direct avec les familles.",
+      "cvUrl": null,
+      "statut": "recue",
+      "decisions": [],
+      "recueLe": "2026-10-04T22:35:53.735Z"
+    },
+    {
+      "id": "cde_7b5c6ecfc7381041",
+      "posteId": "pos_93782cd91c8f01e1",
+      "posteSouhaite": "Formateur en froid et climatisation",
+      "nom": "Reginald Noël",
+      "email": "reginald.noel@exemple.ht",
+      "telephone": "+509 3877 5510",
+      "adresse": "Port-au-Prince",
+      "niveauEtudes": "CAP électromécanique",
+      "experienceAnnees": 2,
+      "disponibilite": "Un mois",
+      "pretentionSalariale": 29000,
+      "lettre": "Formé en électromécanique, j’interviens depuis deux ans sur des unités de climatisation commerciales.",
+      "cvUrl": null,
+      "statut": "recue",
+      "decisions": [],
+      "recueLe": "2026-10-05T22:35:53.735Z"
+    }
+  ],
+  "comptes": [
+    {
+      "num": "101000",
+      "label": "Capital",
+      "classe": "1",
+      "systeme": true
+    },
+    {
+      "num": "106000",
+      "label": "Réserves",
+      "classe": "1",
+      "systeme": true
+    },
+    {
+      "num": "120000",
+      "label": "Résultat de l’exercice",
+      "classe": "1",
+      "systeme": true
+    },
+    {
+      "num": "164000",
+      "label": "Emprunts auprès des établissements de crédit",
+      "classe": "1",
+      "systeme": true
+    },
+    {
+      "num": "213000",
+      "label": "Constructions et aménagements",
+      "classe": "2",
+      "systeme": true
+    },
+    {
+      "num": "215000",
+      "label": "Matériel et outillage d’atelier",
+      "classe": "2",
+      "systeme": true
+    },
+    {
+      "num": "218300",
+      "label": "Matériel informatique",
+      "classe": "2",
+      "systeme": true
+    },
+    {
+      "num": "218400",
+      "label": "Mobilier",
+      "classe": "2",
+      "systeme": true
+    },
+    {
+      "num": "281000",
+      "label": "Amortissements des immobilisations",
+      "classe": "2",
+      "systeme": true
+    },
+    {
+      "num": "321000",
+      "label": "Fournitures et consommables d’atelier",
+      "classe": "3",
+      "systeme": true
+    },
+    {
+      "num": "401000",
+      "label": "Fournisseurs",
+      "classe": "4",
+      "systeme": true
+    },
+    {
+      "num": "411000",
+      "label": "Étudiants — frais de scolarité",
+      "classe": "4",
+      "systeme": true
+    },
+    {
+      "num": "421000",
+      "label": "Personnel — rémunérations dues",
+      "classe": "4",
+      "systeme": true
+    },
+    {
+      "num": "427000",
+      "label": "Formateurs — honoraires et revenus dus",
+      "classe": "4",
+      "systeme": true
+    },
+    {
+      "num": "431000",
+      "label": "ONA — cotisations à verser",
+      "classe": "4",
+      "systeme": true
+    },
+    {
+      "num": "432000",
+      "label": "OFATMA — cotisations à verser",
+      "classe": "4",
+      "systeme": true
+    },
+    {
+      "num": "442000",
+      "label": "DGI — impôt sur le revenu retenu à la source",
+      "classe": "4",
+      "systeme": true
+    },
+    {
+      "num": "445000",
+      "label": "DGI — TCA à reverser",
+      "classe": "4",
+      "systeme": true
+    },
+    {
+      "num": "512100",
+      "label": "Banque — compte courant",
+      "classe": "5",
+      "systeme": true
+    },
+    {
+      "num": "515000",
+      "label": "Portefeuille mobile (MonCash / NatCash)",
+      "classe": "5",
+      "systeme": true
+    },
+    {
+      "num": "531000",
+      "label": "Caisse",
+      "classe": "5",
+      "systeme": true
+    },
+    {
+      "num": "601000",
+      "label": "Achats de fournitures pédagogiques",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "606100",
+      "label": "Électricité et carburant",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "613000",
+      "label": "Loyers et charges locatives",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "615000",
+      "label": "Entretien et réparations",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "622000",
+      "label": "Honoraires des formateurs",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "626000",
+      "label": "Télécommunications et internet",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "627000",
+      "label": "Frais bancaires et commissions de paiement",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "641000",
+      "label": "Salaires et appointements",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "645100",
+      "label": "Charges sociales — ONA (part employeur)",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "645200",
+      "label": "Charges sociales — OFATMA (part employeur)",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "647000",
+      "label": "Boni de fin d’année",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "681000",
+      "label": "Dotations aux amortissements",
+      "classe": "6",
+      "systeme": true
+    },
+    {
+      "num": "706100",
+      "label": "Frais de scolarité et d’inscription",
+      "classe": "7",
+      "systeme": true
+    },
+    {
+      "num": "706200",
+      "label": "Ventes de formations en ligne",
+      "classe": "7",
+      "systeme": true
+    },
+    {
+      "num": "706300",
+      "label": "Prestations aux entreprises",
+      "classe": "7",
+      "systeme": true
+    },
+    {
+      "num": "708000",
+      "label": "Produits annexes (certificats, duplicatas)",
+      "classe": "7",
+      "systeme": true
+    },
+    {
+      "num": "758000",
+      "label": "Subventions et dons",
+      "classe": "7",
+      "systeme": true
+    }
+  ],
+  "exercices": [
+    {
+      "id": "exe_2026",
+      "libelle": "Exercice 2026",
+      "debut": "2026-01-01",
+      "fin": "2026-12-31",
+      "clos": false,
+      "ouvertLe": "2026-10-07T22:35:53.733Z"
+    }
+  ],
+  "ecritures": [
+    {
+      "id": "ecr_fee571c1836114f2",
+      "numero": "VT-2026-00001",
+      "exerciceId": "exe_2026",
+      "journal": "VT",
+      "date": "2026-06-07",
+      "piece": "INS-0001",
+      "libelle": "Frais de scolarité — OAS-2026-0001 — Installation électrique résidentielle",
+      "lignes": [
+        {
+          "compte": "411000",
+          "libelle": "Rosemie Baptiste",
+          "debit": 24000,
+          "credit": 0
+        },
+        {
+          "compte": "706100",
+          "libelle": "Installation électrique résidentielle",
+          "debit": 0,
+          "credit": 24000
+        }
+      ],
+      "source": "scolarite.facturation",
+      "refSource": "ins_f6ac6c500d28db72",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_c4e51c5cb94afb4d",
+      "numero": "MM-2026-00001",
+      "exerciceId": "exe_2026",
+      "journal": "MM",
+      "date": "2026-06-06",
+      "piece": "REC-2026-00001",
+      "libelle": "Encaissement scolarité — OAS-2026-0001",
+      "lignes": [
+        {
+          "compte": "515000",
+          "libelle": "Reçu REC-2026-00001",
+          "debit": 8000,
+          "credit": 0
+        },
+        {
+          "compte": "411000",
+          "libelle": "Rosemie Baptiste",
+          "debit": 0,
+          "credit": 8000
+        }
+      ],
+      "source": "scolarite.encaissement",
+      "refSource": "pay_3e8adb5e3aefd2be",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_2d2e2e9d077f7a24",
+      "numero": "CA-2026-00001",
+      "exerciceId": "exe_2026",
+      "journal": "CA",
+      "date": "2026-07-06",
+      "piece": "REC-2026-00002",
+      "libelle": "Encaissement scolarité — OAS-2026-0001",
+      "lignes": [
+        {
+          "compte": "531000",
+          "libelle": "Reçu REC-2026-00002",
+          "debit": 8000,
+          "credit": 0
+        },
+        {
+          "compte": "411000",
+          "libelle": "Rosemie Baptiste",
+          "debit": 0,
+          "credit": 8000
+        }
+      ],
+      "source": "scolarite.encaissement",
+      "refSource": "pay_d57d4d3004355a73",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_8fa1d6480d797e87",
+      "numero": "VT-2026-00002",
+      "exerciceId": "exe_2026",
+      "journal": "VT",
+      "date": "2026-06-07",
+      "piece": "INS-0002",
+      "libelle": "Frais de scolarité — OAS-2026-0002 — Plomberie sanitaire",
+      "lignes": [
+        {
+          "compte": "411000",
+          "libelle": "Widmar Célestin",
+          "debit": 18000,
+          "credit": 0
+        },
+        {
+          "compte": "706100",
+          "libelle": "Plomberie sanitaire",
+          "debit": 0,
+          "credit": 18000
+        }
+      ],
+      "source": "scolarite.facturation",
+      "refSource": "ins_aecdb254f68c360a",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_fb30749faadf1dd9",
+      "numero": "MM-2026-00002",
+      "exerciceId": "exe_2026",
+      "journal": "MM",
+      "date": "2026-06-06",
+      "piece": "REC-2026-00003",
+      "libelle": "Encaissement scolarité — OAS-2026-0002",
+      "lignes": [
+        {
+          "compte": "515000",
+          "libelle": "Reçu REC-2026-00003",
+          "debit": 6000,
+          "credit": 0
+        },
+        {
+          "compte": "411000",
+          "libelle": "Widmar Célestin",
+          "debit": 0,
+          "credit": 6000
+        }
+      ],
+      "source": "scolarite.encaissement",
+      "refSource": "pay_7c20c973c2183cf7",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_1d67015a487ba7cf",
+      "numero": "CA-2026-00002",
+      "exerciceId": "exe_2026",
+      "journal": "CA",
+      "date": "2026-07-06",
+      "piece": "REC-2026-00004",
+      "libelle": "Encaissement scolarité — OAS-2026-0002",
+      "lignes": [
+        {
+          "compte": "531000",
+          "libelle": "Reçu REC-2026-00004",
+          "debit": 6000,
+          "credit": 0
+        },
+        {
+          "compte": "411000",
+          "libelle": "Widmar Célestin",
+          "debit": 0,
+          "credit": 6000
+        }
+      ],
+      "source": "scolarite.encaissement",
+      "refSource": "pay_92c1a3492a62b3b2",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_a4ea94d48ac46c52",
+      "numero": "MM-2026-00003",
+      "exerciceId": "exe_2026",
+      "journal": "MM",
+      "date": "2026-08-06",
+      "piece": "REC-2026-00005",
+      "libelle": "Encaissement scolarité — OAS-2026-0002",
+      "lignes": [
+        {
+          "compte": "515000",
+          "libelle": "Reçu REC-2026-00005",
+          "debit": 6000,
+          "credit": 0
+        },
+        {
+          "compte": "411000",
+          "libelle": "Widmar Célestin",
+          "debit": 0,
+          "credit": 6000
+        }
+      ],
+      "source": "scolarite.encaissement",
+      "refSource": "pay_ce08cf476fd4afd0",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_29296443a90cc253",
+      "numero": "VT-2026-00003",
+      "exerciceId": "exe_2026",
+      "journal": "VT",
+      "date": "2026-06-07",
+      "piece": "INS-0003",
+      "libelle": "Frais de scolarité — OAS-2026-0003 — Couture industrielle",
+      "lignes": [
+        {
+          "compte": "411000",
+          "libelle": "Nadège Jean-Baptiste",
+          "debit": 15000,
+          "credit": 0
+        },
+        {
+          "compte": "706100",
+          "libelle": "Couture industrielle",
+          "debit": 0,
+          "credit": 15000
+        }
+      ],
+      "source": "scolarite.facturation",
+      "refSource": "ins_9ff13e8797861c7f",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_8c68c89129a5270d",
+      "numero": "MM-2026-00004",
+      "exerciceId": "exe_2026",
+      "journal": "MM",
+      "date": "2026-06-06",
+      "piece": "REC-2026-00006",
+      "libelle": "Encaissement scolarité — OAS-2026-0003",
+      "lignes": [
+        {
+          "compte": "515000",
+          "libelle": "Reçu REC-2026-00006",
+          "debit": 7500,
+          "credit": 0
+        },
+        {
+          "compte": "411000",
+          "libelle": "Nadège Jean-Baptiste",
+          "debit": 0,
+          "credit": 7500
+        }
+      ],
+      "source": "scolarite.encaissement",
+      "refSource": "pay_80ec25543dc06f21",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.734Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_17fb022201ea3089",
+      "numero": "VT-2026-00004",
+      "exerciceId": "exe_2026",
+      "journal": "VT",
+      "date": "2026-06-07",
+      "piece": "INS-0004",
+      "libelle": "Frais de scolarité — OAS-2026-0004 — Froid et climatisation",
+      "lignes": [
+        {
+          "compte": "411000",
+          "libelle": "Ernst Dorvilier",
+          "debit": 27000,
+          "credit": 0
+        },
+        {
+          "compte": "706100",
+          "libelle": "Froid et climatisation",
+          "debit": 0,
+          "credit": 27000
+        }
+      ],
+      "source": "scolarite.facturation",
+      "refSource": "ins_7341d2444e6eeb87",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_fcfc4de4782cd393",
+      "numero": "PA-2026-00001",
+      "exerciceId": "exe_2026",
+      "journal": "PA",
+      "date": "2026-09-28",
+      "piece": "PAIE-2026-09-EMP-2026-001",
+      "libelle": "Paie 2026-09 — Jacques Pierre-Louis",
+      "lignes": [
+        {
+          "compte": "641000",
+          "libelle": "Salaire brut — Jacques Pierre-Louis",
+          "debit": 48000,
+          "credit": 0
+        },
+        {
+          "compte": "645100",
+          "libelle": "ONA part employeur",
+          "debit": 2880,
+          "credit": 0
+        },
+        {
+          "compte": "645200",
+          "libelle": "OFATMA part employeur",
+          "debit": 2400,
+          "credit": 0
+        },
+        {
+          "compte": "421000",
+          "libelle": "Net à payer — Jacques Pierre-Louis",
+          "debit": 0,
+          "credit": 39840
+        },
+        {
+          "compte": "431000",
+          "libelle": "ONA à verser",
+          "debit": 0,
+          "credit": 5760
+        },
+        {
+          "compte": "432000",
+          "libelle": "OFATMA à verser",
+          "debit": 0,
+          "credit": 2400
+        },
+        {
+          "compte": "442000",
+          "libelle": "IRI retenu à la source",
+          "debit": 0,
+          "credit": 5280
+        }
+      ],
+      "source": "rh.paie",
+      "refSource": "pai_08c35de5ccd45a9e",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_10f78ad39629d4ab",
+      "numero": "PA-2026-00002",
+      "exerciceId": "exe_2026",
+      "journal": "PA",
+      "date": "2026-09-28",
+      "piece": "PAIE-2026-09-EMP-2026-002",
+      "libelle": "Paie 2026-09 — Marlène Édouard",
+      "lignes": [
+        {
+          "compte": "641000",
+          "libelle": "Salaire brut — Marlène Édouard",
+          "debit": 36000,
+          "credit": 0
+        },
+        {
+          "compte": "645100",
+          "libelle": "ONA part employeur",
+          "debit": 2160,
+          "credit": 0
+        },
+        {
+          "compte": "645200",
+          "libelle": "OFATMA part employeur",
+          "debit": 1800,
+          "credit": 0
+        },
+        {
+          "compte": "421000",
+          "libelle": "Net à payer — Marlène Édouard",
+          "debit": 0,
+          "credit": 30764
+        },
+        {
+          "compte": "431000",
+          "libelle": "ONA à verser",
+          "debit": 0,
+          "credit": 4320
+        },
+        {
+          "compte": "432000",
+          "libelle": "OFATMA à verser",
+          "debit": 0,
+          "credit": 1800
+        },
+        {
+          "compte": "442000",
+          "libelle": "IRI retenu à la source",
+          "debit": 0,
+          "credit": 3076
+        }
+      ],
+      "source": "rh.paie",
+      "refSource": "pai_05f6f78119eccca5",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_90e77621837d7952",
+      "numero": "PA-2026-00003",
+      "exerciceId": "exe_2026",
+      "journal": "PA",
+      "date": "2026-09-28",
+      "piece": "PAIE-2026-09-EMP-2026-003",
+      "libelle": "Paie 2026-09 — Fritznel Augustin",
+      "lignes": [
+        {
+          "compte": "641000",
+          "libelle": "Salaire brut — Fritznel Augustin",
+          "debit": 32000,
+          "credit": 0
+        },
+        {
+          "compte": "645100",
+          "libelle": "ONA part employeur",
+          "debit": 1920,
+          "credit": 0
+        },
+        {
+          "compte": "645200",
+          "libelle": "OFATMA part employeur",
+          "debit": 1600,
+          "credit": 0
+        },
+        {
+          "compte": "421000",
+          "libelle": "Net à payer — Fritznel Augustin",
+          "debit": 0,
+          "credit": 27568
+        },
+        {
+          "compte": "431000",
+          "libelle": "ONA à verser",
+          "debit": 0,
+          "credit": 3840
+        },
+        {
+          "compte": "432000",
+          "libelle": "OFATMA à verser",
+          "debit": 0,
+          "credit": 1600
+        },
+        {
+          "compte": "442000",
+          "libelle": "IRI retenu à la source",
+          "debit": 0,
+          "credit": 2512
+        }
+      ],
+      "source": "rh.paie",
+      "refSource": "pai_b82884d684d1e932",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_b0c8ade5a95a431c",
+      "numero": "PA-2026-00004",
+      "exerciceId": "exe_2026",
+      "journal": "PA",
+      "date": "2026-09-28",
+      "piece": "PAIE-2026-09-EMP-2026-004",
+      "libelle": "Paie 2026-09 — Carline Moïse",
+      "lignes": [
+        {
+          "compte": "641000",
+          "libelle": "Salaire brut — Carline Moïse",
+          "debit": 22000,
+          "credit": 0
+        },
+        {
+          "compte": "645100",
+          "libelle": "ONA part employeur",
+          "debit": 1320,
+          "credit": 0
+        },
+        {
+          "compte": "645200",
+          "libelle": "OFATMA part employeur",
+          "debit": 1100,
+          "credit": 0
+        },
+        {
+          "compte": "421000",
+          "libelle": "Net à payer — Carline Moïse",
+          "debit": 0,
+          "credit": 19578
+        },
+        {
+          "compte": "431000",
+          "libelle": "ONA à verser",
+          "debit": 0,
+          "credit": 2640
+        },
+        {
+          "compte": "432000",
+          "libelle": "OFATMA à verser",
+          "debit": 0,
+          "credit": 1100
+        },
+        {
+          "compte": "442000",
+          "libelle": "IRI retenu à la source",
+          "debit": 0,
+          "credit": 1102
+        }
+      ],
+      "source": "rh.paie",
+      "refSource": "pai_231da856fb2e65a7",
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_abc4f836fac29c7f",
+      "numero": "BQ-2026-00001",
+      "exerciceId": "exe_2026",
+      "journal": "BQ",
+      "date": "2026-09-02",
+      "piece": "SUB-001",
+      "libelle": "Subvention de fonctionnement",
+      "lignes": [
+        {
+          "compte": "512100",
+          "libelle": "Virement reçu",
+          "debit": 150000,
+          "credit": 0
+        },
+        {
+          "compte": "758000",
+          "libelle": "Subvention annuelle",
+          "debit": 0,
+          "credit": 150000
+        }
+      ],
+      "source": "saisie",
+      "refSource": null,
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_ff924a4b2f1de7b9",
+      "numero": "BQ-2026-00002",
+      "exerciceId": "exe_2026",
+      "journal": "BQ",
+      "date": "2026-09-05",
+      "piece": "LOY-2026-09",
+      "libelle": "Loyer du centre de formation",
+      "lignes": [
+        {
+          "compte": "613000",
+          "libelle": "Loyer mensuel",
+          "debit": 45000,
+          "credit": 0
+        },
+        {
+          "compte": "512100",
+          "libelle": "Virement au bailleur",
+          "debit": 0,
+          "credit": 45000
+        }
+      ],
+      "source": "saisie",
+      "refSource": null,
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_5c825454ca47fb5f",
+      "numero": "CA-2026-00003",
+      "exerciceId": "exe_2026",
+      "journal": "CA",
+      "date": "2026-09-12",
+      "piece": "ELE-2026-09",
+      "libelle": "Électricité et carburant du groupe",
+      "lignes": [
+        {
+          "compte": "606100",
+          "libelle": "EDH et carburant",
+          "debit": 12500,
+          "credit": 0
+        },
+        {
+          "compte": "531000",
+          "libelle": "Règlement en espèces",
+          "debit": 0,
+          "credit": 12500
+        }
+      ],
+      "source": "saisie",
+      "refSource": null,
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    },
+    {
+      "id": "ecr_08b43879518f1687",
+      "numero": "AC-2026-00001",
+      "exerciceId": "exe_2026",
+      "journal": "AC",
+      "date": "2026-09-18",
+      "piece": "FAC-0087",
+      "libelle": "Fournitures d’atelier électricité",
+      "lignes": [
+        {
+          "compte": "601000",
+          "libelle": "Câbles, disjoncteurs, gaines",
+          "debit": 18400,
+          "credit": 0
+        },
+        {
+          "compte": "401000",
+          "libelle": "Quincaillerie Delmas",
+          "debit": 0,
+          "credit": 18400
+        }
+      ],
+      "source": "saisie",
+      "refSource": null,
+      "validee": true,
+      "saisieLe": "2026-10-07T22:35:53.735Z",
+      "saisiePar": "usr_admin"
+    }
+  ],
+  "compteurs": {
+    "matricule_2026": 4,
+    "matricule_emp_2026": 4,
+    "recu_2026": 6,
+    "ecriture_VT_2026": 4,
+    "ecriture_MM_2026": 4,
+    "ecriture_CA_2026": 3,
+    "ecriture_PA_2026": 4,
+    "ecriture_BQ_2026": 2,
+    "ecriture_AC_2026": 1
+  }
+}
