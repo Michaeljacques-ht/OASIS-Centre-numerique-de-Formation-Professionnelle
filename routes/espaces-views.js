@@ -1438,3 +1438,5 @@ function dashAdmin(user, db) {
     </div>`, {sombre:true,sousTitre:'Administration'});
 }
 module.exports.dashAdmin = dashAdmin;
+
+module.exports.programmeShell=(title,user,content)=>shell(title,user,MENU_F,'/formateur/programmes',content,{sousTitre:'Formateur'});

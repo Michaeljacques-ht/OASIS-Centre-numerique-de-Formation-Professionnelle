@@ -1,0 +1,26 @@
+'use strict';
+(()=>{
+ const form=document.getElementById('programme-form');if(!form)return;
+ const panels=[...form.querySelectorAll('[data-panel]')],steps=[...document.querySelectorAll('[data-step]')];let current=0;
+ const prev=document.getElementById('pg-prev'),next=document.getElementById('pg-next'),save=document.getElementById('pg-save');
+ const error=document.createElement('p');error.className='alerte ko';error.setAttribute('role','alert');error.hidden=true;form.prepend(error);
+ function show(n){current=Math.max(0,Math.min(2,n));panels.forEach((p,i)=>p.hidden=i!==current);steps.forEach((s,i)=>{s.classList.toggle('is-current',i===current);if(i===current)s.setAttribute('aria-current','step');else s.removeAttribute('aria-current');});prev.hidden=current===0;next.hidden=current===2;save.textContent=current===2?'Enregistrer le programme':'Enregistrer les modifications';}
+ function validatePanel(panel){const invalid=[...panel.querySelectorAll('input,select,textarea')].find(el=>!el.checkValidity());if(invalid){invalid.reportValidity();return false;}return true;}
+ steps.forEach(s=>s.addEventListener('click',()=>show(Number(s.dataset.step))));prev.addEventListener('click',()=>show(current-1));next.addEventListener('click',()=>{if(validatePanel(panels[current])){show(current+1);steps[current].focus();}});
+ document.querySelectorAll('[data-bullet-field]').forEach(source=>{
+  const container=document.createElement('div');container.className='pg-bullet-editor';container.setAttribute('role','group');container.setAttribute('aria-labelledby',source.id+'-label');const label=document.querySelector('label[for="'+source.id+'"]');label.id=source.id+'-label';label.removeAttribute('for');
+  const rows=document.createElement('div');container.append(rows);
+  function sync(){source.value=[...rows.querySelectorAll('textarea')].map(el=>el.value.replace(/\s+/g,' ').trim()).filter(Boolean).map(v=>'• '+v).join('\n');source.dispatchEvent(new Event('input',{bubbles:true}));}
+  function add(value='',focus=false){const row=document.createElement('div');row.className='pg-bullet-row';const dot=document.createElement('span');dot.className='pg-bullet-dot';dot.textContent='•';dot.setAttribute('aria-hidden','true');const input=document.createElement('textarea');input.rows=2;input.maxLength=12000;input.value=value;input.setAttribute('aria-label',label.textContent+' — point de liste');input.placeholder='Saisissez une idée, un objectif ou une information…';input.addEventListener('input',sync);row.append(dot,input);const controls=document.createElement('div');controls.className='pg-bullet-tools';for(const [symbol,name,fn] of [['↑','Déplacer vers le haut',()=>{if(row.previousElementSibling)rows.insertBefore(row,row.previousElementSibling);}],['↓','Déplacer vers le bas',()=>{if(row.nextElementSibling)rows.insertBefore(row.nextElementSibling,row);}],['×','Retirer ce point',()=>row.remove()]]){const b=document.createElement('button');b.type='button';b.textContent=symbol;b.setAttribute('aria-label',name);b.title=name;b.addEventListener('click',()=>{fn();sync();});controls.append(b);}row.append(controls);rows.append(row);if(focus)input.focus();}
+  const initial=source.value.split('\n').map(v=>v.replace(/^\s*•\s*/, '').trim()).filter(Boolean);initial.forEach(v=>add(v));if(!initial.length)add();
+  const button=document.createElement('button');button.type='button';button.className='btn ligne petit';button.textContent='+ Ajouter un point';button.addEventListener('click',()=>{add('',true);sync();});container.append(button);source.after(container);source.hidden=true;sync();
+ });
+ function value(key){return form.elements[key]?.value||'';}
+ function preview(){document.getElementById('pg-preview-title').textContent=value('titre')||'Titre de votre programme';document.getElementById('pg-preview-diplome').textContent=value('diplome')||'Votre diplôme apparaîtra ici';document.getElementById('pg-preview-duree').textContent=value('dureeAnnees')+' ans · '+value('semestres')+' semestres';document.getElementById('pg-preview-grade').textContent=value('grade')||'À préciser';document.getElementById('pg-preview-heures').textContent=value('heuresAnnoncees')+' h';document.getElementById('pg-preview-statut').textContent=value('statut')==='publie'?'Publié':'Brouillon privé';const list=document.getElementById('pg-preview-presentation');list.replaceChildren();value('presentation').split('\n').filter(Boolean).slice(0,4).forEach(v=>{const li=document.createElement('li');li.textContent=v.replace(/^•\s*/,'');list.append(li);});}
+ form.addEventListener('input',preview);form.addEventListener('change',preview);preview();form.noValidate=true;
+ form.addEventListener('submit',e=>{
+  const tooLong=[...form.querySelectorAll('[data-bullet-field]')].find(el=>el.value.length>12000);if(tooLong){e.preventDefault();show(0);error.textContent='Cette liste dépasse 12 000 caractères : '+tooLong.name;error.hidden=false;tooLong.nextElementSibling.querySelector('textarea')?.focus();return;}
+  const invalid=[...form.querySelectorAll('input,select,textarea')].find(el=>!el.checkValidity());if(invalid){e.preventDefault();show(Number(invalid.closest('[data-panel]')?.dataset.panel||0));invalid.reportValidity();return;}
+
+ });show(0);
+})();

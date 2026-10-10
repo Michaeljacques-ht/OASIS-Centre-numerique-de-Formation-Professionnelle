@@ -427,3 +427,21 @@ Validation : vérifications HTTP des dix programmes importés, de la conservatio
 La fiche reprend maintenant la disposition des formations classiques : couverture et titre à gauche, badge diplôme et métadonnées, partage WhatsApp/Facebook/X/LinkedIn, description enrichie, tableaux d’informations et modules, aperçu des unités. Un encadré à droite affiche les frais réels renseignés, les admissions, le responsable, le diplôme et la cohorte. Le bouton « Contacter pour s’inscrire » ouvre le formulaire de contact prérempli avec le programme concerné. Les apprenants déjà inscrits accèdent à leur parcours et à leur relevé ; l’accès aux ressources privées reste contrôlé. Aucun tarif ni achat de programme n’est créé automatiquement.
 
 Dans Configurer → Identité et diplôme, une URL de couverture HTTP(S) ou un chemin /assets/ ou une image /fichiers/ existante peut être renseigné. Sans image, la fiche affiche un visuel dégradé avec un symbole de diplôme. Les programmes publiés fournissent des métadonnées de partage avec titre, description et image. Les brouillons n’affichent pas les actions de partage.
+
+## Configuration guidée et listes à puces
+
+La création et la configuration des programmes longs utilisent le même menu formateur que les formations classiques, avec trois étapes : **Informations**, **Contenu**, **Publication**, et un aperçu latéral qui se met à jour pendant la saisie. Les boutons Précédent et Continuer permettent de naviguer. Enregistrer les modifications conserve l’état de publication sélectionné ; un nouveau programme démarre en brouillon.
+
+Les rubriques Présentation, Public cible, Admission, Objectifs, Compétences, Débouchés, Méthodes et Équipements/logiciels utilisent un éditeur de listes à puces : **Ajouter un point**, modifier son texte, déplacer vers le haut/bas, retirer. Chaque liste est enregistrée sous forme de texte canonique « • point » et affichée en véritables éléments HTML ul/li dans la fiche publique. Les listes importées regroupent les lignes de continuation d’un même point ; les paragraphes sans puce sont conservés comme éléments à affiner. Aucune information source n’est déduite ou inventée. Les champs vides restent vides. Maximum 12 000 caractères par rubrique.
+
+Sans JavaScript, les blocs restent visibles et les listes sont éditables dans les champs texte avec un point « • » par ligne. La sauvegarde de la configuration conserve les unités et les grilles déjà attachées aux identifiants stables des modules. Validation HTTP et syntaxique réalisée pour les dix formulaires, les listes et leur persistance, l’échappement HTML et les accès. Aucun contrôle graphique dans un navigateur n’a été réalisé dans cet environnement.
+
+## Catalogue des programmes sans imports automatiques
+
+Les pages **Programmes longs** et **Mes programmes longs** reprennent la présentation du catalogue de formations : titre et compteur, recherche, filtres Domaine métier / Durée / Modalité et vignettes avec couverture, diplôme, durée et modules. L’espace formateur propose Créer un programme, Configurer, Aperçu et Apprenants et relevés. L’état vide propose de créer le premier programme. Le catalogue public affiche uniquement les programmes publiés.
+
+Les programmes importés EDUCA et ceux créés à partir du modèle Bureautique sont retirés des collections actives au démarrage. Ils ne sont plus ajoutés automatiquement. Le bouton et la création depuis le modèle Bureautique sont supprimés ; un ancien lien avec `?modele=bureautique` ouvre une création vierge. Les programmes créés manuellement sans origine importée restent actifs. Les formations classiques ne sont pas supprimées.
+
+Pour préserver les données existantes, les programmes retirés et les inscriptions correspondantes sont conservés dans les collections internes `programmesArchives` et `programmeEnrollmentsArchives`. Ils ne sont accessibles ni par le catalogue ni par leurs anciennes fiches. Les associations de formations vers ces programmes retirés sont désactivées. Conservez DATA_DIR au déploiement ; le nettoyage s’applique aussi à votre base existante, sans réinitialisation.
+
+Validation : tests de retrait et d’absence de réimport, préservation des programmes manuels, des formations et des traces de suivi, filtres du catalogue, restriction des brouillons, état vide et création sans modèle. Syntaxe JavaScript vérifiée.
