@@ -551,6 +551,7 @@ function avisF(user, list) {
 /* =============== ESPACE APPRENANT =============== */
 function dashApprenant(user, list, flash) {
   return shell('Mes formations', user, MENU_A, '/apprenant', `
+  ${require('./programmes-pedagogie').learnerLinks(user)}
   <h1>Bonjour, ${esc(user.name.split(' ')[0])} ! 👋</h1>
   <p class="sous">Reprenez vos formations là où vous vous êtes arrêté.</p>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}

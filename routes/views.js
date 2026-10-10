@@ -442,6 +442,22 @@ function layout(title, content, { user = null, active = '', social = null } = {}
 ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
 <style>${CSS}
 .social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
+
+/* Boutons de partage : couleurs, contraste et zones tactiles */
+.course-share{padding:14px!important;background:#f5f8fc;border-top:1px solid #e0e8f1!important}
+.social-actions.social-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.social-actions a,.social-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:9px 10px!important;border:0!important;border-radius:11px!important;font-size:12px!important;font-weight:700!important;line-height:1.2;text-decoration:none!important;box-sizing:border-box;box-shadow:0 3px 8px #13375214;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.social-actions a[data-network="facebook"]{background:#1877f2!important;color:white!important}
+.social-actions a[data-network="whatsapp"]{background:#128c52!important;color:white!important}
+.social-actions a[data-network="x"]{background:#111827!important;color:white!important}
+.social-actions button[data-copy]{background:#e4eef8!important;color:#174d78!important;border:1px solid #c6d9eb!important}
+.social-actions button[data-install]{background:#edf4fc!important;color:#174d78!important;border:1px solid #c6d9eb!important}
+.social-actions a:hover,.social-actions button:hover{transform:translateY(-2px);box-shadow:0 5px 12px #13375226}
+.social-actions a:focus-visible,.social-actions button:focus-visible{outline:3px solid #e89619;outline-offset:3px}
+.social-icon{flex:0 0 18px}.social-actions span{overflow-wrap:anywhere}.social-toolbar{gap:7px}.social-toolbar a,.social-toolbar button{min-height:38px}
+@media(max-width:480px){.social-actions a,.social-actions button{min-height:44px}.course-share{padding:12px!important}.social-toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.social-toolbar a,.social-toolbar button{padding:8px 5px!important;gap:4px;font-size:11px!important}}
+@media(prefers-reduced-motion:reduce){.social-actions a,.social-actions button{transition:none;transform:none!important}}
+
 </style></head><body>
 <div class="cadre">
   <input type="checkbox" id="ouvrir-menu" class="bascule-menu" hidden>
@@ -499,12 +515,17 @@ ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="descript
 
 /* ---------- Carte formation ---------- */
 function partage(path, title, install = false) {
- return `<div class="social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}" aria-label="Partager">
- <a data-network="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur Facebook">Facebook</a>
- <a data-network="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur WhatsApp">WhatsApp</a>
- ${install ? '<button type="button" data-install>Installer</button>' : ''}
- <a data-network="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur X">X</a>
- ${install ? '' : '<button type="button" data-copy>Copier le lien</button>'}</div>`;
+ const icon=(body)=>`<svg class="social-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">${body}</svg>`;
+ const facebook=icon('<path fill="currentColor" d="M14 22v-9h3l.5-4H14V7c0-1 .3-2 2-2h2V1h-3c-4 0-5 2-5 6v2H7v4h3v9z"/>');
+ const whatsapp=icon('<path fill="none" stroke="currentColor" stroke-width="1.8" d="M20 11.5a8.5 8.5 0 0 1-12.8 7.3L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 7c-2 3 4 9 7 7l-2-2-1 1-2-2 1-1z"/>');
+ const x=icon('<path fill="none" stroke="currentColor" stroke-width="2" d="M4 3l16 18M20 3L4 21M4 3h5l11 18h-5z"/>');
+ const copy=icon('<rect x="8" y="8" width="12" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 5V3H3v13h2" fill="none" stroke="currentColor" stroke-width="1.8"/>');
+ return `<div class="social-actions ${install?'social-toolbar':'social-card-grid'}" data-share-path="${esc(path)}" data-share-title="${esc(title)}" aria-label="Partager">
+ <a data-network="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur Facebook">${facebook}<span>Facebook</span></a>
+ <a data-network="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur WhatsApp">${whatsapp}<span>WhatsApp</span></a>
+ ${install ? '<button type="button" data-install><span aria-hidden="true">↓</span><span>Installer</span></button>' : ''}
+ <a data-network="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur X">${x}<span>X</span></a>
+ ${install ? '' : `<button type="button" data-copy aria-label="Copier le lien de la formation">${copy}<span>Copier le lien</span></button>`}</div>`;
 }
 
 function carteCours(c) {
@@ -1168,7 +1189,7 @@ function aPropos(user, stats) {
 }
 
 /* ---------- Contact ---------- */
-function contactPage(user, sent) {
+function contactPage(user, sent, programme) {
   return layout('Contact', `
   <div class="page-head">
     <span class="eyebrow">ASSISTANCE</span>
@@ -1194,11 +1215,11 @@ function contactPage(user, sent) {
         </div>
         <label>Sujet *</label>
         <select name="sujet" required><option value="">Sélectionnez un sujet</option>
-          <option>Question sur une formation</option><option>Devenir formateur</option>
+          <option ${programme?'selected':''}>Question sur une formation</option><option>Devenir formateur</option>
           <option>Offre entreprise</option><option>Paiement / facturation</option>
           <option>Signaler un problème</option><option>Partenariats</option></select>
         <label>Message *</label>
-        <textarea name="message" rows="5" required maxlength="1000" placeholder="Décrivez votre demande en détail…"></textarea>
+        <textarea name="message" rows="5" required maxlength="1000" placeholder="Décrivez votre demande en détail…">${programme?esc('Je souhaite obtenir les informations et les modalités d’inscription au programme « '+programme.titre+' » ('+(programme.code||programme.id)+').'):''}</textarea>
         <div style="margin-top:16px"><button class="btn">📨 Envoyer le message</button></div>
       </form>
     </div>

@@ -9,7 +9,7 @@ document.querySelectorAll('[data-share-path]').forEach(group=>{
  const u=encodeURIComponent(url), t=encodeURIComponent(title);
  a.href=a.dataset.network==='facebook' ? 'https://www.facebook.com/sharer/sharer.php?u='+u : a.dataset.network==='whatsapp' ? 'https://wa.me/?text='+t+'%20'+u : 'https://twitter.com/intent/tweet?text='+t+'&url='+u;
  });
- group.querySelector('[data-copy]')?.addEventListener('click',async e=>{try{await navigator.clipboard.writeText(url);e.target.textContent='Copié ✓';}catch{window.prompt('Copiez ce lien :',url);}});
+ group.querySelector('[data-copy]')?.addEventListener('click',async e=>{const button=e.currentTarget;try{await navigator.clipboard.writeText(url);const label=button.querySelector('span');if(label)label.textContent='Copié ✓';else button.textContent='Copié ✓';}catch{window.prompt('Copiez ce lien :',url);}});
 });
 document.querySelectorAll('[data-install]').forEach(b=>b.addEventListener('click',async()=>{
  if(installPrompt){await installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;}

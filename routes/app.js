@@ -382,7 +382,7 @@ async function handle(req, res) {
       }
       return U.redirect(res, '/contact?ok=1');
     }
-    return U.sendHTML(res, 200, V.contactPage(user, req.query.get('ok')));
+    return U.sendHTML(res, 200, V.contactPage(user, req.query.get('ok'), (db.programmes||[]).find(p=>p.id===req.query.get('programme')&&(p.statut==='publie'||user&&(user.role==='admin'||user.id===p.ownerId)))));
   }
 
   /* ================= AUTH ================= */
