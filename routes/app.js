@@ -306,6 +306,8 @@ async function handle(req, res) {
     user.totpSecret=pending.secret;user.totpLastStep=step;delete user.totpPending;db.sessions=db.sessions.filter(s=>s.userId!==user.id);save();return openSession(res,user.id,'/securite/2fa');
   }
 
+  if (await require('./programmes').handle(req, res, user)) return;
+
   /* ================= PUBLIC ================= */
   m = path.match(/^\/fichiers\/([a-z0-9_.-]+)$/i);
   if (m && method === 'GET') return F.serve(req, res, m[1]);
@@ -1290,6 +1292,7 @@ async function handle(req, res) {
       examenFinal: { questions: [] },
       modules: [], createdAt: new Date().toISOString()
     };
+    require('../lib/formation-details').apply(c, data);
     db.courses.push(c);
     audit(u.id, 'course.created', { id: c.id, image: !!imageMeta });
     save();
@@ -1486,6 +1489,7 @@ async function handle(req, res) {
       c.modalite = DB.MODALITES.some(x => x.id === data.modalite) ? data.modalite : (c.modalite || 'en_ligne');
       c.lieuPratique = String(data.lieuPratique || '').slice(0, 120) || null;
       c.socle = DB.SOCLE_TRANSVERSAL.filter(b => data['socle_' + b.id] === 'on').map(b => b.id);
+      require('../lib/formation-details').apply(c, data);
       save();
       return U.redirect(res, `/formateur/formation/${c.id}?ok=` + encodeURIComponent('Informations enregistrées.'));
     }

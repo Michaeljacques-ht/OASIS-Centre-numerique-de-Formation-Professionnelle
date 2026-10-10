@@ -355,3 +355,50 @@ Remplacer le code et les ressources puis redémarrer. Conserver la base et les f
 ## Restauration de « Mon espace » formations
 
 Pour les administrateurs, le bouton « Mon espace » (bureau, mobile et menu latéral) et la connexion ouvrent `/formateur`, l’espace existant de création et d’administration des formations : tableau de bord, mes formations, création, modules, leçons, ressources, quiz, évaluations et publication. Les droits administrateur existants sont conservés. L’administration générale et la gestion institutionnelle restent accessibles par les liens du menu de cet espace. Aucun compte ou cours existant n’est modifié.
+
+## Programmes longs et diplômes techniques
+
+Depuis **Mon espace → Programmes longs / diplômes** :
+
+1. Choisir **Créer un programme** ou **Utiliser le modèle Bureautique EDUCA**.
+2. Configurer les rubriques : identité de l’établissement, département, version, cohorte, durée, semestres, diplôme, grade, niveau de sortie, langue, modalités, admissions, public, présentation, objectifs, compétences et débouchés.
+3. Compléter les méthodes, équipements, partenaires, frais, responsable et contacts.
+4. Définir l’organisation par années/semestres, la répartition globale des heures et les projets intégrateurs.
+5. Ajouter ou retirer les modules et renseigner leur code, année, semestre, titre, thèmes, objectifs spécifiques, prérequis, évaluations, crédits, heures théorie/pratique/stage et notes horaires.
+6. Configurer le stage, le tutorat, les livrables du projet final, le jury, les évaluations pondérées, les seuils et la règle d’assiduité.
+7. Enregistrer comme **Brouillon privé** ; ouvrir l’aperçu ; publier lorsque le programme est complet.
+8. Depuis **Mes formations → Gérer → Programme long et diplôme technique**, associer une formation au programme. Ses objectifs, compétences, admissions, débouchés et conditions du diplôme enrichissent automatiquement sa fiche. Une association à un brouillon ne montre pas ses informations aux visiteurs.
+9. Dans l’aperçu du programme, cliquer sur **Imprimer / enregistrer en PDF** puis choisir la destination PDF du navigateur.
+
+Les formateurs approuvés créent et configurent leurs propres programmes. Les administrateurs peuvent configurer tous les programmes. Les apprenants et visiteurs consultent les programmes publiés. Le bouton Mon espace reste dirigé vers l’espace de création et de gestion des formations, et l’ancienne bannière est conservée.
+
+### Modèle du document joint
+
+Le modèle conserve les informations du programme EDUCA de bureautique : deux ans, quatre semestres, 19 modules, projets S1 à S4, stage de huit semaines/240 heures, PFF, répartition globale, pondération 30/40/30, seuils de 60 et 65/100 et absences maximales de 20 %. Le document source est conservé sous `docs/Programme-Bureautique-EDUCA.pdf`. Le modèle n’est ni publié ni injecté automatiquement dans la base : il faut l’enregistrer depuis l’éditeur.
+
+**Vérification horaire nécessaire :** le tableau global annonce 960 heures, alors que les heures chiffrées des modules totalisent 970 heures, avant attribution d’un volume au PFF. Ces données sont conservées sans correction arbitraire. L’éditeur affiche l’écart et demande une confirmation explicite avant publication. La répartition globale reste un champ détaillé modifiable ; le total calculé provient des modules.
+
+L’intitulé du diplôme est un paramètre pédagogique du programme. La rubrique reconnaissance/habilitation permet de renseigner une reconnaissance documentée. Le module ne crée pas automatiquement de diplôme pour un étudiant et ne constitue pas un système de suivi des inscriptions, des stages ou de décision de jury : il gère la conception, la présentation et la publication des programmes.
+
+### Données et mise à jour
+
+Les programmes sont stockés dans la collection `programmes` de la base JSON existante, ajoutée au premier usage sans remplacer les données actuelles. L’association utilise `programmeId` sur les formations. Les routes d’écriture vérifient les droits, un jeton anti-CSRF, les années/semestres, les valeurs numériques et la somme des pondérations. Les programmes acceptent jusqu’à 200 modules. Les titres, textes et modules restent modifiables après enregistrement.
+
+Au déploiement, remplacer le code et les ressources puis redémarrer, en conservant la base et les fichiers utilisateurs sur le disque persistant `DATA_DIR`. Ne pas remplacer la base de production par `data/db.json` du ZIP.
+
+
+## Paramètres pédagogiques de chaque formation
+
+Dans **Mon espace → Mes formations → Gérer → Modifier les informations**, les champs objectifs, compétences, débouchés, équipements, logiciels, grade, intitulé du diplôme/certificat, niveau de sortie, public cible, admission, méthodes pédagogiques, évaluations et conditions de réussite sont directement modifiables. Ils existent aussi à la création d’une formation. Les rubriques vides sont masquées sur la fiche publique. Ces champs sont indépendants des programmes longs et restent enregistrés sur la formation. Vider un champ puis enregistrer le retire de la fiche publique. Aucune information du modèle Bureautique n’est appliquée automatiquement à des formations d’autres métiers.
+
+## Dix programmes EDUCA intégrés
+
+Au premier démarrage de cette version, dix programmes sont ajoutés comme **brouillons privés** dans **Mon espace → Programmes longs / diplômes**, sous la responsabilité du compte administrateur existant : robotique, bureautique et IA, informatique médicale, production musicale, construction et bâtiment, cinématographie, réseaux et télécommunications, revêtement de plancher, vitrage, électricité et solaire.
+
+Les objectifs, compétences, débouchés, admissions, grade, intitulé du diplôme, modules, volumes horaires, logiciels et équipements, projets intégrateurs, stages et conditions de diplomation proviennent des PDF joints. Les quatre composantes d’évaluation et leurs intitulés sont désormais paramétrables. Lorsqu’une valeur de seuil PFF ou d’absences n’est pas précisée dans le document, elle reste vide. Les informations propres au programme et les exigences particulières sont conservées dans les champs détaillés.
+
+Cliquer sur **Configurer** pour adapter les informations puis choisir **Publié** et enregistrer. Les volumes annoncés et les totaux chiffrés des modules sont conservés distinctement : vérifier l’écart éventuel avant publication. Les PDF originaux restent consultables avec **Document PDF source** dans l’aperçu du programme, et sont inclus dans `docs`. L’accès au PDF suit la visibilité du programme.
+
+Chaque import possède une identité stable : redémarrer ou redéployer n’ajoute pas de doublon et ne remplace pas vos modifications. Les programmes et formations déjà enregistrés sont conservés. Une formation peut être rattachée à l’un de ces programmes depuis **Mes formations → Gérer → Programme long et diplôme technique**.
+
+Conserver `DATA_DIR` sur le disque persistant et ne pas remplacer `data/db.json` en production. Les nouveaux imports sont ajoutés dans la base existante au démarrage, sans réinitialiser celle-ci. Les programmes restent des contenus pédagogiques configurables ; l’ajout ne délivre pas automatiquement de diplômes aux apprenants.

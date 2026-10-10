@@ -419,6 +419,7 @@ function layout(title, content, { user = null, active = '', social = null } = {}
     { titre: 'Plateforme', liens: [
       ['/', '🏠', 'Accueil'],
       ['/formations', '📚', 'Formations'],
+      ['/programmes', '🎓', 'Programmes longs'],
       ['/certifications', '🏅', 'Certificats'],
       ['/ressources-numeriques', '🧰', 'Ressources']
     ] },
@@ -695,6 +696,8 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
             <button class="btn ligne petit" onclick="navigator.clipboard.writeText(decodeURIComponent('${lien}')).then(()=>this.textContent='Copié ✓')">🔗 Copier le lien</button>
           </div>
           <h2>Description</h2><p>${esc(c.description)}</p>
+          ${require('../lib/formation-details').display(c)}
+          ${require('./programmes').coursePublic(c,user)}
           <h2>Programme — ${c.modules.length} module(s), ${nbLecons(c)} leçon(s)${nbQuiz ? `, ${nbQuiz} quiz` : ''}${aExamen ? ', évaluation finale certifiante' : ''}</h2>
           ${c.modules.map((m, i) => `<div class="carte" style="padding:14px;margin-bottom:10px">
             <b>Module ${i + 1} — ${esc(m.titre)}</b>

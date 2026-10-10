@@ -29,6 +29,7 @@ const MENU_F = [
   ['/formateur', '📊', 'Tableau de bord'],
   ['/formateur/formations', '📚', 'Mes formations'],
   ['/formateur/creer', '➕', 'Créer une formation'],
+  ['/formateur/programmes', '🎓', 'Programmes longs / diplômes'],
   ['/formateur/revenus', '💰', 'Mes revenus'],
   ['/formateur/abonnes', '👥', 'Abonnés'],
   ['/formateur/avis', '⭐', 'Avis & évaluations'],
@@ -192,6 +193,7 @@ function creerFormation(user, error) {
         <label>Description *</label>
         <textarea name="description" rows="5" required maxlength="2000"
           placeholder="Décrivez votre formation, ce que les apprenants vont apprendre, les objectifs…" oninput="ap()"></textarea>
+        ${require('../lib/formation-details').form()}
         <label>Image de couverture</label>
         <input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onchange="apImg(this)">
         <p class="aide">Format recommandé : 1280×720 px (16:9) — JPG, PNG, WebP (max. 5 Mo). Facultatif : sans image, un visuel de catégorie est utilisé.</p>
@@ -255,6 +257,7 @@ function gererFormation(user, c, flash, annonces = []) {
   return shell('Gérer — ' + c.titre, user, MENU_F, '/formateur/formations', `
   <a href="/formateur/formations" style="font-size:13.5px">← Retour à mes formations</a>
   <h1>${cat.emoji} ${esc(c.titre)}</h1>
+  ${require('./programmes').courseEditor(c,user)}
   <p class="sous">${esc(c.sousTitre || '')} —
     <span class="badge ${c.statut === 'publiee' ? 'b-vert' : 'b-orange'}">${c.statut === 'publiee' ? 'Publiée' : c.statut === 'en_verification' ? '🔎 En vérification' : 'Brouillon'}</span>
     · ${fmtHTG(c.prix)} · ${nbInscrits(c.id)} inscrit(s)</p>
@@ -450,6 +453,7 @@ function gererFormation(user, c, flash, annonces = []) {
           <label>Titre</label><input name="titre" value="${esc(c.titre)}" required maxlength="100">
           <label>Prix (HTG)</label><input name="prix" type="number" min="0" value="${c.prix}" required>
           <label>Description</label><textarea name="description" rows="4" maxlength="2000">${esc(c.description)}</textarea>
+          ${require('../lib/formation-details').form(c)}
           <div class="grille g2">
             <div><label>Format du parcours</label><select name="format">
               ${FORMATS.map(f => `<option value="${f.id}" ${(c.format || 'certificat_pro') === f.id ? 'selected' : ''}>${esc(f.label)} — ${esc(f.duree)}</option>`).join('')}</select></div>
