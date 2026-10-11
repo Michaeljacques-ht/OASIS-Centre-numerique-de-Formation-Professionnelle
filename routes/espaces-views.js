@@ -1280,6 +1280,10 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
   .fiche b{color:#001C4A;min-width:116px;display:inline-block}
   h2{font-size:12px;letter-spacing:.13em;color:#0166C2;text-transform:uppercase;margin:24px 0 8px;font-weight:800}
   table{width:100%;border-collapse:collapse;font-size:12px}
+  .table-competences{width:100%;table-layout:fixed;margin-left:0;margin-right:0}
+  .table-competences th,.table-competences td{overflow-wrap:anywhere;text-align:left}
+  .table-competences th:last-child,.table-competences td:last-child{text-align:right}
+  .table-competences col.code-col{width:11%}.table-competences col.competence-col{width:75%}.table-competences col.statut-col{width:14%}
   th{background:#001C4A;color:#fff;text-align:left;padding:8px 9px;font-size:10.5px;
   letter-spacing:.05em;text-transform:uppercase;font-weight:700}
   th.n,td.n{text-align:center}
@@ -1321,14 +1325,14 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
 
     <div class="tete">
       <img src="/assets/logo-oasis.png" alt="">
-      <div><div class="nom">OASIS</div><div class="sous">Centre numérique de formation professionnelle</div></div>
+      <div style="min-width:0"><div class="nom">OASIS</div><div class="sous">Centre numérique de formation professionnelle</div>
+        <div class="institution-contact" style="font-size:10px;line-height:1;margin-top:6px;overflow-wrap:anywhere">${esc(params.villeCertificat || 'Port-au-Prince, Haïti')}<br>Site web : ${esc(params.institutionWeb || '—')}<br>Email : ${esc(params.institutionEmail || '—')}<br>Téléphone : ${esc(params.institutionTelephone || '—')}</div></div>
       <div class="ref">N° ${esc(enr.id).toUpperCase()}<br>Édité le ${new Date().toISOString().slice(0, 10)}</div>
       ${qr ? `<div class="qr-tete">${qr.svg}<span>Vérifier</span></div>` : ''}
     </div>
 
     <h1>RELEVÉ DE NOTES</h1>
-    <p class="soustitre">Document officiel · ${esc(params.villeCertificat || 'Port-au-Prince, Haïti')}</p>
-    <div style="text-align:center;font-size:12px;line-height:1.8;margin:12px 0 20px;overflow-wrap:anywhere"><b>Site web :</b> ${esc(params.institutionWeb || '—')}<br><b>Email de l’institution :</b> ${esc(params.institutionEmail || '—')} · <b>Téléphone :</b> ${esc(params.institutionTelephone || '—')}</div>
+    <p class="soustitre">Document officiel</p>
 
     <div class="fiche">
       <div><b>Apprenant</b> <span>${esc(user.name)}</span></div>
@@ -1354,12 +1358,12 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
         <td class="n">${m.sur === null ? '—' : m.sur}</td>
         <td class="n">${pct(m.pct)}</td>
         <td class="n">${m.lecFaites}/${m.lecons}</td>
-        <td>${statutMod(m.statut)}</td></tr>`).join('')}
+        <td>${m.statut === 'acquise' ? '<span class="et ok">Terminé</span>' : statutMod(m.statut)}</td></tr>`).join('')}
     </table>
 
     <h2>Relevé des compétences</h2>
     <p>Le statut suit la progression du module : les compétences sont acquises lorsque ses leçons sont terminées et son évaluation réussie, si elle est prévue.</p>
-    ${rel.modules.map(m => m.grilleCompetences.length ? `<h3>${esc(m.titre)}</h3><div style="max-width:100%;overflow-x:auto"><table>
+    ${rel.modules.map(m => m.grilleCompetences.length ? `<h3>${esc(m.titre)}</h3><div style="width:100%;max-width:100%;overflow-x:auto"><table class="table-competences"><colgroup><col class="code-col"><col class="competence-col"><col class="statut-col"></colgroup>
       <thead><tr><th>Code</th><th>Compétences</th><th>Statut</th></tr></thead>
       <tbody>${m.grilleCompetences.map(k => `<tr><td class="code">${esc(k.code)}</td><td><b>${esc(k.intitule)}</b></td><td>${statutMod(m.statut)}</td></tr>`).join('')}</tbody>
     </table></div>` : '').join('') || '<p>Aucune compétence renseignée.</p>'}
