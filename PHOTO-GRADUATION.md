@@ -19,3 +19,6 @@ Référence API : https://developers.openai.com/api/reference/resources/images/m
 ## Personnalisation
 
 Dans Paramètres → Photos de graduation, l’administrateur définit couleur, style, décor, message (160 caractères) et téléverse un logo (5 Mo). Les choix couleur/style de l’étudiant peuvent être autorisés ou verrouillés. Le logo OASIS est fourni par défaut comme seconde image de référence à l’IA. Le message et le logo sont reproduits par l’IA sur une feuille blanche tenue en main ; leur reproduction peut comporter des variations, ce n’est pas un assemblage typographique exact. Les changements de réglages ne modifient pas les photos existantes.
+
+## Photos par formation
+Dans Mes certificats, chaque carte propose de créer ou voir sa photo de graduation. Une seule création réussie est autorisée par étudiant et par formation terminée, avec contrôle côté serveur. Les anciennes photos restent téléchargeables via un lien dédié.
