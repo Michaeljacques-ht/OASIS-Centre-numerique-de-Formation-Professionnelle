@@ -441,6 +441,7 @@ function layout(title, content, { user = null, active = '', social = null } = {}
       ['/pour-les-entreprises', '🏢', 'Entreprises'],
       ['/tarifs', '💳', 'Tarifs']
     ] },
+    ...(user?.role==='admin'?[{titre:'Administration',liens:[['/admin/parametres','⚙️','Paramètres']]}]:[]),
     { titre: 'Institution & aide', liens: [
       ['/a-propos', 'ℹ️', 'À propos'],
       ['/recrutement', '📬', 'Recrutement'],

@@ -11,7 +11,7 @@ const { layout, avatarHtml, etoiles } = require('./views');
 /* ---------- Coquille à barre latérale ---------- */
 function shell(title, user, menu, activeHref, content, { sombre = false, sousTitre = '' } = {}) {
   const espaceMenu = user.role === 'admin' && menu === MENU_F
-    ? [...MENU_F, ['/admin', '⚙️', 'Administration générale'], ['/gestion', '🏛️', 'Gestion de l’institution']]
+    ? [...MENU_F, ['/admin', '⚙️', 'Administration générale'], ['/admin/parametres', '⚙️', 'Paramètres'], ['/gestion', '🏛️', 'Gestion de l’institution']]
     : menu;
   const inner = `
   <div class="shell">
@@ -48,7 +48,7 @@ const MENU_ADMIN = [
   ['/admin', '📊', 'Tableau de bord'],
   ['/admin/candidatures', '📝', 'Candidatures formateurs'],
   ['/admin/moderation', '🔎', 'Formations à vérifier'],
-  ['/admin/parametres', '🎖️', 'Paramètres certificat'],
+  ['/admin/parametres', '⚙️', 'Paramètres'],
   ['/gestion', '🏛️', 'Gestion de l’institution'],
   ['/gestion/etudiants', '🎓', 'Dossiers étudiants'],
   ['/gestion/rh', '👔', 'Personnel & paie'],
@@ -1195,9 +1195,11 @@ function adminCandidatures(user, list, flash) {
 
 /* ---- Administration : paramètres du certificat ---- */
 function adminParametres(user, p, flash) {
-  return shell('Paramètres du certificat', user, MENU_ADMIN, '/admin/parametres', `
-  <h1>Paramètres du certificat</h1>
-  <p class="sous">Sceau officiel, signature et signataire apposés sur tous les certificats délivrés.</p>
+  return shell('Paramètres', user, MENU_ADMIN, '/admin/parametres', `
+  <h1>Paramètres</h1>
+  <p class="sous">Coordonnées de l’institution, documents officiels et service de photo de graduation.</p>
+  <section class="carte" style="margin:18px 0"><h2>🎓 Photos de graduation</h2><p><span class="badge ${process.env.OPENAI_API_KEY?'b-vert':'b-orange'}">${process.env.OPENAI_API_KEY?'Clé API configurée':'À configurer'}</span></p><p class="aide">Pour activer la transformation des portraits, renseignez OPENAI_API_KEY dans Environment sur Render, puis redéployez. La clé reste sur le serveur. Une clé présente ne garantit pas que les crédits et l’accès au modèle sont disponibles.</p><p>Limite quotidienne : <b>${Math.max(1,Math.min(20,Number(process.env.GRADUATION_DAILY_LIMIT)||3))} tentatives par utilisateur</b>. Modifiez GRADUATION_DAILY_LIMIT sur Render pour ajuster cette limite.</p><a class="btn ligne" href="/certifications">Voir Documents officiels</a></section>
+  <h2>Institution et certificats</h2>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
   <div class="grille" style="grid-template-columns:1.3fr .9fr;align-items:start">
     <div class="carte">
@@ -1456,7 +1458,7 @@ function dashAdmin(user, db) {
   const modules = [
     ['/admin/candidatures', '📝', 'Candidatures formateurs', 'Examiner les demandes et gérer les décisions.'],
     ['/admin/moderation', '🔎', 'Formations à vérifier', 'Contrôler les formations avant leur publication.'],
-    ['/admin/parametres', '🎖️', 'Paramètres des certificats', 'Configurer le sceau, la signature et les certificats.'],
+    ['/admin/parametres', '⚙️', 'Paramètres', 'Coordonnées, documents officiels et configuration des portraits de graduation.'],
     ['/gestion', '🏛️', 'Gestion de l’institution', 'Consulter les indicateurs de scolarité, de personnel et de comptabilité.'],
     ['/gestion/etudiants', '🎓', 'Dossiers étudiants', 'Suivre les inscriptions et les dossiers étudiants.'],
     ['/gestion/rh', '👔', 'Personnel et ressources humaines', 'Consulter et gérer les membres du personnel.'],
