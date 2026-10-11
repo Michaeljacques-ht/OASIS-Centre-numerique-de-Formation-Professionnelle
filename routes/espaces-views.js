@@ -590,7 +590,8 @@ function dashApprenant(user, list, flash) {
   : `<div class="carte" style="text-align:center;padding:40px">
       <p style="font-size:38px">📚</p><b>Vous n'êtes inscrit à aucune formation.</b>
       <p class="aide" style="margin:8px 0 16px">Explorez le catalogue et développez de nouvelles compétences.</p>
-      <a class="btn" href="/formations">Explorer les formations</a></div>`}`,
+      <a class="btn" href="/formations">Explorer les formations</a></div>`}
+  ${require('../lib/portrait-graduation').eligible(user)?require('../lib/portrait-graduation').card(user):''}`,
   { sousTitre: 'Apprenant' });
 }
 
@@ -1198,7 +1199,7 @@ function adminParametres(user, p, flash) {
   return shell('Paramètres', user, MENU_ADMIN, '/admin/parametres', `
   <h1>Paramètres</h1>
   <p class="sous">Coordonnées de l’institution, documents officiels et service de photo de graduation.</p>
-  <section class="carte" style="margin:18px 0"><h2>🎓 Photos de graduation</h2><p><span class="badge ${process.env.OPENAI_API_KEY?'b-vert':'b-orange'}">${process.env.OPENAI_API_KEY?'Clé API configurée':'À configurer'}</span></p><p class="aide">Pour activer la transformation des portraits, renseignez OPENAI_API_KEY dans Environment sur Render, puis redéployez. La clé reste sur le serveur. Une clé présente ne garantit pas que les crédits et l’accès au modèle sont disponibles.</p><p>Limite quotidienne : <b>${Math.max(1,Math.min(20,Number(process.env.GRADUATION_DAILY_LIMIT)||3))} tentatives par utilisateur</b>. Modifiez GRADUATION_DAILY_LIMIT sur Render pour ajuster cette limite.</p><a class="btn ligne" href="/certifications">Voir Documents officiels</a></section>
+  <section class="carte" style="margin:18px 0"><h2>🎓 Photos de graduation</h2><p><span class="badge ${process.env.OPENAI_API_KEY?'b-vert':'b-orange'}">${process.env.OPENAI_API_KEY?'Clé API configurée':'À configurer'}</span></p><p class="aide">Pour activer la transformation des portraits, renseignez OPENAI_API_KEY dans Environment sur Render, puis redéployez. La clé reste sur le serveur. Une clé présente ne garantit pas que les crédits et l’accès au modèle sont disponibles.</p><p>Limite quotidienne : <b>${Math.max(1,Math.min(20,Number(process.env.GRADUATION_DAILY_LIMIT)||3))} tentatives par utilisateur</b>. Modifiez GRADUATION_DAILY_LIMIT sur Render pour ajuster cette limite.</p>${require('../lib/graduation-settings').admin(user)}</section>
   <h2>Institution et certificats</h2>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
   <div class="grille" style="grid-template-columns:1.3fr .9fr;align-items:start">

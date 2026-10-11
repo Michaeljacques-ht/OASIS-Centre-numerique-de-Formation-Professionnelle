@@ -1024,7 +1024,7 @@ function certificationsPage(user) {
     <div class="concept-card"><b>QR code vérifiable</b><p class="aide">Le scan ouvre une page publique indiquant si le document est authentique.</p></div>
     <div class="concept-card"><b>Signature et sceau</b><p class="aide">Les documents utilisent l'identité officielle du centre et les paramètres administratifs.</p></div>
     <div class="concept-card"><b>Traçabilité</b><p class="aide">La référence relie le document à l'inscription, aux notes et à la progression réelle.</p></div>
-  </div>${require('../lib/portrait-graduation').card(user)}`, { user, active: '/certifications' });
+  </div>`, { user, active: '/certifications' });
 }
 
 function ressourcesNumeriques(user) {
