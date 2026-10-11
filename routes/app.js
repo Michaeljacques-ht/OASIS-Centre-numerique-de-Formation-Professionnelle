@@ -369,6 +369,7 @@ async function handle(req, res) {
 
   if (path === '/pour-les-formateurs' && method === 'GET') return U.sendHTML(res, 200, V.pourFormateurs(user));
   if (path === '/pour-les-entreprises' && method === 'GET') return U.sendHTML(res, 200, V.pourEntreprises(user));
+  if (await require('../lib/portrait-graduation').handle(req,res,user)) return;
   if (path === '/certifications' && method === 'GET') return U.sendHTML(res, 200, V.certificationsPage(user));
   if (path === '/ressources-numeriques' && method === 'GET') return U.sendHTML(res, 200, V.ressourcesNumeriques(user));
   if (path === '/apprentissage-professionnel' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'apprentissageProfessionnel'));

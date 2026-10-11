@@ -433,7 +433,7 @@ function layout(title, content, { user = null, active = '', social = null } = {}
       ['/', '🏠', 'Accueil'],
       ['/formations', '📚', 'Formations'],
       ['/programmes', '🎓', 'Programmes longs'],
-      ['/certifications', '🏅', 'Certificats'],
+      ['/certifications', '🏅', 'Documents officiels'],
       ['/ressources-numeriques', '🧰', 'Ressources']
     ] },
     { titre: 'Espaces', liens: [
@@ -454,7 +454,7 @@ function layout(title, content, { user = null, active = '', social = null } = {}
 <link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#145da0">
 ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
 <style>${CSS}
-.social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
+.social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb} .cours{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}.cours .visuel{height:160px}.cours-link{flex:1;display:flex!important;flex-direction:column}.cours .titre{font-size:16px;min-height:44px}.cours .meta{line-height:1.6}.cours .prix{padding-top:12px}.cours a.cours-link:hover{text-decoration:none}.course-share{background:#f7fafc;margin-top:auto;padding:14px 18px}.course-share-menu summary{text-align:center;width:100%;box-sizing:border-box}.course-share-menu .social-actions{padding-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-share-menu .social-actions>*{min-width:0;text-align:center;justify-content:center;overflow-wrap:anywhere}.course-share-menu [data-copy]{grid-column:1/-1}.course-share-menu [hidden]{display:none!important}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
 
 /* Boutons de partage : couleurs, contraste et zones tactiles */
 .course-share{padding:14px!important;background:#f5f8fc;border-top:1px solid #e0e8f1!important}
@@ -539,12 +539,14 @@ function partage(path, title, install = false) {
  const links=networks.map(([label,key])=>{const url=process.env['OASIS_SOCIAL_'+key]||'';return /^https:\/\//i.test(url)?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`:'';}).filter(Boolean).join('');
  return `<div class="home-social-menus"><details class="social-dropdown"><summary>↗ Partager</summary><div class="social-dropdown-panel social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}"><strong>Partager OASIS</strong><a data-network="facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(path)}" target="_blank" rel="noopener noreferrer">${facebook} Facebook</a><a data-network="whatsapp" href="https://wa.me/?text=${encodeURIComponent(title+' '+path)}" target="_blank" rel="noopener noreferrer">${whatsapp} WhatsApp</a><a data-network="x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}" target="_blank" rel="noopener noreferrer">${x} X</a><button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details><details class="social-dropdown"><summary>♡ Suivez-nous</summary><div class="social-dropdown-panel follow-links"><strong>Retrouvez OASIS</strong>${links||'<p>Nos liens vers les réseaux sociaux seront disponibles prochainement.</p>'}</div></details></div>`;
  }
- return `<div class="social-actions ${install?'social-toolbar':'social-card-grid'}" data-share-path="${esc(path)}" data-share-title="${esc(title)}" aria-label="Partager">
- <a data-network="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur Facebook">${facebook}<span>Facebook</span></a>
- <a data-network="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur WhatsApp">${whatsapp}<span>WhatsApp</span></a>
- 
- <a data-network="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur X">${x}<span>X</span></a>
- ${install ? '' : `<button type="button" data-copy aria-label="Copier le lien de la formation">${copy}<span>Copier le lien</span></button>`}</div>`;
+ return `<details class="social-dropdown course-share-menu"><summary>↗ Partager</summary><div class="social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}" aria-label="Options de partage">
+ <a data-network="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${facebook}<span>Facebook</span></a>
+ <a data-network="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${whatsapp}<span>WhatsApp</span></a>
+ <a data-network="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${x}<span>X</span></a>
+ <a data-network="linkedin" href="${esc(path)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+ <a data-network="telegram" href="${esc(path)}" target="_blank" rel="noopener noreferrer">Telegram</a>
+ <button type="button" data-native-share>Autres applications</button>
+ <button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details>`;
 }
 
 function carteCours(c) {
@@ -975,7 +977,7 @@ function pourEntreprises(user) {
 
 /* ---------- Pages de concepts publics ---------- */
 function certificationsPage(user) {
-  return layout('Certifications reconnues', `
+  return layout('Documents officiels', `
   <div class="page-head">
     <span class="eyebrow">DOCUMENTS OFFICIELS</span>
     <h1>Certificat et relevé de notes Oasis</h1>
@@ -1021,7 +1023,7 @@ function certificationsPage(user) {
     <div class="concept-card"><b>QR code vérifiable</b><p class="aide">Le scan ouvre une page publique indiquant si le document est authentique.</p></div>
     <div class="concept-card"><b>Signature et sceau</b><p class="aide">Les documents utilisent l'identité officielle du centre et les paramètres administratifs.</p></div>
     <div class="concept-card"><b>Traçabilité</b><p class="aide">La référence relie le document à l'inscription, aux notes et à la progression réelle.</p></div>
-  </div>`, { user, active: '/certifications' });
+  </div>${require('../lib/portrait-graduation').card(user)}`, { user, active: '/certifications' });
 }
 
 function ressourcesNumeriques(user) {
@@ -1490,3 +1492,5 @@ module.exports = {
 module.exports.securityPage = (title, content, user) => layout(title, '<div class="carte" style="max-width:560px;margin:24px auto"><h1>' + esc(title) + '</h1>' + content + '</div>', {user});
 
 module.exports.carteCours=carteCours;
+
+module.exports.partage=partage;

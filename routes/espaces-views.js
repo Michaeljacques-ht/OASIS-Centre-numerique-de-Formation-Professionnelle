@@ -557,19 +557,30 @@ function avisF(user, list) {
 }
 
 /* =============== ESPACE APPRENANT =============== */
+function stylesCartesApprenant(){return `<style>
+  .apprenant-cartes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .apprenant-carte{min-width:0;padding:24px!important;border:1px solid #dce8f0!important;border-radius:20px!important;background:linear-gradient(145deg,#fff,#f5faff)!important;box-shadow:0 8px 24px #1739520b;display:flex;flex-direction:column;gap:14px;position:relative}
+  .apprenant-carte::before{content:'';height:4px;position:absolute;top:0;left:22px;right:22px;background:linear-gradient(90deg,#0166c2,#06b994);border-radius:0 0 6px 6px}
+  .apprenant-carte .carte-titre{font-size:17px;line-height:1.4;color:#123251;overflow-wrap:anywhere}
+  .apprenant-carte .carte-date{display:block;font-size:13px;color:#65788d;margin-top:6px}
+  .apprenant-carte .carte-actions{display:flex;flex-wrap:nowrap;gap:8px;margin-top:auto;align-items:stretch}
+  .apprenant-carte .carte-actions .btn{flex:1 1 0;min-width:0;padding:11px 8px;font-size:12px;white-space:nowrap;text-align:center;display:flex;align-items:center;justify-content:center;border-radius:11px;margin:0}
+  @media(max-width:1200px){.apprenant-cartes{grid-template-columns:minmax(0,1fr)}}
+  @media(max-width:480px){.apprenant-carte{padding:18px 12px!important}.apprenant-carte .carte-actions{gap:5px}.apprenant-carte .carte-actions .btn{font-size:10px;padding:10px 3px}}
+  </style>`;}
 function dashApprenant(user, list, flash) {
   return shell('Mes formations', user, MENU_A, '/apprenant', `
-  ${require('./programmes-pedagogie').learnerLinks(user)}
+  ${stylesCartesApprenant()}${require('./programmes-pedagogie').learnerLinks(user)}
   <h1>Bonjour, ${esc(user.name.split(' ')[0])} ! 👋</h1>
   <p class="sous">Reprenez vos formations là où vous vous êtes arrêté.</p>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
-  ${list.length ? `<div class="grille g2">${list.map(e => `
-    <div class="carte">
-      <b>${categorie(e.cours.categorie).emoji} ${esc(e.cours.titre)}</b>
+  ${list.length ? `<div class="apprenant-cartes">${list.map(e => `
+    <div class="carte apprenant-carte">
+      <b class="carte-titre">${categorie(e.cours.categorie).emoji} ${esc(e.cours.titre)}</b>
       ${e.source === 'entreprise' ? ' <span class="badge b-vert">Assignée par votre entreprise</span>' : ''}
       <div style="display:flex;gap:10px;align-items:center;margin:12px 0">
         <div class="barre" style="flex:1"><i style="width:${e.pct}%"></i></div><b>${e.pct}%</b></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div class="carte-actions">
         <a class="btn petit" href="/apprenant/cours/${e.cours.id}">${e.pct === 0 ? 'Commencer' : e.pct === 100 ? 'Revoir' : 'Continuer'} →</a>
         <a class="btn ligne petit" href="/releve/${e.id}">📄 Relevé de notes</a>
         ${e.completedAt ? `<a class="btn vert petit" href="/certificat/${e.id}">🎖️ Mon certificat</a>`
@@ -696,12 +707,12 @@ function pageQuiz(user, c, cible, quiz, resultat, dernierResultat, melanger = fa
 
 function certificatsA(user, list) {
   return shell('Mes certificats', user, MENU_A, '/apprenant/certificats', `
-  <h1>Mes certificats</h1>
+  ${stylesCartesApprenant()}<h1>Mes certificats</h1>
   <p class="sous">Vos certificats de réussite, prêts à imprimer ou partager.</p>
-  ${list.length ? `<div class="grille g2">${list.map(e => `<div class="carte" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-    <span>🎖️ <b>${esc(e.cours.titre)}</b><br><small class="aide">Terminée le ${e.completedAt.slice(0, 10)}</small></span>
-    <a class="btn vert petit" href="/certificat/${e.id}">Voir le certificat</a>
-    <a class="btn ligne petit" href="/releve/${e.id}" style="margin-left:6px">📄 Relevé de notes</a></div>`).join('')}</div>`
+  ${list.length ? `<div class="apprenant-cartes">${list.map(e => `<div class="carte apprenant-carte">
+    <span class="carte-titre">🎖️ <b>${esc(e.cours.titre)}</b><br><small class="carte-date">Terminée le ${e.completedAt.slice(0, 10)}</small></span>
+    <div class="carte-actions"><a class="btn vert petit" href="/certificat/${e.id}">Voir le certificat</a>
+    <a class="btn ligne petit" href="/releve/${e.id}">📄 Relevé de notes</a></div></div>`).join('')}</div>`
   : '<div class="carte"><p class="aide">Terminez une formation à 100 % pour obtenir votre premier certificat.</p></div>'}`,
   { sousTitre: 'Apprenant' });
 }

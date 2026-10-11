@@ -4,3 +4,16 @@
 .pg-catalogue .page-head{background:#fff;color:#123044;border-left:4px solid #07949b;box-shadow:0 5px 20px #173e5610}.pg-catalogue .page-head h1{color:#123044}.pg-catalogue .page-head .eyebrow{display:inline-block;background:#e4f1f2;color:#146773;padding:8px 14px;border-radius:40px;font-size:11px}.pg-catalog-filters{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:20px 0;padding:22px!important}.pg-catalog-filters>div{flex:1;min-width:150px}.pg-catalog-filters>div:first-child{flex:2;min-width:190px}.pg-catalog-filters label{display:block;margin-bottom:8px;font-size:13px;font-weight:700}.pg-catalog-filters input,.pg-catalog-filters select{width:100%}.pg-catalog-cover{height:165px;background:linear-gradient(135deg,#14588b,#06a7af);display:grid;place-items:center;position:relative;font-size:50px;overflow:hidden}.pg-catalog-cover img{height:100%;width:100%;object-fit:cover}.pg-catalog-cover .badge{position:absolute;top:12px;left:12px;background:#fff;color:#185777;font-size:11px}.pg-catalog-body{padding:17px}.pg-catalog-body h2{font-size:17px;line-height:1.5;margin:0 0 10px}.pg-catalog-body p{line-height:1.6}.pg-catalog-actions{display:flex;gap:8px;flex-wrap:wrap;padding:14px 17px;background:#f5f9fc;border-top:1px solid #e0e9f0;margin-top:auto}.pg-catalog-actions>a:last-child:not(.btn){font-size:12px;width:100%;font-weight:700}.pg-catalog-card{display:flex;flex-direction:column}.pg-catalog-card .cours-link{flex:1}.pg-catalog-fees{font-weight:700;color:#145b78}.pg-empty{grid-column:1/-1;text-align:center;padding:45px!important}.pg-empty>span{font-size:48px}.pg-programme-grid{gap:18px}@media(max-width:650px){.pg-catalog-filters{padding:16px!important}.pg-catalog-filters>div{flex-basis:100%}.pg-catalog-cover{height:150px}}
 
 .pg-common-course{display:flex;flex-direction:column;min-width:0}.pg-common-course>.cours{flex:1}.pg-common-course .pg-catalog-actions{border-radius:0 0 12px 12px}
+
+/* Cartes harmonisées avec le catalogue des formations. */
+.pg-programme-grid{align-items:stretch;gap:22px}
+.pg-common-course{border:1px solid #e0e9f0;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 5px 22px #1232510b}
+.pg-common-course>.cours{border:0;border-radius:0;box-shadow:none}
+.pg-common-course .pg-catalog-actions{margin-top:0;border-radius:0;padding:14px 18px}
+.pg-catalog-card{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}
+.pg-catalog-cover{height:160px}
+.pg-catalog-body{padding:18px}
+.pg-catalog-body h2{font-size:16px;min-height:44px}
+.pg-catalog-card .pg-catalog-actions{margin-top:0}
+.pg-catalog-actions>.btn:only-child{width:100%;text-align:center;box-sizing:border-box}
+@media(max-width:650px){.pg-programme-grid{gap:16px}}

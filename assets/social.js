@@ -5,8 +5,9 @@ document.querySelectorAll('[data-share-path]').forEach(group=>{
  const title=group.dataset.shareTitle;
  group.querySelectorAll('[data-network]').forEach(a=>{
  const u=encodeURIComponent(url), t=encodeURIComponent(title);
- a.href=a.dataset.network==='facebook' ? 'https://www.facebook.com/sharer/sharer.php?u='+u : a.dataset.network==='whatsapp' ? 'https://wa.me/?text='+t+'%20'+u : 'https://twitter.com/intent/tweet?text='+t+'&url='+u;
+ const links={facebook:'https://www.facebook.com/sharer/sharer.php?u='+u,whatsapp:'https://wa.me/?text='+t+'%20'+u,x:'https://twitter.com/intent/tweet?text='+t+'&url='+u,linkedin:'https://www.linkedin.com/sharing/share-offsite/?url='+u,telegram:'https://t.me/share/url?url='+u+'&text='+t};a.href=links[a.dataset.network]||url;
  });
+ const native=group.querySelector('[data-native-share]');if(native){native.hidden=!navigator.share;native.addEventListener('click',async()=>{try{await navigator.share({title,text:title,url});}catch(error){if(error.name!=='AbortError')window.prompt('Copiez ce lien pour le partager :',url);}});}
  group.querySelector('[data-copy]')?.addEventListener('click',async e=>{const button=e.currentTarget;try{await navigator.clipboard.writeText(url);const label=button.querySelector('span');if(label)label.textContent='Copié ✓';else button.textContent='Copié ✓';}catch{window.prompt('Copiez ce lien :',url);}});
 });
 const socialMenus=Array.from(document.querySelectorAll('.social-dropdown'));
