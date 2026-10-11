@@ -104,12 +104,14 @@ const CATEGORIES = [
 /* ---------- Formats de certification ----------
    Trois durées de parcours, du certificat court à l'insertion complète. */
 const FORMATS = [
-  { id: 'certificat_court', label: 'Certificat court',        duree: '1 à 3 mois',  emoji: '⏱️',
+  { id: 'certificat_court', label: 'Attestation',        duree: '1 à 3 mois',  emoji: '⏱️',
     description: 'Une compétence précise, rapidement opérationnelle.' },
   { id: 'certificat_pro',   label: 'Certificat professionnel', duree: '3 à 6 mois', emoji: '📜',
     description: 'Le cœur du métier, avec pratique encadrée.' },
   { id: 'parcours_metier',  label: 'Parcours métier',          duree: '6 à 12 mois', emoji: '🏅',
-    description: 'Métier complet, socle transversal et stage : prêt à l\u2019emploi.' }
+    description: 'Métier complet, socle transversal et stage : prêt à l\u2019emploi.' },
+  { id: 'diplome_technique', label: 'Diplôme technique', duree: '12 mois et plus', emoji: '🎓',
+    description: 'Parcours technique approfondi, organisé en modules, pratique et évaluations.' }
 ];
 
 /* ---------- Modalités d'apprentissage ----------
@@ -701,6 +703,7 @@ function epreuvesDe(c) {
   return [];
 }
 const TYPES_EPREUVES = {
+  html: {label: 'Fichier HTML interactif', auto:true},
   qcm: { label: 'Quiz (QCM)', auto: true },
   trous: { label: 'Texte à trous', auto: true },
   reponse_elaboree: { label: 'Question à réponse élaborée', auto: false },

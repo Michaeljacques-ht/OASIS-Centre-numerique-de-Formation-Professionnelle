@@ -22,3 +22,13 @@ Dans Paramètres → Photos de graduation, l’administrateur définit couleur, 
 
 ## Photos par formation
 Dans Mes certificats, chaque carte propose de créer ou voir sa photo de graduation. Une seule création réussie est autorisée par étudiant et par formation terminée, avec contrôle côté serveur. Les anciennes photos restent téléchargeables via un lien dédié.
+
+## Document tenu en main
+Choix : papier blanc plié ou roulé sans inscription, certificat, diplôme, ou les deux. Les documents personnels doivent être joints comme images lisibles (5 Mo maximum chacun). Les références sont transmises au service IA avec le portrait, sans conserver les originaux. Le rendu des textes peut varier. Une photo réussie par formation reste la limite ; les photos existantes ne sont pas régénérées.
+
+Le logo de l’institution est demandé en miniature dans le décor, en haut à droite, pour toutes les nouvelles photos. Il reste séparé du document tenu en main. Les photos déjà générées sont conservées.
+
+## Suppression
+Chaque photo peut être supprimée par son propriétaire après confirmation, y compris la photo précédente. Le fichier privé est effacé du serveur ; la création déjà utilisée reste comptabilisée. Les copies téléchargées ne sont pas effacées.
+
+Le bouton de suppression des photos a été retiré de l’interface à la demande de l’institution.

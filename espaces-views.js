@@ -3,6 +3,7 @@
    OASIS — Gabarits des espaces connectés
    (formateur · apprenant · entreprise)
    ============================================================ */
+const P = require('../lib/progression');
 const { esc, fmtHTG } = require('../lib/utils');
 const { CATEGORIES, FORMATS, MODALITES, SOCLE_TRANSVERSAL, categorie, format: fmtDe, modalite: modDe, noteCours, nbInscrits, nbLecons, epreuvesDe, TYPES_EPREUVES } = require('../lib/db');
 const { layout, avatarHtml, etoiles } = require('./views');
@@ -10,7 +11,7 @@ const { layout, avatarHtml, etoiles } = require('./views');
 /* ---------- Coquille à barre latérale ---------- */
 function shell(title, user, menu, activeHref, content, { sombre = false, sousTitre = '' } = {}) {
   const espaceMenu = user.role === 'admin' && menu === MENU_F
-    ? [...MENU_F, ['/admin', '⚙️', 'Administration générale'], ['/gestion', '🏛️', 'Gestion de l’institution']]
+    ? [...MENU_F, ['/admin', '⚙️', 'Administration générale'], ['/admin/parametres', '⚙️', 'Paramètres'], ['/gestion', '🏛️', 'Gestion de l’institution']]
     : menu;
   const inner = `
   <div class="shell">
@@ -47,7 +48,7 @@ const MENU_ADMIN = [
   ['/admin', '📊', 'Tableau de bord'],
   ['/admin/candidatures', '📝', 'Candidatures formateurs'],
   ['/admin/moderation', '🔎', 'Formations à vérifier'],
-  ['/admin/parametres', '🎖️', 'Paramètres certificat'],
+  ['/admin/parametres', '⚙️', 'Paramètres'],
   ['/gestion', '🏛️', 'Gestion de l’institution'],
   ['/gestion/etudiants', '🎓', 'Dossiers étudiants'],
   ['/gestion/rh', '👔', 'Personnel & paie'],
@@ -132,10 +133,10 @@ function mesFormationsF(user, courses, flash) {
 }
 
 /* ---- Assistant de création (étape 1 : informations) ---- */
-function creerFormation(user, error) {
-  return shell('Créer une formation', user, MENU_F, '/formateur/creer', `
+function creerFormation(user, error, programmeLong=false) {
+  return shell(programmeLong?'Créer un programme long':'Créer une formation', user, MENU_F, programmeLong?'/formateur/programmes':'/formateur/creer', `
   <a href="/formateur/formations" style="font-size:13.5px">← Retour</a>
-  <h1>Créer une nouvelle formation</h1>
+  <h1>${programmeLong?'Créer un programme long':'Créer une nouvelle formation'}</h1>
   <p class="sous">Suivez les étapes pour créer et publier votre formation sur Oasis.</p>
   <div class="etapes">
     <span class="et on"><i>1</i> Informations</span><span class="tiret"></span>
@@ -147,7 +148,8 @@ function creerFormation(user, error) {
     <div class="carte">
       <h2 style="margin-top:0">Informations générales</h2>
       <p class="aide">Commencez par renseigner les informations de base de votre formation.</p>
-      <form method="POST" action="/formateur/creer" id="f" enctype="multipart/form-data">
+      <form method="POST" action="/formateur/creer${programmeLong?'?type=programme_long':''}" id="f" enctype="multipart/form-data">
+        ${programmeLong?'<input type="hidden" name="parcoursType" value="programme_long">':''}
         <label>Titre de la formation *</label>
         <input name="titre" required maxlength="100" placeholder="Ex : Développement Web complet avec Laravel" oninput="ap()">
         <label>Sous-titre</label>
@@ -253,11 +255,13 @@ function formQuestion(action) {
 
 /* ---- Gestion d'une formation (étape 2 : contenu) ---- */
 function gererFormation(user, c, flash, annonces = []) {
+  if(!user.moduleImageCsrf){user.moduleImageCsrf=require('crypto').randomBytes(24).toString('hex');require('../lib/db').save();}
   const cat = categorie(c.categorie);
   return shell('Gérer — ' + c.titre, user, MENU_F, '/formateur/formations', `
   <a href="/formateur/formations" style="font-size:13.5px">← Retour à mes formations</a>
   <h1>${cat.emoji} ${esc(c.titre)}</h1>
   ${require('./programmes').courseEditor(c,user)}
+  <div class="actions-h" style="margin:12px 0">${require('./suppression-formations').button(c,user)}</div>
   <p class="sous">${esc(c.sousTitre || '')} —
     <span class="badge ${c.statut === 'publiee' ? 'b-vert' : 'b-orange'}">${c.statut === 'publiee' ? 'Publiée' : c.statut === 'en_verification' ? '🔎 En vérification' : 'Brouillon'}</span>
     · ${fmtHTG(c.prix)} · ${nbInscrits(c.id)} inscrit(s)</p>
@@ -267,13 +271,18 @@ function gererFormation(user, c, flash, annonces = []) {
     <span class="et ${c.statut === 'publiee' ? 'on' : ''}"><i>3</i> Publication</span>
   </div>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
-  <div class="grille" style="grid-template-columns:1.5fr .9fr;align-items:start">
+  <style>.gestion-grid{grid-template-columns:minmax(0,1.5fr) minmax(0,.9fr);align-items:start;width:100%;max-width:100%}.gestion-grid>*{min-width:0}.gestion-grid .carte,.gestion-grid .panneau,.gestion-grid form,.gestion-grid .competence-editor{min-width:0;max-width:100%}.gestion-grid input,.gestion-grid textarea,.gestion-grid select{min-width:0;max-width:100%;box-sizing:border-box}.gestion-grid input[type=file]{display:block;width:100%;overflow:hidden}.gestion-grid input[type=file]::file-selector-button{max-width:100%;white-space:normal}.gestion-grid .lecon-row{flex-wrap:wrap;overflow-wrap:anywhere}.gestion-grid .lecon-row>span{min-width:0;flex:1 1 180px}.gestion-grid p,.gestion-grid h2,.gestion-grid b,.gestion-grid a{overflow-wrap:anywhere}.gestion-grid .btn{white-space:normal}.gestion-grid .grille{grid-template-columns:minmax(0,1.3fr) minmax(0,.5fr)!important}.gestion-grid .g2{grid-template-columns:repeat(2,minmax(0,1fr))!important}.gestion-grid .competence-table{min-width:540px}.gestion-grid .competence-editor>div{max-width:100%;overflow-x:auto}@media(max-width:1250px){.gestion-grid{grid-template-columns:minmax(0,1fr)!important}}@media(max-width:600px){.gestion-grid .grille{grid-template-columns:minmax(0,1fr)!important}.gestion-grid .carte{padding:16px}.gestion-grid form[style*="display:flex"]{flex-wrap:wrap}.gestion-grid form[style*="display:flex"]>input{flex:1 1 100%}}</style><div class="grille gestion-grid">
     <div>
       ${c.modules.map((m, i) => `<div class="carte" style="margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <b>Module ${i + 1} — ${esc(m.titre)}</b>
           <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/supprimer">
             <button class="btn petit" style="background:var(--rouge)">Supprimer</button></form></div>
+        <div class="panneau" style="margin:12px 0"><b>🖼️ Vignette du module</b>
+          ${m.image?`<img src="${esc(m.image)}" alt="Vignette de ${esc(m.titre)}" style="display:block;width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:10px 0">`:''}
+          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/image" enctype="multipart/form-data"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif" required><button class="btn ligne petit" style="margin-top:8px">${m.image?'Remplacer la vignette':'Ajouter une vignette'}</button></form><p class="aide">JPG, PNG, WebP ou GIF · 5 Mo maximum · format 16:9 recommandé.</p>
+          ${m.image?`<form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/image/supprimer"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><button class="btn ligne petit">Retirer la vignette</button></form>`:''}
+        </div>
         ${m.lecons.map(l => `<div class="lecon-row"><span>▸ <b>${esc(l.titre)}</b>
           <small style="color:var(--sourd)"> · ${l.duree} min</small><br>
           <small style="color:var(--sourd)">${esc(String(l.contenu).slice(0, 110))}${String(l.contenu).length > 110 ? '…' : ''}</small></span></div>`).join('')}
@@ -321,7 +330,7 @@ function gererFormation(user, c, flash, annonces = []) {
         </div>
 
         <div class="panneau" style="margin-top:10px">
-          <b>📝 Quiz du module</b>
+          <b>📝 Évaluation interactive du module</b><p class="aide">Présentée automatiquement après les leçons. Correction immédiate et déblocage du module suivant après réussite au seuil configuré dans le barème.</p>
           ${(m.quiz && m.quiz.questions || []).map((q, qi) => `<div class="lecon-row">
             <span><b>Q${qi + 1}.</b> ${esc(q.question)}<br>
             <small class="aide">${q.options.map((o, oi) =>
@@ -329,25 +338,23 @@ function gererFormation(user, c, flash, annonces = []) {
             <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/quiz/${q.id}/supprimer">
               <button style="background:none;border:none;color:var(--rouge);cursor:pointer;font-weight:700">✕</button></form>
           </div>`).join('') || '<p class="aide" style="margin:6px 0">Aucune question — les apprenants verront le quiz dès la première question ajoutée.</p>'}
+          ${require('./evaluations-html').uploadForm(c,user,m)}
           ${formQuestion(`/formateur/formation/${c.id}/module/${m.id}/quiz`)}
         </div>
 
         <div class="panneau" style="margin-top:10px">
           <b>🎯 Compétences visées par ce module</b>
-          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/competences" style="display:flex;gap:8px;margin-top:8px;align-items:center">
-            <input name="competences" value="${esc((m.competences || []).join(', '))}"
-              placeholder="Compétences séparées par des virgules (ex : Maîtriser RECHERCHEX, Construire un TCD)">
-            <button class="btn ligne petit" style="white-space:nowrap">Enregistrer</button>
-          </form>
+          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/competences" style="margin-top:8px"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}">
+          ${require('../lib/module-competences').fields(m,m.id)}<button class="btn ligne petit">Enregistrer la grille</button></form>
           <p class="aide" style="margin-top:6px">Une compétence est marquée « acquise » quand l'apprenant a terminé
           toutes les leçons du module et réussi son quiz (s'il existe).</p>
         </div>
       </div>`).join('')}
       <div class="carte">
         <b>Nouveau module</b>
-        <form method="POST" action="/formateur/formation/${c.id}/module" style="display:flex;gap:10px;margin-top:8px">
+        <form method="POST" action="/formateur/formation/${c.id}/module" style="margin-top:8px">
           <input name="titre" required placeholder="Titre du module (ex : Introduction)" maxlength="120">
-          <button class="btn violet petit" style="white-space:nowrap">+ Ajouter</button></form>
+          <input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><h3>Compétences du nouveau module</h3>${require('../lib/module-competences').fields({},'new')}<button class="btn violet petit" style="white-space:nowrap">+ Ajouter le module</button></form>
       </div>
     </div>
     <div>
@@ -400,10 +407,11 @@ function gererFormation(user, c, flash, annonces = []) {
                 <button style="background:none;border:none;color:var(--rouge);cursor:pointer;font-weight:700">✕</button></form></div>`).join('')}
             ${formQuestion(`/formateur/formation/${c.id}/epreuve/${ep.id}/question`)}` : ''}
         </div>`).join('') || '<p class="aide">Aucune épreuve — le certificat ne dépendra que des quiz de modules.</p>'}
+        ${require('./evaluations-html').uploadForm(c,user)}
         <form method="POST" action="/formateur/formation/${c.id}/epreuve" style="border-top:1px dashed var(--ligne);margin-top:12px;padding-top:10px">
           <b>➕ Ajouter une épreuve</b>
           <div class="grille g2" style="margin-top:6px;gap:6px">
-            <select name="type">${Object.entries(TYPES_EPREUVES).map(([k, v]) =>
+            <select name="type">${Object.entries(TYPES_EPREUVES).filter(([k])=>k!=='html').map(([k, v]) =>
               `<option value="${k}">${esc(v.label)}${v.auto ? ' (auto)' : ''}</option>`).join('')}</select>
             <input name="poids" type="number" min="1" max="100" value="20" title="Poids (%)">
           </div>
@@ -549,19 +557,30 @@ function avisF(user, list) {
 }
 
 /* =============== ESPACE APPRENANT =============== */
+function stylesCartesApprenant(){return `<style>
+  .apprenant-cartes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .apprenant-carte{min-width:0;padding:24px!important;border:1px solid #dce8f0!important;border-radius:20px!important;background:linear-gradient(145deg,#fff,#f5faff)!important;box-shadow:0 8px 24px #1739520b;display:flex;flex-direction:column;gap:14px;position:relative}
+  .apprenant-carte::before{content:'';height:4px;position:absolute;top:0;left:22px;right:22px;background:linear-gradient(90deg,#0166c2,#06b994);border-radius:0 0 6px 6px}
+  .apprenant-carte .carte-titre{font-size:17px;line-height:1.4;color:#123251;overflow-wrap:anywhere}
+  .apprenant-carte .carte-date{display:block;font-size:13px;color:#65788d;margin-top:6px}
+  .apprenant-carte .carte-actions{display:flex;flex-wrap:nowrap;gap:8px;margin-top:auto;align-items:stretch}
+  .apprenant-carte .carte-actions .btn{flex:1 1 0;min-width:0;padding:11px 8px;font-size:12px;white-space:nowrap;text-align:center;display:flex;align-items:center;justify-content:center;border-radius:11px;margin:0}
+  @media(max-width:1200px){.apprenant-cartes{grid-template-columns:minmax(0,1fr)}}
+  @media(max-width:480px){.apprenant-carte{padding:18px 12px!important}.apprenant-carte .carte-actions{gap:5px}.apprenant-carte .carte-actions .btn{font-size:10px;padding:10px 3px}}
+  </style>`;}
 function dashApprenant(user, list, flash) {
   return shell('Mes formations', user, MENU_A, '/apprenant', `
-  ${require('./programmes-pedagogie').learnerLinks(user)}
+  ${stylesCartesApprenant()}${require('./programmes-pedagogie').learnerLinks(user)}
   <h1>Bonjour, ${esc(user.name.split(' ')[0])} ! 👋</h1>
   <p class="sous">Reprenez vos formations là où vous vous êtes arrêté.</p>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
-  ${list.length ? `<div class="grille g2">${list.map(e => `
-    <div class="carte">
-      <b>${categorie(e.cours.categorie).emoji} ${esc(e.cours.titre)}</b>
+  ${list.length ? `<div class="apprenant-cartes">${list.map(e => `
+    <div class="carte apprenant-carte">
+      <b class="carte-titre">${categorie(e.cours.categorie).emoji} ${esc(e.cours.titre)}</b>
       ${e.source === 'entreprise' ? ' <span class="badge b-vert">Assignée par votre entreprise</span>' : ''}
       <div style="display:flex;gap:10px;align-items:center;margin:12px 0">
         <div class="barre" style="flex:1"><i style="width:${e.pct}%"></i></div><b>${e.pct}%</b></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div class="carte-actions">
         <a class="btn petit" href="/apprenant/cours/${e.cours.id}">${e.pct === 0 ? 'Commencer' : e.pct === 100 ? 'Revoir' : 'Continuer'} →</a>
         <a class="btn ligne petit" href="/releve/${e.id}">📄 Relevé de notes</a>
         ${e.completedAt ? `<a class="btn vert petit" href="/certificat/${e.id}">🎖️ Mon certificat</a>`
@@ -571,7 +590,8 @@ function dashApprenant(user, list, flash) {
   : `<div class="carte" style="text-align:center;padding:40px">
       <p style="font-size:38px">📚</p><b>Vous n'êtes inscrit à aucune formation.</b>
       <p class="aide" style="margin:8px 0 16px">Explorez le catalogue et développez de nouvelles compétences.</p>
-      <a class="btn" href="/formations">Explorer les formations</a></div>`}`,
+      <a class="btn" href="/formations">Explorer les formations</a></div>`}
+  `,
   { sousTitre: 'Apprenant' });
 }
 
@@ -581,7 +601,9 @@ function lecteurCours(user, c, enr, leconActive, annonces = [], bilan = null) {
   const evals = enr.evaluations || {};
   let flat = [];
   c.modules.forEach((m, mi) => m.lecons.forEach(l => flat.push({ m, mi, l })));
-  const cur = leconActive || flat.find(x => !doneSet.has(x.l.id)) || flat[0];
+  const etats=P.etats(c,enr),finaleOuverte=P.finaleOuverte(c,enr);
+  const programmeLong=c.parcoursType==='programme_long',moduleEnCours=etats.findIndex(e=>e.ouvert&&!e.valide);
+  const cur = leconActive || flat.find(x => etats[x.mi].ouvert && !doneSet.has(x.l.id)) || flat.filter(x=>etats[x.mi].ouvert).at(-1);
   const pct = flat.length ? Math.round(100 * enr.progress.length / flat.length) : 0;
   const aExamen = epreuvesDe(c).length;
   const badgeEval = (r) => r
@@ -598,26 +620,27 @@ function lecteurCours(user, c, enr, leconActive, annonces = [], bilan = null) {
     <a class="btn ligne petit" href="/cours/${c.id}/forum">💬 Forum</a>
     <a class="btn ligne petit" href="/releve/${enr.id}">📄 Relevé</a>
     ${enr.completedAt ? `<a class="btn vert petit" href="/certificat/${enr.id}">🎖️ Mon certificat</a>`
-      : aExamen ? `<a class="btn petit" style="background:var(--orange)" href="/apprenant/cours/${c.id}/examen">🎓 Évaluation finale (${epreuvesDe(c).length} épreuve${epreuvesDe(c).length > 1 ? 's' : ''})</a>` : ''}</div>
+      : aExamen && finaleOuverte ? `<a class="btn petit" style="background:var(--orange)" href="/apprenant/cours/${c.id}/examen">🎓 Évaluation finale (${epreuvesDe(c).length} épreuve${epreuvesDe(c).length > 1 ? 's' : ''})</a>` : ''}</div>
   ${annonces.length ? `<div class="carte" style="border-left:4px solid var(--orange);margin-bottom:14px;padding:14px 18px">
     <b>📣 Annonces du formateur</b>
     ${annonces.map(a => `<p style="margin-top:8px"><b>${esc(a.titre)}</b>
       <small class="aide"> · ${a.createdAt.slice(0, 10)}</small><br>${esc(a.contenu)}</p>`).join('')}
   </div>` : ''}
-  <div class="grille" style="grid-template-columns:.9fr 1.5fr;align-items:start">
+  ${programmeLong?`<style>.parcours-long-layout .module-carte{border:1px solid #dce6ee;border-radius:16px;padding:14px;margin:0 0 14px;background:#fff}.parcours-long-layout .module-carte.en-cours{border:2px solid #1495bc;box-shadow:0 5px 18px #1495bc18;background:#f5fbff}.parcours-long-layout .module-carte.a-venir{background:#f1f3f5;border-color:#e0e4e8;color:#6b7280}.module-carte.a-venir .lecon-row{background:#e9edf1;color:#66717e}.parcours-long-layout .module-carte.valide{background:#f6f8fa;border-color:#dce7e0}.module-vignette{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:11px;margin-bottom:12px}.module-carte.a-venir .module-vignette{filter:grayscale(1);opacity:.6}.module-carte h3{font-size:15px;margin:10px 0}.module-carte .module-etat{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.module-carte.en-cours .module-etat{color:#096d92}.module-carte.valide .module-etat{color:#277449}.module-carte p{font-size:12px;line-height:1.5;margin:8px 0}.parcours-long-layout .lecon-row{font-size:13px}.parcours-long-layout .carte:first-child{background:transparent;border:0;box-shadow:none;padding:0!important}@media(max-width:850px){.parcours-long-layout{grid-template-columns:1fr!important}}</style><h2>Votre parcours, module par module</h2><p class="aide">Avancez dans l’ordre : terminez les leçons et réussissez l’évaluation du module pour accéder au suivant.</p>`:''}
+  <div class="grille ${programmeLong?'parcours-long-layout':''}" style="grid-template-columns:.9fr 1.5fr;align-items:start">
     <div class="carte" style="padding:12px">
-      ${c.modules.map((m, mi) => `<b style="display:block;padding:8px 6px 4px;font-size:13.5px">Module ${mi + 1} — ${esc(m.titre)}</b>
-        ${m.lecons.map(l => `<a href="/apprenant/cours/${c.id}?lecon=${l.id}"
+      ${c.modules.map((m, mi) => `${programmeLong?`<section class="module-carte ${!etats[mi].ouvert?'a-venir':etats[mi].valide?'valide':'en-cours'}" aria-label="Module ${mi+1} : ${esc(m.titre)}">${m.image?`<img class="module-vignette" src="${esc(m.image)}" alt="${esc(m.titre)}" loading="lazy">`: ''}<span class="module-etat">${!etats[mi].ouvert?'🔒 À venir':etats[mi].valide?'✓ Validé · Révision disponible':mi===moduleEnCours?'▶ Module en cours':'Disponible'}</span><h3>Module ${mi+1} — ${esc(m.titre)}</h3><p>${m.lecons.filter(l=>doneSet.has(l.id)).length}/${m.lecons.length} leçon(s) terminée(s)${etats[mi].aQuiz?' · Évaluation requise':''}</p>`:`<b style="display:block;padding:8px 6px 4px;font-size:13.5px">Module ${mi + 1} — ${esc(m.titre)}</b>`}
+        ${m.lecons.map(l => !etats[mi].ouvert ? `<div class="lecon-row" aria-disabled="true"><span>🔒 ${esc(l.titre)}</span><small>Validez le module précédent</small></div>` : `<a href="/apprenant/cours/${c.id}?lecon=${l.id}"
           class="lecon-row ${doneSet.has(l.id) ? 'done' : ''}" style="text-decoration:none;color:var(--texte);${cur && cur.l.id === l.id ? 'border-color:var(--bleu);box-shadow:0 0 0 1px var(--bleu)' : ''}">
           <span style="font-size:13.5px">${doneSet.has(l.id) ? '✅' : '▸'} ${esc(l.titre)}</span>
           <small style="color:var(--sourd)">${l.duree} min</small></a>`).join('')}
-        ${m.quiz && m.quiz.questions && m.quiz.questions.length ? `
-        <a href="/apprenant/cours/${c.id}/quiz/${m.id}" class="lecon-row" style="text-decoration:none;color:var(--texte)">
-          <span style="font-size:13.5px">📝 Quiz du module</span>${badgeEval(evals[m.id])}</a>` : ''}`).join('')}
-      ${aExamen ? `<b style="display:block;padding:10px 6px 4px;font-size:13.5px">Certification</b>
+        ${m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length) ? !etats[mi].ouvert || !etats[mi].leconsOk ? `<div class="lecon-row" aria-disabled="true">🔒 Évaluation du module — terminez les leçons</div>` : `
+        <a href="/apprenant/cours/${c.id}/${m.quiz.html?'html':'quiz'}/${m.id}" class="lecon-row" style="text-decoration:none;color:var(--texte)">
+          <span style="font-size:13.5px">📝 Évaluation ${m.quiz.html?'HTML interactive':'du module'}</span>${badgeEval(evals[m.id])}</a>` : ''}${programmeLong?'</section>':''}`).join('')}
+      ${aExamen ? !finaleOuverte ? `<div class="panneau">🔒 Évaluation finale : validez les modules pour y accéder.</div>` : `<b style="display:block;padding:10px 6px 4px;font-size:13.5px">Certification</b>
         <a href="/apprenant/cours/${c.id}/examen" class="lecon-row" style="text-decoration:none;color:var(--texte);border-color:var(--orange)">
           <span style="font-size:13.5px">🎓 Évaluation finale — ${epreuvesDe(c).length} épreuve(s)</span>
-          ${bilan && bilan.aExam ? (bilan.examFait ? `<span class="badge ${bilan.pctExam >= 60 ? 'b-vert' : 'b-rouge'}">${bilan.pctExam} %</span>` : '<span class="badge b-orange">en cours</span>') : ''}</a>` : ''}
+          ${bilan && bilan.aExam ? (bilan.examFait ? `<span class="badge ${bilan.pctExam >= P.seuil(c) ? 'b-vert' : 'b-rouge'}">${bilan.pctExam} %</span>` : '<span class="badge b-orange">en cours</span>') : ''}</a>` : ''}
     </div>
     <div class="carte">
       ${cur ? `<span class="badge b-bleu">Module ${cur.mi + 1} — ${esc(cur.m.titre)}</span>
@@ -661,14 +684,14 @@ function pageQuiz(user, c, cible, quiz, resultat, dernierResultat, melanger = fa
   return shell(titre + ' — ' + c.titre, user, MENU_A, '/apprenant', `
   <a href="/apprenant/cours/${c.id}" style="font-size:13.5px">← Retour à la formation</a>
   <h1 style="font-size:22px">${titre}</h1>
-  <p class="sous">${esc(c.titre)} — ${quiz.questions.length} question(s)${estFinal ? ' · 60 % requis pour le certificat' : ''}.
+  <p class="sous">${esc(c.titre)} — ${quiz.questions.length} question(s) · ${P.seuil(c)} % requis pour valider.
   ${dernierResultat ? ` Dernier résultat : <b>${dernierResultat.score}/${dernierResultat.total}</b> (${dernierResultat.pct}%).` : ''}</p>
   ${resultat && bilan && bilan.aEvaluations ? `<p><span class="badge ${bilan.note >= bilan.cfg.seuil ? 'b-vert' : 'b-orange'}" style="font-size:14px">Note globale de la formation : ${bilan.note} % (seuil : ${bilan.cfg.seuil} %)</span></p>` : ''}
   ${resultat ? `<div class="alerte ${resultat.reussi ? 'ok' : 'ko'}" style="font-size:15px">
     ${resultat.reussi ? '🎉 Réussi !' : 'Insuffisant —'} Votre score : <b>${resultat.score}/${resultat.total}</b> (${resultat.pct}%).
     ${estFinal ? (resultat.reussi ? ' Votre certificat est disponible dès que toutes les leçons sont terminées.' : ' Il faut 60 % — révisez puis réessayez, le meilleur score est conservé.') : ''}
     </div>
-    <p><a class="btn" href="/apprenant/cours/${c.id}">Retour à la formation</a>
+    <p><a class="btn" href="/apprenant/cours/${c.id}">Continuer le parcours</a>
     ${!resultat.reussi ? `<a class="btn ligne" href="/apprenant/cours/${c.id}/quiz/${cible}" style="margin-left:8px">Réessayer</a>` : ''}</p>`
   : `<div class="carte"><form method="POST" action="/apprenant/cours/${c.id}/quiz/${cible}">
     ${questionsAff.map((q, qi) => {
@@ -685,12 +708,12 @@ function pageQuiz(user, c, cible, quiz, resultat, dernierResultat, melanger = fa
 
 function certificatsA(user, list) {
   return shell('Mes certificats', user, MENU_A, '/apprenant/certificats', `
-  <h1>Mes certificats</h1>
-  <p class="sous">Vos certificats de réussite, prêts à imprimer ou partager.</p>
-  ${list.length ? `<div class="grille g2">${list.map(e => `<div class="carte" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-    <span>🎖️ <b>${esc(e.cours.titre)}</b><br><small class="aide">Terminée le ${e.completedAt.slice(0, 10)}</small></span>
-    <a class="btn vert petit" href="/certificat/${e.id}">Voir le certificat</a>
-    <a class="btn ligne petit" href="/releve/${e.id}" style="margin-left:6px">📄 Relevé de notes</a></div>`).join('')}</div>`
+  ${stylesCartesApprenant()}<h1>Mes certificats</h1>
+  <p class="sous">Vos certificats de réussite, prêts à imprimer ou partager. Une photo de graduation par formation terminée.</p>${require('../lib/portrait-graduation').legacy(user)}
+  ${list.length ? `<div class="apprenant-cartes">${list.map(e => `<div class="carte apprenant-carte">
+    <span class="carte-titre">🎖️ <b>${esc(e.cours.titre)}</b><br><small class="carte-date">Terminée le ${e.completedAt.slice(0, 10)}</small></span>
+    <div class="carte-actions"><a class="btn vert petit" href="/certificat/${e.id}">Voir le certificat</a>
+    <a class="btn ligne petit" href="/releve/${e.id}">📄 Relevé de notes</a></div><a class="btn ligne petit" style="margin-top:14px;align-self:flex-start" href="/certifications/portrait?courseId=${encodeURIComponent(e.cours.id)}">🎓 ${require('../lib/portrait-graduation').created(user,e.cours.id)?(require('../lib/portrait-graduation').available(user,e.cours.id)?'Voir ma photo de graduation':'Photo supprimée'):'Créer ma photo de graduation'}</a></div>`).join('')}</div>`
   : '<div class="carte"><p class="aide">Terminez une formation à 100 % pour obtenir votre premier certificat.</p></div>'}`,
   { sousTitre: 'Apprenant' });
 }
@@ -721,11 +744,12 @@ function certificat(enr, cours, user, formateur, bilan = null, params = {}, qr =
     <img class="marque" src="/assets/logo-oasis.png" alt="">
     <p class="marque-txt">OASIS · CENTRE NUMÉRIQUE DE FORMATION PROFESSIONNELLE</p>
     <h1>CERTIFICAT DE RÉUSSITE</h1>
+    <p style="font-family:Arial,sans-serif;font-size:10px;line-height:1.6;overflow-wrap:anywhere;color:#52637b;margin:10px auto;max-width:440px">Site web : ${esc(params.institutionWeb || '—')}<br>Email : ${esc(params.institutionEmail || '—')} · Téléphone : ${esc(params.institutionTelephone || '—')}</p>
     <p class="grand">Ce certificat est décerné à</p>
     <p class="nom">${esc(user.name)}</p>
     <p>pour avoir complété avec succès la formation</p>
     <p style="font-size:20px"><b>« ${esc(cours.titre)} »</b></p>
-    <p><small>Durée : ${esc(cours.duree)} · Niveau : ${esc(cours.niveau)} · Terminée le ${enr.completedAt.slice(0, 10)}</small></p>
+    <p><small>Durée : ${esc(cours.duree)} · Volume : ${esc(require('../lib/formation-details').heures(cours))} · Niveau : ${esc(cours.niveau)} · Terminée le ${enr.completedAt.slice(0, 10)}</small></p>
     ${bilan && bilan.aEvaluations ? `<p><small><b>Note globale obtenue : ${bilan.note} %</b> (seuil requis : ${bilan.cfg.seuil} %)</small></p>` : ''}
     <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-top:34px">
       <div style="flex:1;text-align:center">
@@ -882,7 +906,7 @@ function pageBilan(user, c, enr, competences, bilan, pct) {
           : '<p class="aide" style="margin-top:4px">Aucune compétence définie pour ce module.</p>'}
       </div>`).join('')}
       <p class="aide" style="margin-top:10px">Une compétence est acquise quand toutes les leçons du module
-      sont terminées et son quiz réussi (≥ 60 %).</p>
+      sont terminées et son quiz réussi au seuil configuré.</p>
     </div>
     <div class="carte">
       <h2 style="margin-top:0">Grille d'évaluation comptabilisée</h2>
@@ -914,7 +938,7 @@ function pageBilan(user, c, enr, competences, bilan, pct) {
 
 /* ---- Carnet de notes (formateur) ---- */
 function pageNotesFormateur(user, c, lignes, cfg) {
-  const modulesQuiz = c.modules.filter(m => m.quiz && m.quiz.questions && m.quiz.questions.length);
+  const modulesQuiz = c.modules.filter(m => m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length));
   const aExam = c.examenFinal && c.examenFinal.questions && c.examenFinal.questions.length;
   return shell('Carnet de notes — ' + c.titre, user, MENU_F, '/formateur/formations', `
   <a href="/formateur/formation/${c.id}" style="font-size:13.5px">← Retour à la gestion</a>
@@ -1027,7 +1051,7 @@ function pageSujet(user, c, suj, messages) {
 /* ---- Évaluation finale (apprenant) : liste des épreuves ---- */
 function pageExamen(user, c, enr, bilan, flash) {
   const badgeEp = l => l.note !== null
-    ? `<span class="badge ${l.note >= 60 ? 'b-vert' : 'b-rouge'}">${l.note}/100</span>`
+    ? `<span class="badge ${l.note >= P.seuil(c) ? 'b-vert' : 'b-rouge'}">${l.note}/100</span>`
     : l.enAttenteCorrection ? '<span class="badge b-orange">En correction</span>'
     : '<span class="badge b-gris">À faire</span>';
   return shell('Évaluation finale — ' + c.titre, user, MENU_A, '/apprenant', `
@@ -1059,8 +1083,8 @@ function pageEpreuve(user, c, ep, soumission, resultat, melanger) {
   let corps = '';
   if (resultat && resultat.erreur) corps += `<div class="alerte ko">${esc(resultat.erreur)}</div>`;
   if (resultat && resultat.auto) {
-    corps += `<div class="alerte ${resultat.pct >= 60 ? 'ok' : 'ko'}">Votre score : <b>${resultat.pct} %</b>
-      (${esc(resultat.detail)}). ${resultat.pct < 60 ? 'Vous pouvez réessayer — le meilleur score est conservé.' : ''}</div>
+    corps += `<div class="alerte ${resultat.pct >= P.seuil(c) ? 'ok' : 'ko'}">Votre score : <b>${resultat.pct} %</b>
+      (${esc(resultat.detail)}). ${resultat.pct < P.seuil(c) ? 'Vous pouvez réessayer — le meilleur score est conservé.' : ''}</div>
       ${resultat.reponses ? resultat.reponses.map((r, i) => `<p style="font-size:14px">${r.ok ? '✅' : '❌'}
         Trou ${i + 1} : <code>${esc(r.donne || '—')}</code>${r.ok ? '' : ' → attendu : <code>' + esc(r.attendu) + '</code>'}</p>`).join('') : ''}
       <p style="margin-top:12px"><a class="btn" href="/apprenant/cours/${c.id}/examen">Retour à l'examen</a>
@@ -1172,9 +1196,11 @@ function adminCandidatures(user, list, flash) {
 
 /* ---- Administration : paramètres du certificat ---- */
 function adminParametres(user, p, flash) {
-  return shell('Paramètres du certificat', user, MENU_ADMIN, '/admin/parametres', `
-  <h1>Paramètres du certificat</h1>
-  <p class="sous">Sceau officiel, signature et signataire apposés sur tous les certificats délivrés.</p>
+  return shell('Paramètres', user, MENU_ADMIN, '/admin/parametres', `
+  <h1>Paramètres</h1>
+  <p class="sous">Coordonnées de l’institution, documents officiels et service de photo de graduation.</p>
+  <section class="carte" style="margin:18px 0"><h2>🎓 Photos de graduation</h2><p><span class="badge ${process.env.OPENAI_API_KEY?'b-vert':'b-orange'}">${process.env.OPENAI_API_KEY?'Clé API configurée':'À configurer'}</span></p><p class="aide">Pour activer la transformation des portraits, renseignez OPENAI_API_KEY dans Environment sur Render, puis redéployez. La clé reste sur le serveur. Une clé présente ne garantit pas que les crédits et l’accès au modèle sont disponibles.</p><p>Limite quotidienne : <b>${Math.max(1,Math.min(20,Number(process.env.GRADUATION_DAILY_LIMIT)||3))} tentatives par utilisateur</b>. Modifiez GRADUATION_DAILY_LIMIT sur Render pour ajuster cette limite.</p>${require('../lib/graduation-settings').admin(user)}</section>
+  <h2>Institution et certificats</h2>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
   <div class="grille" style="grid-template-columns:1.3fr .9fr;align-items:start">
     <div class="carte">
@@ -1185,6 +1211,10 @@ function adminParametres(user, p, flash) {
         <input name="signataireTitre" maxlength="120" value="${esc(p.signataireTitre)}">
         <label>Fait à (ville)</label>
         <input name="villeCertificat" maxlength="60" value="${esc(p.villeCertificat)}">
+        <h3>Coordonnées de l’institution sur les certificats et relevés</h3>
+        <label>Adresse web</label><input name="institutionWeb" type="url" maxlength="200" value="${esc(p.institutionWeb || '')}" placeholder="https://…">
+        <label>Email de l’institution</label><input name="institutionEmail" type="email" maxlength="200" value="${esc(p.institutionEmail || '')}">
+        <label>Téléphone de l’institution</label><input name="institutionTelephone" type="tel" maxlength="60" value="${esc(p.institutionTelephone || '')}">
         <label>Nouveau sceau officiel (PNG/JPG/WebP, fond transparent conseillé)</label>
         <input name="sceau" type="file" accept="image/png,image/jpeg,image/webp">
         <label>Nouvelle signature (PNG à fond transparent ou blanc)</label>
@@ -1264,6 +1294,10 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
   .fiche b{color:#001C4A;min-width:116px;display:inline-block}
   h2{font-size:12px;letter-spacing:.13em;color:#0166C2;text-transform:uppercase;margin:24px 0 8px;font-weight:800}
   table{width:100%;border-collapse:collapse;font-size:12px}
+  .table-competences{width:100%;table-layout:fixed;margin-left:0;margin-right:0}
+  .table-competences th,.table-competences td{overflow-wrap:anywhere;text-align:left}
+  .table-competences th:last-child,.table-competences td:last-child{text-align:right}
+  .table-competences col.code-col{width:11%}.table-competences col.competence-col{width:75%}.table-competences col.statut-col{width:14%}
   th{background:#001C4A;color:#fff;text-align:left;padding:8px 9px;font-size:10.5px;
   letter-spacing:.05em;text-transform:uppercase;font-weight:700}
   th.n,td.n{text-align:center}
@@ -1305,13 +1339,14 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
 
     <div class="tete">
       <img src="/assets/logo-oasis.png" alt="">
-      <div><div class="nom">OASIS</div><div class="sous">Centre numérique de formation professionnelle</div></div>
+      <div style="min-width:0"><div class="nom">OASIS</div><div class="sous">Centre numérique de formation professionnelle</div>
+        <div class="institution-contact" style="font-size:10px;line-height:1;margin-top:6px;overflow-wrap:anywhere">${esc(params.villeCertificat || 'Port-au-Prince, Haïti')}<br>Site web : ${esc(params.institutionWeb || '—')}<br>Email : ${esc(params.institutionEmail || '—')}<br>Téléphone : ${esc(params.institutionTelephone || '—')}</div></div>
       <div class="ref">N° ${esc(enr.id).toUpperCase()}<br>Édité le ${new Date().toISOString().slice(0, 10)}</div>
       ${qr ? `<div class="qr-tete">${qr.svg}<span>Vérifier</span></div>` : ''}
     </div>
 
     <h1>RELEVÉ DE NOTES</h1>
-    <p class="soustitre">Document officiel · ${esc(params.villeCertificat || 'Port-au-Prince, Haïti')}</p>
+    <p class="soustitre">Document officiel</p>
 
     <div class="fiche">
       <div><b>Apprenant</b> <span>${esc(user.name)}</span></div>
@@ -1326,21 +1361,26 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
         : 'En cours (' + rel.leconsFaites + '/' + rel.nbLecons + ' leçons)'}</span></div>
     </div>
 
-    <h2>Modules et compétences</h2>
+    <h2>Modules</h2>
     <table>
       <tr><th>Code</th><th>Module</th><th class="n">Note</th><th class="n">Sur</th>
           <th class="n">%</th><th class="n">Leçons</th><th>Statut</th></tr>
       ${rel.modules.map(m => `<tr>
         <td class="code">${esc(m.code)}</td>
-        <td><b>${esc(m.titre)}</b>
-          ${m.competences.length ? `<div class="comp">${m.competences.map(k =>
-            `<span class="${m.statut === 'acquise' ? 'ok' : ''}">${m.statut === 'acquise' ? '✓ ' : ''}${esc(k)}</span>`).join('')}</div>` : ''}</td>
+        <td><b>${esc(m.titre)}</b></td>
         <td class="n">${m.note === null ? '—' : '<b>' + m.note + '</b>'}</td>
         <td class="n">${m.sur === null ? '—' : m.sur}</td>
         <td class="n">${pct(m.pct)}</td>
         <td class="n">${m.lecFaites}/${m.lecons}</td>
-        <td>${statutMod(m.statut)}</td></tr>`).join('')}
+        <td>${m.statut === 'acquise' ? '<span class="et ok">Terminé</span>' : statutMod(m.statut)}</td></tr>`).join('')}
     </table>
+
+    <h2>Relevé des compétences</h2>
+    <p>Le statut suit la progression du module : les compétences sont acquises lorsque ses leçons sont terminées et son évaluation réussie, si elle est prévue.</p>
+    ${rel.modules.map(m => m.grilleCompetences.length ? `<h3>${esc(m.titre)}</h3><div style="width:100%;max-width:100%;overflow-x:auto"><table class="table-competences"><colgroup><col class="code-col"><col class="competence-col"><col class="statut-col"></colgroup>
+      <thead><tr><th>Code</th><th>Compétences</th><th>Statut</th></tr></thead>
+      <tbody>${m.grilleCompetences.map(k => `<tr><td class="code">${esc(k.code)}</td><td><b>${esc(k.intitule)}</b></td><td>${statutMod(m.statut)}</td></tr>`).join('')}</tbody>
+    </table></div>` : '').join('') || '<p>Aucune compétence renseignée.</p>'}
 
     ${rel.epreuves.length ? `<h2>Évaluation finale</h2>
     <table>
@@ -1419,7 +1459,7 @@ function dashAdmin(user, db) {
   const modules = [
     ['/admin/candidatures', '📝', 'Candidatures formateurs', 'Examiner les demandes et gérer les décisions.'],
     ['/admin/moderation', '🔎', 'Formations à vérifier', 'Contrôler les formations avant leur publication.'],
-    ['/admin/parametres', '🎖️', 'Paramètres des certificats', 'Configurer le sceau, la signature et les certificats.'],
+    ['/admin/parametres', '⚙️', 'Paramètres', 'Coordonnées, documents officiels et configuration des portraits de graduation.'],
     ['/gestion', '🏛️', 'Gestion de l’institution', 'Consulter les indicateurs de scolarité, de personnel et de comptabilité.'],
     ['/gestion/etudiants', '🎓', 'Dossiers étudiants', 'Suivre les inscriptions et les dossiers étudiants.'],
     ['/gestion/rh', '👔', 'Personnel et ressources humaines', 'Consulter et gérer les membres du personnel.'],
@@ -1438,3 +1478,5 @@ function dashAdmin(user, db) {
     </div>`, {sombre:true,sousTitre:'Administration'});
 }
 module.exports.dashAdmin = dashAdmin;
+
+module.exports.programmeShell=(title,user,content)=>shell(title,user,MENU_F,'/formateur/programmes',content,{sousTitre:'Formateur'});

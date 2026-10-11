@@ -11,7 +11,9 @@ const PP = require('../lib/plopplop');
 const QR = require('../lib/qrcode');
 const F = require('../lib/files');
 const GEST = require('./gestion');
+const MAIL = require('../lib/notifications-email');
 
+const P = require('../lib/progression');
 /* ---------- Aides quiz & complétion ---------- */
 function lireQuestion(data) {
   const options = [data.opt1, data.opt2, data.opt3, data.opt4]
@@ -24,7 +26,7 @@ function lireQuestion(data) {
 function corrigerQuiz(quiz, data) {
   let score = 0;
   for (const q of quiz.questions) {
-    if (Number(data['q_' + q.id]) === q.bonne) score++;
+    if (String(data['q_' + q.id] ?? '').trim() !== '' && Number(data['q_' + q.id]) === q.bonne) score++;
   }
   const total = quiz.questions.length;
   const pct = total ? Math.round(100 * score / total) : 0;
@@ -47,7 +49,7 @@ function bilanNotes(enr, c) {
   const evals = (enr && enr.evaluations) || {};
   const soum = (enr && enr.soumissions) || {};
   const cfg = configEvaluation(c);
-  const modulesQuiz = c.modules.filter(m => m.quiz && m.quiz.questions && m.quiz.questions.length);
+  const modulesQuiz = c.modules.filter(m => m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length));
   const epreuves = DB.epreuvesDe(c);
   const lignes = modulesQuiz.map(m => ({
     cible: m.id, libelle: 'Quiz — ' + m.titre,
@@ -80,7 +82,7 @@ function bilanNotes(enr, c) {
   } else if (moyQuiz !== null) note = moyQuiz;
   else if (pctExam !== null) note = pctExam;
   const aEvaluations = note !== null;
-  const reussi = !aEvaluations || (note >= cfg.seuil && examFait);
+  const reussi = P.finaleOuverte(c, enr || {}) && (!aEvaluations || (note >= cfg.seuil && examFait && (!aExam || pctExam >= cfg.seuil)));
   return { cfg, lignes, lignesExam, epreuves, moyQuiz, pctExam, aExam, examFait, note, aEvaluations, reussi };
 }
 /* Correction d'un texte à trous : {{mot}} → comparaison insensible à la casse. */
@@ -108,8 +110,8 @@ function bilanCompetences(enr, c) {
   const evals = (enr && enr.evaluations) || {};
   return c.modules.map((m, i) => {
     const lecOk = m.lecons.length > 0 && m.lecons.every(l => done.has(l.id));
-    const aQuiz = m.quiz && m.quiz.questions && m.quiz.questions.length;
-    const quizOk = !aQuiz || (evals[m.id] && evals[m.id].reussi);
+    const aQuiz = m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length);
+    const quizOk = !aQuiz || (evals[m.id] && evals[m.id].pct >= P.seuil(c));
     const commence = m.lecons.some(l => done.has(l.id)) || (aQuiz && evals[m.id]);
     return {
       module: m, index: i,
@@ -137,7 +139,7 @@ function releveDeNotes(enr, c) {
 
   const modules = c.modules.map((m, i) => {
     const r = evals[m.id] || null;
-    const aQuiz = !!(m.quiz && m.quiz.questions && m.quiz.questions.length);
+    const aQuiz = !!(m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length));
     const lecFaites = m.lecons.filter(l => done.has(l.id)).length;
     const cm = comp[i] || { competences: [], statut: 'a_venir' };
     return {
@@ -146,10 +148,11 @@ function releveDeNotes(enr, c) {
       lecons: m.lecons.length, lecFaites,
       aQuiz,
       note: r ? r.score : null,
-      sur: r ? r.total : (aQuiz ? m.quiz.questions.length : null),
+      sur: r ? r.total : (aQuiz ? (m.quiz.html ? null : m.quiz.questions.length) : null),
       pct: r ? r.pct : (aQuiz ? 0 : null),
       statut: cm.statut,
       competences: cm.competences,
+      grilleCompetences: require('../lib/module-competences').grille(m),
       acquises: cm.statut === 'acquise' ? cm.competences : []
     };
   });
@@ -201,7 +204,10 @@ function parametresCertificat(db) {
     signatureUrl: p.signatureUrl || '/assets/signature.png',
     signataireNom: p.signataireNom || 'Michael Jacques',
     signataireTitre: p.signataireTitre || 'Directeur général — Oasis',
-    villeCertificat: p.villeCertificat || 'Port-au-Prince, Haïti'
+    villeCertificat: p.villeCertificat || 'Port-au-Prince, Haïti',
+    institutionWeb: p.institutionWeb || process.env.BASE_URL || '',
+    institutionEmail: p.institutionEmail || process.env.MAIL_FROM || '',
+    institutionTelephone: p.institutionTelephone || ''
   };
 }
 function urlVerification(req, enrId) {
@@ -268,9 +274,10 @@ async function handle(req, res) {
   const S = require('../lib/security');
   const page = (title, content, status=200) => {res.setHeader('Cache-Control','no-store');return U.sendHTML(res,status,V.securityPage(title,content,user));};
   const form = (action, fields, label) => `<form method="POST" action="${action}">${fields}<button class="btn" style="margin-top:16px">${label}</button></form>`;
+  if(path === '/assets/graduation.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript; charset=utf-8');res.setHeader('Cache-Control','no-cache');return res.end(require('fs').readFileSync(require('path').join(__dirname,'../assets/graduation.js')));}
   if(path === '/assets/social.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript; charset=utf-8');return res.end(require('fs').readFileSync(require('path').join(__dirname,'../assets/social.js')));}
-  if(path === '/manifest.webmanifest' && method === 'GET') {res.setHeader('Content-Type','application/manifest+json');return res.end(JSON.stringify({name:'OASIS Centre numérique de formation professionnelle',short_name:'OASIS',start_url:'/',scope:'/',display:'standalone',background_color:'#ffffff',theme_color:'#145da0',icons:[{src:'/assets/logo-oasis.png',sizes:'any',type:'image/png',purpose:'any'}]}));}
-  if(path === '/sw.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript');res.setHeader('Cache-Control','no-cache');return res.end("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',()=>{});");}
+  if(path === '/manifest.webmanifest' && method === 'GET') {res.setHeader('Content-Type','application/manifest+json');return res.end(JSON.stringify({name:'OASIS Centre numérique de formation professionnelle',short_name:'OASIS',start_url:'/',scope:'/',display:'standalone',background_color:'#ffffff',theme_color:'#145da0',icons:[{src:'/assets/pwa-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'/assets/pwa-512.png',sizes:'512x512',type:'image/png',purpose:'any'}]}));}
+  if(path === '/sw.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript');res.setHeader('Cache-Control','no-cache');return res.end(require('fs').readFileSync(require('path').join(__dirname,'../assets/pwa-sw.js')));}
   if(path === '/mot-de-passe-oublie') {
     if(method==='GET')return page('Mot de passe oublié',form(path,'<label>Adresse email</label><input type="email" name="email" required autocomplete="email">','Envoyer le lien de réinitialisation'));
     if(method!=='POST')return page('Méthode non autorisée','',405);
@@ -306,6 +313,8 @@ async function handle(req, res) {
     user.totpSecret=pending.secret;user.totpLastStep=step;delete user.totpPending;db.sessions=db.sessions.filter(s=>s.userId!==user.id);save();return openSession(res,user.id,'/securite/2fa');
   }
 
+  if (await require('./evaluations-html').handle(req,res,user,majCompletion)) return;
+  if (await require('./suppression-formations').handle(req,res,user)) return;
   if (await require('./programmes').handle(req, res, user)) return;
 
   /* ================= PUBLIC ================= */
@@ -361,6 +370,8 @@ async function handle(req, res) {
 
   if (path === '/pour-les-formateurs' && method === 'GET') return U.sendHTML(res, 200, V.pourFormateurs(user));
   if (path === '/pour-les-entreprises' && method === 'GET') return U.sendHTML(res, 200, V.pourEntreprises(user));
+  if (await require('../lib/graduation-settings').handle(req,res,user)) return;
+  if (await require('../lib/portrait-graduation').handle(req,res,user)) return;
   if (path === '/certifications' && method === 'GET') return U.sendHTML(res, 200, V.certificationsPage(user));
   if (path === '/ressources-numeriques' && method === 'GET') return U.sendHTML(res, 200, V.ressourcesNumeriques(user));
   if (path === '/apprentissage-professionnel' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'apprentissageProfessionnel'));
@@ -414,6 +425,7 @@ async function handle(req, res) {
     if (role === 'entreprise') { u.companyName = u.name; u.plan = 'entreprise'; }
     db.users.push(u);
     audit(u.id, 'user.registered', { role });
+    MAIL.compte(u,U.baseUrl(req));
     save();
     const dest = req.query.get('suite') ||
       (role === 'formateur' ? '/formateur' : role === 'entreprise' ? '/entreprise' : '/formations');
@@ -473,6 +485,8 @@ async function handle(req, res) {
     }
     const formateur = c && db.users.find(u2 => u2.id === c.formateurId);
     if (formateur) formateur.balance = (formateur.balance || 0) + order.net;
+    const acheteur=db.users.find(u=>u.id===order.userId);
+    if(c&&acheteur)MAIL.achat(order,c,acheteur,U.baseUrl(req));
     audit(order.userId, 'order.paid', { orderId: order.id, courseId: order.courseId, via: 'plopplop' });
     save();
     return order;
@@ -491,6 +505,7 @@ async function handle(req, res) {
     if (c.prix === 0) {
       db.enrollments.push({ id: U.rid('enr', 6), userId: user.id, courseId: c.id,
         source: 'gratuit', progress: [], completedAt: null, createdAt: new Date().toISOString() });
+      MAIL.gratuit(db.enrollments.find(e=>e.userId===user.id&&e.courseId===c.id),c,user,U.baseUrl(req));
       audit(user.id, 'enrollment.gratuit', { courseId: c.id });
       save();
       return U.redirect(res, '/apprenant/cours/' + c.id + '?ok=' +
@@ -606,6 +621,7 @@ async function handle(req, res) {
       createdAt: new Date().toISOString() };
     db.users.push(u);
     audit(u.id, 'candidature.soumise', null);
+    MAIL.compte(u,U.baseUrl(req));
     save();
     return openSession(res, u.id, '/candidature/statut');
   }
@@ -651,6 +667,7 @@ async function handle(req, res) {
       db.parametres.signataireNom = String(data.signataireNom || '').slice(0, 100);
       db.parametres.signataireTitre = String(data.signataireTitre || '').slice(0, 120);
       db.parametres.villeCertificat = String(data.villeCertificat || '').slice(0, 60);
+      for(const key of ['institutionWeb','institutionEmail','institutionTelephone'])if(data[key]!==undefined)db.parametres[key]=String(data[key]||'').trim().slice(0,key==='institutionTelephone'?60:200);
       audit(a.id, 'parametres.certificat', null);
       save();
       return U.redirect(res, '/admin/parametres?ok=' + encodeURIComponent('Paramètres du certificat enregistrés.'));
@@ -839,7 +856,7 @@ async function handle(req, res) {
   }
 
   /* ================= ÉPREUVES DE L'ÉVALUATION FINALE (formateur) ================= */
-  m = path.match(/^\/formateur\/formation\/(crs_[a-z0-9]+)\/epreuve(?:\/(ep_[a-z0-9]+))?(\/.*)?$/i);
+  m = path.match(/^\/formateur\/formation\/(crs_[a-z0-9]+)\/epreuve(?:\/(ep_[a-z0-9_]+))?(\/.*)?$/i);
   if (m && method === 'POST') {
     const u = need(req, res, ['formateur', 'admin']); if (!u) return;
     const c = db.courses.find(x => x.id === m[1] && (x.formateurId === u.id || u.role === 'admin'));
@@ -857,6 +874,7 @@ async function handle(req, res) {
         titre: String(data.titre).slice(0, 120),
         consigne: String(data.consigne || '').slice(0, 2000),
         poids: Math.min(100, Math.max(1, Math.round(Number(data.poids) || 20))) };
+      if(data.type==='html')return U.redirect(res,retour+'?ok='+encodeURIComponent('Utilisez le bouton Importer le fichier HTML dans Évaluation finale.'));
       if (data.type === 'qcm') ep.questions = [];
       if (data.type === 'trous') {
         ep.texte = String(data.texte || '').slice(0, 3000);
@@ -949,17 +967,20 @@ async function handle(req, res) {
     const c = db.courses.find(x => x.id === m[1]);
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, '/apprenant');
+    if (!P.finaleOuverte(c,enr)) return U.redirect(res,P.suite(c,enr));
     return U.sendHTML(res, 200, E.pageExamen(u, c, enr, bilanNotes(enr, c), flash));
   }
 
-  m = path.match(/^\/apprenant\/cours\/(crs_[a-z0-9]+)\/epreuve\/(ep_[a-z0-9]+)$/i);
+  m = path.match(/^\/apprenant\/cours\/(crs_[a-z0-9]+)\/epreuve\/(ep_[a-z0-9_]+)$/i);
   if (m) {
     const u = need(req, res); if (!u) return;
     const c = db.courses.find(x => x.id === m[1]);
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, '/apprenant');
+    if (!P.finaleOuverte(c,enr)) return U.redirect(res,P.suite(c,enr));
     const ep = DB.epreuvesDe(c).find(e => e.id === m[2]);
     if (!ep) return U.redirect(res, `/apprenant/cours/${c.id}/examen`);
+    if(ep.type==='html')return U.redirect(res,'/apprenant/cours/'+c.id+'/html/'+ep.id);
     enr.soumissions = enr.soumissions || {};
     const cfgEval = configEvaluation(c);
 
@@ -967,6 +988,7 @@ async function handle(req, res) {
       return U.sendHTML(res, 200, E.pageEpreuve(u, c, ep, enr.soumissions[ep.id] || null, null, cfgEval.melanger));
     }
 
+    if (method !== 'POST') return U.sendHTML(res,405,'Méthode non autorisée');
     // Soumission
     let resultat = null;
     if (ep.type === 'qcm') {
@@ -1026,8 +1048,10 @@ async function handle(req, res) {
     const mod = c && c.modules.find(x => x.id === m[2]);
     if (!c || !mod) return notFound(res, u);
     const { data } = await U.readBody(req);
-    mod.competences = String(data.competences || '').split(',')
-      .map(x => x.trim()).filter(Boolean).slice(0, 10).map(x => x.slice(0, 100));
+    if(data.grilleCompetences!==undefined){
+      if(!u.moduleImageCsrf||data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');
+      try{Object.assign(mod,require('../lib/module-competences').parse(data));}catch(error){return U.redirect(res,'/formateur/formation/'+c.id+'?ok='+encodeURIComponent(error.message));}
+    }else{mod.competences=String(data.competences||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,10).map(x=>x.slice(0,100));delete mod.grilleCompetences;}
     save();
     return U.redirect(res, `/formateur/formation/${c.id}?ok=` +
       encodeURIComponent(`Compétences du module enregistrées (${mod.competences.length}).`));
@@ -1086,6 +1110,10 @@ async function handle(req, res) {
     if (lid) c.modules.forEach((mo, mi) => mo.lecons.forEach(l => {
       if (l.id === lid) leconActive = { m: mo, mi, l };
     }));
+    const etats=P.etats(c,enr);
+    if(leconActive && !etats[leconActive.mi].ouvert)return U.redirect(res,P.suite(c,enr));
+    if(!lid){const suite=P.suite(c,enr);if((suite.includes('/quiz/') || suite.includes('/html/')) || (suite.endsWith('/examen') && !enr.completedAt))return U.redirect(res,suite);}
+    if(!lid && !leconActive){const prochain=etats.find(e=>e.ouvert&&!e.valide);const l=prochain?.m.lecons.find(l=>!(enr.progress||[]).includes(l.id));if(l)leconActive={m:prochain.m,mi:c.modules.indexOf(prochain.m),l};}
     const annonces = db.annonces.filter(a => a.courseId === c.id).slice(-3).reverse();
     return U.sendHTML(res, 200, E.lecteurCours(u, c, enr, leconActive, annonces, bilanNotes(enr, c)));
   }
@@ -1100,7 +1128,10 @@ async function handle(req, res) {
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, '/apprenant');
     const cible = m[2];
+    const etat=P.etats(c,enr).find(e=>e.m.id===cible);
+    if(!etat || !etat.ouvert || !etat.leconsOk)return U.redirect(res,P.suite(c,enr));
     const quiz = (c.modules.find(x => x.id === cible) || {}).quiz;
+    if(quiz?.html)return U.redirect(res,'/apprenant/cours/'+c.id+'/html/'+cible);
     if (!quiz || !quiz.questions || !quiz.questions.length) {
       return U.redirect(res, '/apprenant/cours/' + c.id);
     }
@@ -1110,13 +1141,16 @@ async function handle(req, res) {
       return U.sendHTML(res, 200, E.pageQuiz(u, c, cible, quiz, null, enr.evaluations[cible], melanger));
     }
     const { data } = await U.readBody(req);
+    if(method!=='POST')return U.sendHTML(res,405,'Méthode non autorisée');
     const resultat = corrigerQuiz(quiz, data);
+    resultat.reussi=resultat.pct>=P.seuil(c);
     const precedent = enr.evaluations[cible];
     // Le meilleur score est conservé
     if (!precedent || resultat.pct >= precedent.pct) enr.evaluations[cible] = resultat;
     majCompletion(enr, c); // la note globale dépend de toutes les évaluations
     audit(u.id, 'quiz.soumis', { courseId: c.id, cible, score: resultat.score, total: resultat.total });
     save();
+    if(c.modules.some(m=>m.id===cible) && enr.evaluations[cible].pct>=P.seuil(c))return U.redirect(res,P.suite(c,enr));
     return U.sendHTML(res, 200, E.pageQuiz(u, c, cible, quiz, resultat, enr.evaluations[cible], melanger,
       bilanNotes(enr, c)));
   }
@@ -1128,11 +1162,12 @@ async function handle(req, res) {
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, '/apprenant');
     const { data } = await U.readBody(req);
-    const valid = c.modules.some(mo => mo.lecons.some(l => l.id === data.lecon));
+    const valid = P.etats(c,enr).some(e => e.ouvert && e.m.lecons.some(l => l.id === data.lecon));
+    if(!valid)return U.redirect(res,P.suite(c,enr));
     if (valid && !enr.progress.includes(data.lecon)) enr.progress.push(data.lecon);
     majCompletion(enr, c);
     save();
-    return U.redirect(res, '/apprenant/cours/' + c.id);
+    return U.redirect(res, P.apresLecon(c,enr,data.lecon));
   }
 
   if (path === '/apprenant/certificats' && method === 'GET') {
@@ -1192,7 +1227,7 @@ async function handle(req, res) {
     const formateur = db.users.find(x => x.id === cours.formateurId) || { name: 'Oasis' };
     const urlVerif = urlVerification(req, enr.id);
     return U.sendHTML(res, 200, E.releveNotes(enr, cours, titulaire, formateur,
-      releveDeNotes(enr, cours), parametresCertificat(db),
+      releveDeNotes(enr, cours), { ...parametresCertificat(db), institutionWeb: db.parametres?.institutionWeb || U.baseUrl(req) },
       { svg: QR.qrSvg(urlVerif, { taille: 132, couleur: '#000000' }), url: urlVerif }));
   }
 
@@ -1206,7 +1241,7 @@ async function handle(req, res) {
     if (!cours || !titulaire) return notFound(res, user);
     const urlV = urlVerification(req, enr.id);
     return U.sendHTML(res, 200, E.certificat(enr, cours, titulaire, formateur,
-      bilanNotes(enr, cours), parametresCertificat(db),
+      bilanNotes(enr, cours), { ...parametresCertificat(db), institutionWeb: db.parametres?.institutionWeb || U.baseUrl(req) },
       { svg: QR.qrSvg(urlV, { taille: 132, couleur: '#000000' }), url: urlV }));
   }
 
@@ -1246,19 +1281,21 @@ async function handle(req, res) {
   }
 
   if (path === '/formateur/creer') {
+    const programmeLong=req.query.get('type')==='programme_long';
+    const creation=(u,error)=>E.creerFormation(u,error,programmeLong);
     const u = need(req, res, ['formateur', 'admin']); if (!u) return;
-    if (method === 'GET') return U.sendHTML(res, 200, E.creerFormation(u));
+    if (method === 'GET') return U.sendHTML(res, 200, creation(u));
 
     // Le formulaire envoie du multipart (image de couverture facultative)
     let data, imageMeta = null;
     if ((req.headers['content-type'] || '').startsWith('multipart/')) {
       const mp = await U.parseMultipart(req).catch(() => null);
-      if (!mp) return U.sendHTML(res, 422, E.creerFormation(u, 'Envoi invalide ou fichier trop volumineux.'));
+      if (!mp) return U.sendHTML(res, 422, creation(u, 'Envoi invalide ou fichier trop volumineux.'));
       data = mp.fields;
       const img = mp.files.find(f => f.field === 'image' && f.filename);
       if (img) {
         const r = F.saveUpload(img, ['image']);
-        if (!r.ok) return U.sendHTML(res, 422, E.creerFormation(u, r.error));
+        if (!r.ok) return U.sendHTML(res, 422, creation(u, r.error));
         imageMeta = r.fichier;
       }
     } else {
@@ -1268,16 +1305,16 @@ async function handle(req, res) {
     const plan = DB.PLANS.find(p => p.id === (u.plan || 'gratuit')) || DB.PLANS[0];
     const nb = db.courses.filter(c => c.formateurId === u.id).length;
     if (nb >= plan.maxFormations) {
-      return U.sendHTML(res, 403, E.creerFormation(u,
+      return U.sendHTML(res, 403, creation(u,
         `Votre plan « ${plan.label} » est limité à ${plan.maxFormations} formation(s). Passez à un plan supérieur dans « Tarifs ».`));
     }
     const prix = Number(data.prix);
     if (!data.titre || !data.categorie || !data.niveau || !data.description ||
         !Number.isFinite(prix) || prix < 0) {
-      return U.sendHTML(res, 422, E.creerFormation(u, 'Veuillez remplir tous les champs obligatoires (*).'));
+      return U.sendHTML(res, 422, creation(u, 'Veuillez remplir tous les champs obligatoires (*).'));
     }
     const c = {
-      id: U.rid('crs', 6), formateurId: u.id,
+      id: U.rid('crs', 6), formateurId: u.id, parcoursType:programmeLong?'programme_long':'formation',
       titre: String(data.titre).slice(0, 100), sousTitre: String(data.sousTitre || '').slice(0, 150),
       categorie: DB.CATEGORIES.some(x => x.id === data.categorie) ? data.categorie : 'numerique',
       format: DB.FORMATS.some(f => f.id === data.format) ? data.format : 'certificat_pro',
@@ -1326,6 +1363,18 @@ async function handle(req, res) {
       audit(u.id, 'course.image', { id: c.id });
       save();
       return U.redirect(res, `/formateur/formation/${c.id}?ok=` + encodeURIComponent('Image de couverture enregistrée.'));
+    }
+
+    const moduleImage=sub.match(/^\/module\/(mod_[a-z0-9]+)\/image(\/supprimer)?$/i);
+    if(moduleImage && method==='POST'){
+      const mod=c.modules.find(m=>m.id===moduleImage[1]);if(!mod)return notFound(res,u);
+      let data,img;
+      if(moduleImage[2])data=(await U.readBody(req)).data;
+      else{const mp=await U.parseMultipart(req).catch(()=>null);data=mp?.fields||{};img=mp?.files.find(f=>f.field==='image'&&f.filename);}
+      if(!u.moduleImageCsrf||data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré. Rechargez la page.');
+      if(moduleImage[2])delete mod.image;
+      else{if(!img)return U.sendHTML(res,422,'Choisissez une image.');const r=F.saveUpload(img,['image']);if(!r.ok)return U.sendHTML(res,422,U.esc(r.error));mod.image=r.fichier.url;}
+      audit(u.id,'module.vignette',{courseId:c.id,moduleId:mod.id});save();return U.redirect(res,'/formateur/formation/'+c.id+'?ok='+encodeURIComponent(moduleImage[2]?'Vignette retirée.':'Vignette du module enregistrée.'));
     }
 
     /* --- Ressources de module (PDF, image, vidéo, audio) --- */
@@ -1432,7 +1481,9 @@ async function handle(req, res) {
 
     if (sub === '/module' && method === 'POST') {
       const { data } = await U.readBody(req);
-      if (data.titre) c.modules.push({ id: U.rid('mod', 4), titre: String(data.titre).slice(0, 120), lecons: [] });
+      let skills={};
+      if(data.grilleCompetences!==undefined){if(!u.moduleImageCsrf||data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');try{skills=require('../lib/module-competences').parse(data);}catch(error){return U.redirect(res,'/formateur/formation/'+c.id+'?ok='+encodeURIComponent(error.message));}}
+      if (data.titre) c.modules.push({ id: U.rid('mod', 4), titre: String(data.titre).slice(0, 120), lecons: [],...skills });
       save();
       return U.redirect(res, `/formateur/formation/${c.id}?ok=` + encodeURIComponent('Module ajouté.'));
     }
