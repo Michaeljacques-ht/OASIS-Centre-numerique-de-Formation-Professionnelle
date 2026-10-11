@@ -709,11 +709,11 @@ function pageQuiz(user, c, cible, quiz, resultat, dernierResultat, melanger = fa
 function certificatsA(user, list) {
   return shell('Mes certificats', user, MENU_A, '/apprenant/certificats', `
   ${stylesCartesApprenant()}<h1>Mes certificats</h1>
-  <p class="sous">Vos certificats de réussite, prêts à imprimer ou partager. Une photo de graduation par formation terminée.</p>${require('../lib/portrait-graduation').created(user)?'<p><a href="/certifications/portrait/image?download=1">Télécharger ma photo de graduation précédente</a></p>':''}
+  <p class="sous">Vos certificats de réussite, prêts à imprimer ou partager. Une photo de graduation par formation terminée.</p>${require('../lib/portrait-graduation').legacy(user)}
   ${list.length ? `<div class="apprenant-cartes">${list.map(e => `<div class="carte apprenant-carte">
     <span class="carte-titre">🎖️ <b>${esc(e.cours.titre)}</b><br><small class="carte-date">Terminée le ${e.completedAt.slice(0, 10)}</small></span>
     <div class="carte-actions"><a class="btn vert petit" href="/certificat/${e.id}">Voir le certificat</a>
-    <a class="btn ligne petit" href="/releve/${e.id}">📄 Relevé de notes</a></div><a class="btn ligne petit" style="margin-top:14px;align-self:flex-start" href="/certifications/portrait?courseId=${encodeURIComponent(e.cours.id)}">🎓 ${require('../lib/portrait-graduation').created(user,e.cours.id)?'Voir ma photo de graduation':'Créer ma photo de graduation'}</a></div>`).join('')}</div>`
+    <a class="btn ligne petit" href="/releve/${e.id}">📄 Relevé de notes</a></div><a class="btn ligne petit" style="margin-top:14px;align-self:flex-start" href="/certifications/portrait?courseId=${encodeURIComponent(e.cours.id)}">🎓 ${require('../lib/portrait-graduation').created(user,e.cours.id)?(require('../lib/portrait-graduation').available(user,e.cours.id)?'Voir ma photo de graduation':'Photo supprimée'):'Créer ma photo de graduation'}</a></div>`).join('')}</div>`
   : '<div class="carte"><p class="aide">Terminez une formation à 100 % pour obtenir votre premier certificat.</p></div>'}`,
   { sousTitre: 'Apprenant' });
 }

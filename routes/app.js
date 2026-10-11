@@ -1277,7 +1277,7 @@ async function handle(req, res) {
   }
   if (path === '/formateur/formations' && method === 'GET') {
     const u = need(req, res, ['formateur', 'admin']); if (!u) return;
-    return U.sendHTML(res, 200, E.mesFormationsF(u, db.courses.filter(c => c.formateurId === u.id), flash));
+    return U.sendHTML(res, 200, E.mesFormationsF(u, db.courses.filter(c => u.role === 'admin' || c.formateurId === u.id), flash));
   }
 
   if (path === '/formateur/creer') {

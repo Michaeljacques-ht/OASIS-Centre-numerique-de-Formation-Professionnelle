@@ -550,7 +550,7 @@ function partage(path, title, install = false) {
  <button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details>`;
 }
 
-function carteCours(c) {
+function carteCours(c, user = null) {
   const cat = categorie(c.categorie);
   const { note, count } = noteCours(c.id);
   return `<article class="cours"><a class="cours-link" href="/formation/${esc(c.id)}">
@@ -566,7 +566,7 @@ function carteCours(c) {
       </div>
       ${note ? `<div class="note">${etoiles(note)} ${note} <span style="color:var(--sourd);font-weight:500">(${count})</span></div>` : ''}
       <div class="prix">${c.prix === 0 ? '<span style="color:var(--vert)">Gratuit</span>' : fmtHTG(c.prix)}${c.prixBarre ? `<s>${fmtHTG(c.prixBarre)}</s>` : ''}</div>
-    </div></a><div class="course-share">${partage('/formation/' + c.id, c.titre + ' — ' + (c.description || c.sousTitre || '').slice(0, 200))}</div></article>`;
+    </div></a><div class="course-share">${partage('/formation/' + c.id, c.titre + ' — ' + (c.description || c.sousTitre || '').slice(0, 200))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
 }
 
 function formationTicker(courses) {
@@ -692,7 +692,7 @@ function catalogue(courses, { cat, q, fmt, mod }, user) {
       ${MODALITES.map(m => `<option value="${m.id}" ${mod === m.id ? 'selected' : ''}>${m.emoji} ${esc(m.label)}</option>`).join('')}</select></div>
     <button class="btn">Filtrer</button>
   </form>
-  <div class="grille g4">${courses.map(carteCours).join('') ||
+  <div class="grille g4">${courses.map(c=>carteCours(c,user)).join('') ||
     '<p style="color:var(--sourd)">Aucune formation ne correspond à votre recherche.</p>'}</div>`,
   { user, active: '/formations' });
 }
