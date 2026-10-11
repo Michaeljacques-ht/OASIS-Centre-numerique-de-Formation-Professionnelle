@@ -3,6 +3,7 @@
    OASIS — Gabarits des espaces connectés
    (formateur · apprenant · entreprise)
    ============================================================ */
+const P = require('../lib/progression');
 const { esc, fmtHTG } = require('../lib/utils');
 const { CATEGORIES, FORMATS, MODALITES, SOCLE_TRANSVERSAL, categorie, format: fmtDe, modalite: modDe, noteCours, nbInscrits, nbLecons, epreuvesDe, TYPES_EPREUVES } = require('../lib/db');
 const { layout, avatarHtml, etoiles } = require('./views');
@@ -254,11 +255,13 @@ function formQuestion(action) {
 
 /* ---- Gestion d'une formation (étape 2 : contenu) ---- */
 function gererFormation(user, c, flash, annonces = []) {
+  if(!user.moduleImageCsrf){user.moduleImageCsrf=require('crypto').randomBytes(24).toString('hex');require('../lib/db').save();}
   const cat = categorie(c.categorie);
   return shell('Gérer — ' + c.titre, user, MENU_F, '/formateur/formations', `
   <a href="/formateur/formations" style="font-size:13.5px">← Retour à mes formations</a>
   <h1>${cat.emoji} ${esc(c.titre)}</h1>
   ${require('./programmes').courseEditor(c,user)}
+  <div class="actions-h" style="margin:12px 0">${require('./suppression-formations').button(c,user)}</div>
   <p class="sous">${esc(c.sousTitre || '')} —
     <span class="badge ${c.statut === 'publiee' ? 'b-vert' : 'b-orange'}">${c.statut === 'publiee' ? 'Publiée' : c.statut === 'en_verification' ? '🔎 En vérification' : 'Brouillon'}</span>
     · ${fmtHTG(c.prix)} · ${nbInscrits(c.id)} inscrit(s)</p>
@@ -275,6 +278,11 @@ function gererFormation(user, c, flash, annonces = []) {
           <b>Module ${i + 1} — ${esc(m.titre)}</b>
           <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/supprimer">
             <button class="btn petit" style="background:var(--rouge)">Supprimer</button></form></div>
+        <div class="panneau" style="margin:12px 0"><b>🖼️ Vignette du module</b>
+          ${m.image?`<img src="${esc(m.image)}" alt="Vignette de ${esc(m.titre)}" style="display:block;width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:10px 0">`:''}
+          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/image" enctype="multipart/form-data"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif" required><button class="btn ligne petit" style="margin-top:8px">${m.image?'Remplacer la vignette':'Ajouter une vignette'}</button></form><p class="aide">JPG, PNG, WebP ou GIF · 5 Mo maximum · format 16:9 recommandé.</p>
+          ${m.image?`<form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/image/supprimer"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><button class="btn ligne petit">Retirer la vignette</button></form>`:''}
+        </div>
         ${m.lecons.map(l => `<div class="lecon-row"><span>▸ <b>${esc(l.titre)}</b>
           <small style="color:var(--sourd)"> · ${l.duree} min</small><br>
           <small style="color:var(--sourd)">${esc(String(l.contenu).slice(0, 110))}${String(l.contenu).length > 110 ? '…' : ''}</small></span></div>`).join('')}
@@ -322,7 +330,7 @@ function gererFormation(user, c, flash, annonces = []) {
         </div>
 
         <div class="panneau" style="margin-top:10px">
-          <b>📝 Quiz du module</b>
+          <b>📝 Évaluation interactive du module</b><p class="aide">Présentée automatiquement après les leçons. Correction immédiate et déblocage du module suivant après réussite au seuil configuré dans le barème.</p>
           ${(m.quiz && m.quiz.questions || []).map((q, qi) => `<div class="lecon-row">
             <span><b>Q${qi + 1}.</b> ${esc(q.question)}<br>
             <small class="aide">${q.options.map((o, oi) =>
@@ -330,25 +338,23 @@ function gererFormation(user, c, flash, annonces = []) {
             <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/quiz/${q.id}/supprimer">
               <button style="background:none;border:none;color:var(--rouge);cursor:pointer;font-weight:700">✕</button></form>
           </div>`).join('') || '<p class="aide" style="margin:6px 0">Aucune question — les apprenants verront le quiz dès la première question ajoutée.</p>'}
+          ${require('./evaluations-html').uploadForm(c,user,m)}
           ${formQuestion(`/formateur/formation/${c.id}/module/${m.id}/quiz`)}
         </div>
 
         <div class="panneau" style="margin-top:10px">
           <b>🎯 Compétences visées par ce module</b>
-          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/competences" style="display:flex;gap:8px;margin-top:8px;align-items:center">
-            <input name="competences" value="${esc((m.competences || []).join(', '))}"
-              placeholder="Compétences séparées par des virgules (ex : Maîtriser RECHERCHEX, Construire un TCD)">
-            <button class="btn ligne petit" style="white-space:nowrap">Enregistrer</button>
-          </form>
+          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/competences" style="margin-top:8px"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}">
+          ${require('../lib/module-competences').fields(m,m.id)}<button class="btn ligne petit">Enregistrer la grille</button></form>
           <p class="aide" style="margin-top:6px">Une compétence est marquée « acquise » quand l'apprenant a terminé
           toutes les leçons du module et réussi son quiz (s'il existe).</p>
         </div>
       </div>`).join('')}
       <div class="carte">
         <b>Nouveau module</b>
-        <form method="POST" action="/formateur/formation/${c.id}/module" style="display:flex;gap:10px;margin-top:8px">
+        <form method="POST" action="/formateur/formation/${c.id}/module" style="margin-top:8px">
           <input name="titre" required placeholder="Titre du module (ex : Introduction)" maxlength="120">
-          <button class="btn violet petit" style="white-space:nowrap">+ Ajouter</button></form>
+          <input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><h3>Compétences du nouveau module</h3>${require('../lib/module-competences').fields({},'new')}<button class="btn violet petit" style="white-space:nowrap">+ Ajouter le module</button></form>
       </div>
     </div>
     <div>
@@ -401,10 +407,11 @@ function gererFormation(user, c, flash, annonces = []) {
                 <button style="background:none;border:none;color:var(--rouge);cursor:pointer;font-weight:700">✕</button></form></div>`).join('')}
             ${formQuestion(`/formateur/formation/${c.id}/epreuve/${ep.id}/question`)}` : ''}
         </div>`).join('') || '<p class="aide">Aucune épreuve — le certificat ne dépendra que des quiz de modules.</p>'}
+        ${require('./evaluations-html').uploadForm(c,user)}
         <form method="POST" action="/formateur/formation/${c.id}/epreuve" style="border-top:1px dashed var(--ligne);margin-top:12px;padding-top:10px">
           <b>➕ Ajouter une épreuve</b>
           <div class="grille g2" style="margin-top:6px;gap:6px">
-            <select name="type">${Object.entries(TYPES_EPREUVES).map(([k, v]) =>
+            <select name="type">${Object.entries(TYPES_EPREUVES).filter(([k])=>k!=='html').map(([k, v]) =>
               `<option value="${k}">${esc(v.label)}${v.auto ? ' (auto)' : ''}</option>`).join('')}</select>
             <input name="poids" type="number" min="1" max="100" value="20" title="Poids (%)">
           </div>
@@ -582,7 +589,9 @@ function lecteurCours(user, c, enr, leconActive, annonces = [], bilan = null) {
   const evals = enr.evaluations || {};
   let flat = [];
   c.modules.forEach((m, mi) => m.lecons.forEach(l => flat.push({ m, mi, l })));
-  const cur = leconActive || flat.find(x => !doneSet.has(x.l.id)) || flat[0];
+  const etats=P.etats(c,enr),finaleOuverte=P.finaleOuverte(c,enr);
+  const programmeLong=c.parcoursType==='programme_long',moduleEnCours=etats.findIndex(e=>e.ouvert&&!e.valide);
+  const cur = leconActive || flat.find(x => etats[x.mi].ouvert && !doneSet.has(x.l.id)) || flat.filter(x=>etats[x.mi].ouvert).at(-1);
   const pct = flat.length ? Math.round(100 * enr.progress.length / flat.length) : 0;
   const aExamen = epreuvesDe(c).length;
   const badgeEval = (r) => r
@@ -599,29 +608,31 @@ function lecteurCours(user, c, enr, leconActive, annonces = [], bilan = null) {
     <a class="btn ligne petit" href="/cours/${c.id}/forum">💬 Forum</a>
     <a class="btn ligne petit" href="/releve/${enr.id}">📄 Relevé</a>
     ${enr.completedAt ? `<a class="btn vert petit" href="/certificat/${enr.id}">🎖️ Mon certificat</a>`
-      : aExamen ? `<a class="btn petit" style="background:var(--orange)" href="/apprenant/cours/${c.id}/examen">🎓 Évaluation finale (${epreuvesDe(c).length} épreuve${epreuvesDe(c).length > 1 ? 's' : ''})</a>` : ''}</div>
+      : aExamen && finaleOuverte ? `<a class="btn petit" style="background:var(--orange)" href="/apprenant/cours/${c.id}/examen">🎓 Évaluation finale (${epreuvesDe(c).length} épreuve${epreuvesDe(c).length > 1 ? 's' : ''})</a>` : ''}</div>
   ${annonces.length ? `<div class="carte" style="border-left:4px solid var(--orange);margin-bottom:14px;padding:14px 18px">
     <b>📣 Annonces du formateur</b>
     ${annonces.map(a => `<p style="margin-top:8px"><b>${esc(a.titre)}</b>
       <small class="aide"> · ${a.createdAt.slice(0, 10)}</small><br>${esc(a.contenu)}</p>`).join('')}
   </div>` : ''}
-  <div class="grille" style="grid-template-columns:.9fr 1.5fr;align-items:start">
+  ${programmeLong?`<style>.parcours-long-layout .module-carte{border:1px solid #dce6ee;border-radius:16px;padding:14px;margin:0 0 14px;background:#fff}.parcours-long-layout .module-carte.en-cours{border:2px solid #1495bc;box-shadow:0 5px 18px #1495bc18;background:#f5fbff}.parcours-long-layout .module-carte.a-venir{background:#f1f3f5;border-color:#e0e4e8;color:#6b7280}.module-carte.a-venir .lecon-row{background:#e9edf1;color:#66717e}.parcours-long-layout .module-carte.valide{background:#f6f8fa;border-color:#dce7e0}.module-vignette{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:11px;margin-bottom:12px}.module-carte.a-venir .module-vignette{filter:grayscale(1);opacity:.6}.module-carte h3{font-size:15px;margin:10px 0}.module-carte .module-etat{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.module-carte.en-cours .module-etat{color:#096d92}.module-carte.valide .module-etat{color:#277449}.module-carte p{font-size:12px;line-height:1.5;margin:8px 0}.parcours-long-layout .lecon-row{font-size:13px}.parcours-long-layout .carte:first-child{background:transparent;border:0;box-shadow:none;padding:0!important}@media(max-width:850px){.parcours-long-layout{grid-template-columns:1fr!important}}</style><h2>Votre parcours, module par module</h2><p class="aide">Avancez dans l’ordre : terminez les leçons et réussissez l’évaluation du module pour accéder au suivant.</p>`:''}
+  <div class="grille ${programmeLong?'parcours-long-layout':''}" style="grid-template-columns:.9fr 1.5fr;align-items:start">
     <div class="carte" style="padding:12px">
-      ${c.modules.map((m, mi) => `<b style="display:block;padding:8px 6px 4px;font-size:13.5px">Module ${mi + 1} — ${esc(m.titre)}</b>
-        ${m.lecons.map(l => `<a href="/apprenant/cours/${c.id}?lecon=${l.id}"
+      ${c.modules.map((m, mi) => `${programmeLong?`<section class="module-carte ${!etats[mi].ouvert?'a-venir':etats[mi].valide?'valide':'en-cours'}" aria-label="Module ${mi+1} : ${esc(m.titre)}">${m.image?`<img class="module-vignette" src="${esc(m.image)}" alt="${esc(m.titre)}" loading="lazy">`: ''}<span class="module-etat">${!etats[mi].ouvert?'🔒 À venir':etats[mi].valide?'✓ Validé · Révision disponible':mi===moduleEnCours?'▶ Module en cours':'Disponible'}</span><h3>Module ${mi+1} — ${esc(m.titre)}</h3><p>${m.lecons.filter(l=>doneSet.has(l.id)).length}/${m.lecons.length} leçon(s) terminée(s)${etats[mi].aQuiz?' · Évaluation requise':''}</p>`:`<b style="display:block;padding:8px 6px 4px;font-size:13.5px">Module ${mi + 1} — ${esc(m.titre)}</b>`}
+        ${m.lecons.map(l => !etats[mi].ouvert ? `<div class="lecon-row" aria-disabled="true"><span>🔒 ${esc(l.titre)}</span><small>Validez le module précédent</small></div>` : `<a href="/apprenant/cours/${c.id}?lecon=${l.id}"
           class="lecon-row ${doneSet.has(l.id) ? 'done' : ''}" style="text-decoration:none;color:var(--texte);${cur && cur.l.id === l.id ? 'border-color:var(--bleu);box-shadow:0 0 0 1px var(--bleu)' : ''}">
           <span style="font-size:13.5px">${doneSet.has(l.id) ? '✅' : '▸'} ${esc(l.titre)}</span>
           <small style="color:var(--sourd)">${l.duree} min</small></a>`).join('')}
-        ${m.quiz && m.quiz.questions && m.quiz.questions.length ? `
-        <a href="/apprenant/cours/${c.id}/quiz/${m.id}" class="lecon-row" style="text-decoration:none;color:var(--texte)">
-          <span style="font-size:13.5px">📝 Quiz du module</span>${badgeEval(evals[m.id])}</a>` : ''}`).join('')}
-      ${aExamen ? `<b style="display:block;padding:10px 6px 4px;font-size:13.5px">Certification</b>
+        ${m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length) ? !etats[mi].ouvert || !etats[mi].leconsOk ? `<div class="lecon-row" aria-disabled="true">🔒 Évaluation du module — terminez les leçons</div>` : `
+        <a href="/apprenant/cours/${c.id}/${m.quiz.html?'html':'quiz'}/${m.id}" class="lecon-row" style="text-decoration:none;color:var(--texte)">
+          <span style="font-size:13.5px">📝 Évaluation ${m.quiz.html?'HTML interactive':'du module'}</span>${badgeEval(evals[m.id])}</a>` : ''}${programmeLong?'</section>':''}`).join('')}
+      ${aExamen ? !finaleOuverte ? `<div class="panneau">🔒 Évaluation finale : validez les modules pour y accéder.</div>` : `<b style="display:block;padding:10px 6px 4px;font-size:13.5px">Certification</b>
         <a href="/apprenant/cours/${c.id}/examen" class="lecon-row" style="text-decoration:none;color:var(--texte);border-color:var(--orange)">
           <span style="font-size:13.5px">🎓 Évaluation finale — ${epreuvesDe(c).length} épreuve(s)</span>
-          ${bilan && bilan.aExam ? (bilan.examFait ? `<span class="badge ${bilan.pctExam >= 60 ? 'b-vert' : 'b-rouge'}">${bilan.pctExam} %</span>` : '<span class="badge b-orange">en cours</span>') : ''}</a>` : ''}
+          ${bilan && bilan.aExam ? (bilan.examFait ? `<span class="badge ${bilan.pctExam >= P.seuil(c) ? 'b-vert' : 'b-rouge'}">${bilan.pctExam} %</span>` : '<span class="badge b-orange">en cours</span>') : ''}</a>` : ''}
     </div>
     <div class="carte">
       ${cur ? `<span class="badge b-bleu">Module ${cur.mi + 1} — ${esc(cur.m.titre)}</span>
+      ${require('../lib/module-competences').display(cur.m)}
       <h2 style="margin:10px 0">${esc(cur.l.titre)}</h2>
       <p style="white-space:pre-wrap">${esc(cur.l.contenu)}</p>
       ${(cur.m.fichiers || []).length ? `<h2 style="font-size:15px">📎 Ressources du module</h2>
@@ -662,14 +673,14 @@ function pageQuiz(user, c, cible, quiz, resultat, dernierResultat, melanger = fa
   return shell(titre + ' — ' + c.titre, user, MENU_A, '/apprenant', `
   <a href="/apprenant/cours/${c.id}" style="font-size:13.5px">← Retour à la formation</a>
   <h1 style="font-size:22px">${titre}</h1>
-  <p class="sous">${esc(c.titre)} — ${quiz.questions.length} question(s)${estFinal ? ' · 60 % requis pour le certificat' : ''}.
+  <p class="sous">${esc(c.titre)} — ${quiz.questions.length} question(s) · ${P.seuil(c)} % requis pour valider.
   ${dernierResultat ? ` Dernier résultat : <b>${dernierResultat.score}/${dernierResultat.total}</b> (${dernierResultat.pct}%).` : ''}</p>
   ${resultat && bilan && bilan.aEvaluations ? `<p><span class="badge ${bilan.note >= bilan.cfg.seuil ? 'b-vert' : 'b-orange'}" style="font-size:14px">Note globale de la formation : ${bilan.note} % (seuil : ${bilan.cfg.seuil} %)</span></p>` : ''}
   ${resultat ? `<div class="alerte ${resultat.reussi ? 'ok' : 'ko'}" style="font-size:15px">
     ${resultat.reussi ? '🎉 Réussi !' : 'Insuffisant —'} Votre score : <b>${resultat.score}/${resultat.total}</b> (${resultat.pct}%).
     ${estFinal ? (resultat.reussi ? ' Votre certificat est disponible dès que toutes les leçons sont terminées.' : ' Il faut 60 % — révisez puis réessayez, le meilleur score est conservé.') : ''}
     </div>
-    <p><a class="btn" href="/apprenant/cours/${c.id}">Retour à la formation</a>
+    <p><a class="btn" href="/apprenant/cours/${c.id}">Continuer le parcours</a>
     ${!resultat.reussi ? `<a class="btn ligne" href="/apprenant/cours/${c.id}/quiz/${cible}" style="margin-left:8px">Réessayer</a>` : ''}</p>`
   : `<div class="carte"><form method="POST" action="/apprenant/cours/${c.id}/quiz/${cible}">
     ${questionsAff.map((q, qi) => {
@@ -883,7 +894,7 @@ function pageBilan(user, c, enr, competences, bilan, pct) {
           : '<p class="aide" style="margin-top:4px">Aucune compétence définie pour ce module.</p>'}
       </div>`).join('')}
       <p class="aide" style="margin-top:10px">Une compétence est acquise quand toutes les leçons du module
-      sont terminées et son quiz réussi (≥ 60 %).</p>
+      sont terminées et son quiz réussi au seuil configuré.</p>
     </div>
     <div class="carte">
       <h2 style="margin-top:0">Grille d'évaluation comptabilisée</h2>
@@ -915,7 +926,7 @@ function pageBilan(user, c, enr, competences, bilan, pct) {
 
 /* ---- Carnet de notes (formateur) ---- */
 function pageNotesFormateur(user, c, lignes, cfg) {
-  const modulesQuiz = c.modules.filter(m => m.quiz && m.quiz.questions && m.quiz.questions.length);
+  const modulesQuiz = c.modules.filter(m => m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length));
   const aExam = c.examenFinal && c.examenFinal.questions && c.examenFinal.questions.length;
   return shell('Carnet de notes — ' + c.titre, user, MENU_F, '/formateur/formations', `
   <a href="/formateur/formation/${c.id}" style="font-size:13.5px">← Retour à la gestion</a>
@@ -1028,7 +1039,7 @@ function pageSujet(user, c, suj, messages) {
 /* ---- Évaluation finale (apprenant) : liste des épreuves ---- */
 function pageExamen(user, c, enr, bilan, flash) {
   const badgeEp = l => l.note !== null
-    ? `<span class="badge ${l.note >= 60 ? 'b-vert' : 'b-rouge'}">${l.note}/100</span>`
+    ? `<span class="badge ${l.note >= P.seuil(c) ? 'b-vert' : 'b-rouge'}">${l.note}/100</span>`
     : l.enAttenteCorrection ? '<span class="badge b-orange">En correction</span>'
     : '<span class="badge b-gris">À faire</span>';
   return shell('Évaluation finale — ' + c.titre, user, MENU_A, '/apprenant', `
@@ -1060,8 +1071,8 @@ function pageEpreuve(user, c, ep, soumission, resultat, melanger) {
   let corps = '';
   if (resultat && resultat.erreur) corps += `<div class="alerte ko">${esc(resultat.erreur)}</div>`;
   if (resultat && resultat.auto) {
-    corps += `<div class="alerte ${resultat.pct >= 60 ? 'ok' : 'ko'}">Votre score : <b>${resultat.pct} %</b>
-      (${esc(resultat.detail)}). ${resultat.pct < 60 ? 'Vous pouvez réessayer — le meilleur score est conservé.' : ''}</div>
+    corps += `<div class="alerte ${resultat.pct >= P.seuil(c) ? 'ok' : 'ko'}">Votre score : <b>${resultat.pct} %</b>
+      (${esc(resultat.detail)}). ${resultat.pct < P.seuil(c) ? 'Vous pouvez réessayer — le meilleur score est conservé.' : ''}</div>
       ${resultat.reponses ? resultat.reponses.map((r, i) => `<p style="font-size:14px">${r.ok ? '✅' : '❌'}
         Trou ${i + 1} : <code>${esc(r.donne || '—')}</code>${r.ok ? '' : ' → attendu : <code>' + esc(r.attendu) + '</code>'}</p>`).join('') : ''}
       <p style="margin-top:12px"><a class="btn" href="/apprenant/cours/${c.id}/examen">Retour à l'examen</a>

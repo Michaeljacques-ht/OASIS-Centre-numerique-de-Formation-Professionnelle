@@ -285,6 +285,19 @@ border:1px solid var(--ligne);border-radius:var(--r-champ);padding:10px 12px}
 .parcours-info .pi-em{font-size:18px;line-height:1.2;flex:0 0 auto}
 .parcours-info b{display:block;font-size:13px;color:var(--encre);line-height:1.3}
 .parcours-info small{display:block;font-size:11.5px;color:var(--sourd);line-height:1.5;margin-top:2px}
+.parcours-info>div{padding:16px;border-radius:16px;background:linear-gradient(145deg,#f1f8fc,#fff);border-color:#dcebf3;gap:12px}
+.parcours-info .pi-em{display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#e0f1fa;border-radius:11px;font-size:22px}
+.parcours-info .pi-copy{min-width:0;flex:1}
+.parcours-info b{font-size:14px}.parcours-info small{font-size:12px;overflow-wrap:anywhere}
+.pedagogie-details{margin-top:22px;border-left:4px solid var(--orange)}
+.pedagogie-details>h2{margin:0 0 18px}
+.pedagogie-grille{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pedagogie-bloc{display:flex;align-items:flex-start;gap:12px;background:var(--orange-pale);border-radius:14px;padding:16px;min-width:0}
+.pedagogie-icon{font-size:22px;flex:0 0 auto}.pedagogie-bloc>div{min-width:0}
+.pedagogie-bloc h3{font-size:14px;line-height:1.5;color:#8A5200;margin:0 0 8px}
+.pedagogie-bloc p,.pedagogie-bloc ul{font-size:13px;line-height:1.7;margin:0;color:var(--encre);overflow-wrap:anywhere}
+.pedagogie-bloc ul{padding-left:18px}.pedagogie-bloc li+li{margin-top:6px}.pedagogie-bloc li::marker{color:#b57616}
+@media(max-width:700px){.pedagogie-grille{grid-template-columns:1fr}.pedagogie-bloc{padding:14px}}
 /* ---- Socle transversal ---- */
 .carte.socle{border-left:4px solid var(--orange)}
 .socle-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:9px}
@@ -445,6 +458,7 @@ ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="descript
 
 /* Boutons de partage : couleurs, contraste et zones tactiles */
 .course-share{padding:14px!important;background:#f5f8fc;border-top:1px solid #e0e8f1!important}
+.home-social-menus{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.social-dropdown{position:relative}.social-dropdown summary{list-style:none;cursor:pointer;background:#e7f2fa;color:#14557c;border:1px solid #cddfea;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700}.social-dropdown:first-child summary{background:linear-gradient(125deg,#123251,#009fc1);color:#fff;border-color:transparent}.social-dropdown summary::-webkit-details-marker{display:none}.social-dropdown summary:focus-visible{outline:3px solid #e89619;outline-offset:3px}.social-dropdown[open] summary{box-shadow:0 0 0 3px #00a6ce22}.social-dropdown-panel{position:absolute;right:0;top:calc(100% + 10px);z-index:100;width:245px;max-width:calc(100vw - 32px);padding:16px;background:#fff;border:1px solid #dce7ef;border-radius:16px;box-shadow:0 16px 38px #12325124;display:grid!important;grid-template-columns:1fr 1fr;gap:9px}.social-dropdown-panel strong{grid-column:1/-1;font-size:13px;color:#123251;margin-bottom:3px}.follow-links a{display:block;padding:10px;background:#edf5fa;border-radius:9px;text-decoration:none;font-size:13px;color:#14557c;font-weight:700}.follow-links p{grid-column:1/-1;font-size:13px;line-height:1.6;margin:0;color:#64748b}@media(max-width:480px){.home-social-menus{justify-content:center;width:100%}.social-dropdown-panel{right:auto;left:0}}
 .social-actions.social-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .social-actions a,.social-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:9px 10px!important;border:0!important;border-radius:11px!important;font-size:12px!important;font-weight:700!important;line-height:1.2;text-decoration:none!important;box-sizing:border-box;box-shadow:0 3px 8px #13375214;transition:transform .15s,box-shadow .15s;cursor:pointer}
 .social-actions a[data-network="facebook"]{background:#1877f2!important;color:white!important}
@@ -510,7 +524,7 @@ ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="descript
     Paiement mobile sécurisé (MonCash · NatCash · Kashpaw) · Certificats vérifiés · Support 24/7</footer>
   </div>
 </div>
-<script src="/assets/social.js" defer></script></body></html>`;
+<aside id="cookie-consent" class="cookie-consent" aria-label="Préférences de cookies" hidden><b>Vos préférences de cookies</b><p>Les cookies nécessaires permettent la connexion et la sécurité. Vous pouvez accepter ou refuser les cookies facultatifs. Aucun outil de suivi publicitaire ou statistique n’est actuellement activé.</p><div><button type="button" class="btn petit" data-cookie-choice="accepted">Accepter les cookies facultatifs</button><button type="button" class="btn ligne petit" data-cookie-choice="rejected">Refuser les cookies facultatifs</button></div></aside><button type="button" class="cookie-settings" data-cookie-settings>Préférences cookies</button><style>.cookie-consent[hidden]{display:none}.cookie-consent{position:fixed;bottom:65px;left:16px;z-index:150;width:420px;max-width:calc(100vw - 32px);box-sizing:border-box;background:white;border:1px solid #d8e6ef;border-radius:18px;padding:20px;box-shadow:0 12px 45px #12325130}.cookie-consent p{font-size:13px;line-height:1.6;color:#52677c}.cookie-consent>div{display:flex;gap:8px;flex-wrap:wrap}.cookie-settings{position:fixed;bottom:14px;left:16px;z-index:140;padding:9px 12px;border:1px solid #cddfea;border-radius:12px;background:#fff;color:#14557c;font-size:12px;cursor:pointer}</style><script src="/assets/social.js" defer></script></body></html>`;
 }
 
 /* ---------- Carte formation ---------- */
@@ -520,10 +534,15 @@ function partage(path, title, install = false) {
  const whatsapp=icon('<path fill="none" stroke="currentColor" stroke-width="1.8" d="M20 11.5a8.5 8.5 0 0 1-12.8 7.3L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 7c-2 3 4 9 7 7l-2-2-1 1-2-2 1-1z"/>');
  const x=icon('<path fill="none" stroke="currentColor" stroke-width="2" d="M4 3l16 18M20 3L4 21M4 3h5l11 18h-5z"/>');
  const copy=icon('<rect x="8" y="8" width="12" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 5V3H3v13h2" fill="none" stroke="currentColor" stroke-width="1.8"/>');
+ if(install){
+ const networks=[['Facebook','FACEBOOK'],['Instagram','INSTAGRAM'],['WhatsApp','WHATSAPP'],['X','X'],['LinkedIn','LINKEDIN'],['YouTube','YOUTUBE']];
+ const links=networks.map(([label,key])=>{const url=process.env['OASIS_SOCIAL_'+key]||'';return /^https:\/\//i.test(url)?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`:'';}).filter(Boolean).join('');
+ return `<div class="home-social-menus"><details class="social-dropdown"><summary>↗ Partager</summary><div class="social-dropdown-panel social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}"><strong>Partager OASIS</strong><a data-network="facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(path)}" target="_blank" rel="noopener noreferrer">${facebook} Facebook</a><a data-network="whatsapp" href="https://wa.me/?text=${encodeURIComponent(title+' '+path)}" target="_blank" rel="noopener noreferrer">${whatsapp} WhatsApp</a><a data-network="x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}" target="_blank" rel="noopener noreferrer">${x} X</a><button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details><details class="social-dropdown"><summary>♡ Suivez-nous</summary><div class="social-dropdown-panel follow-links"><strong>Retrouvez OASIS</strong>${links||'<p>Nos liens vers les réseaux sociaux seront disponibles prochainement.</p>'}</div></details></div>`;
+ }
  return `<div class="social-actions ${install?'social-toolbar':'social-card-grid'}" data-share-path="${esc(path)}" data-share-title="${esc(title)}" aria-label="Partager">
  <a data-network="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur Facebook">${facebook}<span>Facebook</span></a>
  <a data-network="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur WhatsApp">${whatsapp}<span>WhatsApp</span></a>
- ${install ? '<button type="button" data-install><span aria-hidden="true">↓</span><span>Installer</span></button>' : ''}
+ 
  <a data-network="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer" aria-label="Partager sur X">${x}<span>X</span></a>
  ${install ? '' : `<button type="button" data-copy aria-label="Copier le lien de la formation">${copy}<span>Copier le lien</span></button>`}</div>`;
 }
@@ -698,11 +717,11 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
 
           <div class="parcours-info">
             <div><span class="pi-em">${fmtDe(c.format).emoji}</span>
-              <b>${esc(fmtDe(c.format).label)}</b><small>${esc(fmtDe(c.format).duree)} · ${esc(fmtDe(c.format).description)}</small></div>
+              <div class="pi-copy"><b>${esc(fmtDe(c.format).label)}</b><small>${esc(fmtDe(c.format).duree)} · ${esc(fmtDe(c.format).description)}</small></div></div>
             <div><span class="pi-em">${modDe(c.modalite).emoji}</span>
-              <b>${esc(modDe(c.modalite).label)}</b><small>${esc(modDe(c.modalite).description)}</small></div>
+              <div class="pi-copy"><b>${esc(modDe(c.modalite).label)}</b><small>${esc(modDe(c.modalite).description)}</small></div></div>
             ${c.lieuPratique ? `<div><span class="pi-em">📍</span>
-              <b>Lieu de pratique</b><small>${esc(c.lieuPratique)}</small></div>` : ''}
+              <div class="pi-copy"><b>Lieu de pratique</b><small>${esc(c.lieuPratique)}</small></div></div>` : ''}
           </div>
           <div class="fiche-share">
             <span style="font-size:13px;color:var(--sourd);font-weight:700">PARTAGER :</span>
@@ -747,6 +766,7 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
     </div>
     <div>
       <div class="carte fiche-achat">
+        ${require('./suppression-formations').button(c,user)}
         <div class="fiche-prix" style="color:${c.prix === 0 ? 'var(--vert)' : 'var(--encre)'}">${c.prix === 0 ? 'Gratuit' : fmtHTG(c.prix)}
           ${c.prixBarre ? `<s style="font-size:16px;color:var(--sourd);font-weight:500">${fmtHTG(c.prixBarre)}</s>` : ''}</div>
         <p class="aide" style="margin:6px 0 14px">Accès illimité · Certificat de réussite · Support formateur</p>
