@@ -148,10 +148,11 @@ function releveDeNotes(enr, c) {
       lecons: m.lecons.length, lecFaites,
       aQuiz,
       note: r ? r.score : null,
-      sur: r ? r.total : (aQuiz ? m.quiz.questions.length : null),
+      sur: r ? r.total : (aQuiz ? (m.quiz.html ? null : m.quiz.questions.length) : null),
       pct: r ? r.pct : (aQuiz ? 0 : null),
       statut: cm.statut,
       competences: cm.competences,
+      grilleCompetences: require('../lib/module-competences').grille(m),
       acquises: cm.statut === 'acquise' ? cm.competences : []
     };
   });
@@ -1105,6 +1106,7 @@ async function handle(req, res) {
     const etats=P.etats(c,enr);
     if(leconActive && !etats[leconActive.mi].ouvert)return U.redirect(res,P.suite(c,enr));
     if(!lid){const suite=P.suite(c,enr);if((suite.includes('/quiz/') || suite.includes('/html/')) || (suite.endsWith('/examen') && !enr.completedAt))return U.redirect(res,suite);}
+    if(!lid && !leconActive){const prochain=etats.find(e=>e.ouvert&&!e.valide);const l=prochain?.m.lecons.find(l=>!(enr.progress||[]).includes(l.id));if(l)leconActive={m:prochain.m,mi:c.modules.indexOf(prochain.m),l};}
     const annonces = db.annonces.filter(a => a.courseId === c.id).slice(-3).reverse();
     return U.sendHTML(res, 200, E.lecteurCours(u, c, enr, leconActive, annonces, bilanNotes(enr, c)));
   }
@@ -1141,6 +1143,7 @@ async function handle(req, res) {
     majCompletion(enr, c); // la note globale dépend de toutes les évaluations
     audit(u.id, 'quiz.soumis', { courseId: c.id, cible, score: resultat.score, total: resultat.total });
     save();
+    if(c.modules.some(m=>m.id===cible) && enr.evaluations[cible].pct>=P.seuil(c))return U.redirect(res,P.suite(c,enr));
     return U.sendHTML(res, 200, E.pageQuiz(u, c, cible, quiz, resultat, enr.evaluations[cible], melanger,
       bilanNotes(enr, c)));
   }
@@ -1157,7 +1160,7 @@ async function handle(req, res) {
     if (valid && !enr.progress.includes(data.lecon)) enr.progress.push(data.lecon);
     majCompletion(enr, c);
     save();
-    return U.redirect(res, P.suite(c,enr));
+    return U.redirect(res, P.apresLecon(c,enr,data.lecon));
   }
 
   if (path === '/apprenant/certificats' && method === 'GET') {

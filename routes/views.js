@@ -309,11 +309,11 @@ border-radius:var(--r-champ);padding:9px 11px}
 .catbox b{font-size:14px;color:var(--encre)}.catbox span{font-size:12px;color:var(--sourd)}
 
 /* ---- Barre latérale ---- */
-.shell{display:grid;grid-template-columns:262px 1fr;gap:24px;align-items:start}
+.shell{display:grid;grid-template-columns:262px minmax(0,1fr);gap:24px;align-items:start}
 /* Sans min-width:0, une piste 1fr se laisse élargir par son contenu
    (tableau large, URL insécable) et déborde de la colonne. */
 .shell>section{min-width:0}
-.shell>section .grille{min-width:0}
+.shell>section .grille{min-width:0}.shell>section .grille>*{min-width:0}
 /* Un tableau trop large défile horizontalement plutôt que de couper les mots. */
 .shell>section .carte{overflow-x:auto}
 aside.side{background:#fff;border:1px solid var(--ligne);border-radius:var(--r-carte);padding:18px 14px;

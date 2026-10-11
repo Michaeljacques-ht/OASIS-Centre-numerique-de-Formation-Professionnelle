@@ -271,7 +271,7 @@ function gererFormation(user, c, flash, annonces = []) {
     <span class="et ${c.statut === 'publiee' ? 'on' : ''}"><i>3</i> Publication</span>
   </div>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
-  <div class="grille" style="grid-template-columns:1.5fr .9fr;align-items:start">
+  <style>.gestion-grid{grid-template-columns:minmax(0,1.5fr) minmax(0,.9fr);align-items:start;width:100%;max-width:100%}.gestion-grid>*{min-width:0}.gestion-grid .carte,.gestion-grid .panneau,.gestion-grid form,.gestion-grid .competence-editor{min-width:0;max-width:100%}.gestion-grid input,.gestion-grid textarea,.gestion-grid select{min-width:0;max-width:100%;box-sizing:border-box}.gestion-grid input[type=file]{display:block;width:100%;overflow:hidden}.gestion-grid input[type=file]::file-selector-button{max-width:100%;white-space:normal}.gestion-grid .lecon-row{flex-wrap:wrap;overflow-wrap:anywhere}.gestion-grid .lecon-row>span{min-width:0;flex:1 1 180px}.gestion-grid p,.gestion-grid h2,.gestion-grid b,.gestion-grid a{overflow-wrap:anywhere}.gestion-grid .btn{white-space:normal}.gestion-grid .grille{grid-template-columns:minmax(0,1.3fr) minmax(0,.5fr)!important}.gestion-grid .g2{grid-template-columns:repeat(2,minmax(0,1fr))!important}.gestion-grid .competence-table{min-width:540px}.gestion-grid .competence-editor>div{max-width:100%;overflow-x:auto}@media(max-width:1250px){.gestion-grid{grid-template-columns:minmax(0,1fr)!important}}@media(max-width:600px){.gestion-grid .grille{grid-template-columns:minmax(0,1fr)!important}.gestion-grid .carte{padding:16px}.gestion-grid form[style*="display:flex"]{flex-wrap:wrap}.gestion-grid form[style*="display:flex"]>input{flex:1 1 100%}}</style><div class="grille gestion-grid">
     <div>
       ${c.modules.map((m, i) => `<div class="carte" style="margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -632,7 +632,6 @@ function lecteurCours(user, c, enr, leconActive, annonces = [], bilan = null) {
     </div>
     <div class="carte">
       ${cur ? `<span class="badge b-bleu">Module ${cur.mi + 1} — ${esc(cur.m.titre)}</span>
-      ${require('../lib/module-competences').display(cur.m)}
       <h2 style="margin:10px 0">${esc(cur.l.titre)}</h2>
       <p style="white-space:pre-wrap">${esc(cur.l.contenu)}</p>
       ${(cur.m.fichiers || []).length ? `<h2 style="font-size:15px">📎 Ressources du module</h2>
@@ -1344,15 +1343,20 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
           <th class="n">%</th><th class="n">Leçons</th><th>Statut</th></tr>
       ${rel.modules.map(m => `<tr>
         <td class="code">${esc(m.code)}</td>
-        <td><b>${esc(m.titre)}</b>
-          ${m.competences.length ? `<div class="comp">${m.competences.map(k =>
-            `<span class="${m.statut === 'acquise' ? 'ok' : ''}">${m.statut === 'acquise' ? '✓ ' : ''}${esc(k)}</span>`).join('')}</div>` : ''}</td>
+        <td><b>${esc(m.titre)}</b></td>
         <td class="n">${m.note === null ? '—' : '<b>' + m.note + '</b>'}</td>
         <td class="n">${m.sur === null ? '—' : m.sur}</td>
         <td class="n">${pct(m.pct)}</td>
         <td class="n">${m.lecFaites}/${m.lecons}</td>
         <td>${statutMod(m.statut)}</td></tr>`).join('')}
     </table>
+
+    <h2>Relevé des compétences</h2>
+    <p>Le statut suit la progression du module : les compétences sont acquises lorsque ses leçons sont terminées et son évaluation réussie, si elle est prévue.</p>
+    ${rel.modules.map(m => m.grilleCompetences.length ? `<h3>${esc(m.titre)}</h3><div style="max-width:100%;overflow-x:auto"><table>
+      <thead><tr><th>Code</th><th>Compétences</th><th>Description</th><th>Statut</th></tr></thead>
+      <tbody>${m.grilleCompetences.map(k => `<tr><td class="code">${esc(k.code)}</td><td><b>${esc(k.intitule)}</b></td><td style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(k.description || '—')}</td><td>${statutMod(m.statut)}</td></tr>`).join('')}</tbody>
+    </table></div>` : '').join('') || '<p>Aucune compétence renseignée.</p>'}
 
     ${rel.epreuves.length ? `<h2>Évaluation finale</h2>
     <table>
