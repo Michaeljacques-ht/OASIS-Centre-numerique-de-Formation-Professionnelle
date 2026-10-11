@@ -22,5 +22,4 @@ if(cookiePanel){cookiePanel.hidden=['accepted','rejected'].includes(cookiePrefer
   document.cookie='oasis_cookie_consent='+choice+'; Path=/; Max-Age=15552000; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');
   cookiePanel.hidden=true;window.dispatchEvent(new CustomEvent('oasis:cookie-consent',{detail:{optional:choice==='accepted'}}));
  }));
- document.querySelector('[data-cookie-settings]')?.addEventListener('click',()=>{cookiePanel.hidden=false;cookiePanel.querySelector('button').focus();});
 }

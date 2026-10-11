@@ -204,7 +204,10 @@ function parametresCertificat(db) {
     signatureUrl: p.signatureUrl || '/assets/signature.png',
     signataireNom: p.signataireNom || 'Michael Jacques',
     signataireTitre: p.signataireTitre || 'Directeur général — Oasis',
-    villeCertificat: p.villeCertificat || 'Port-au-Prince, Haïti'
+    villeCertificat: p.villeCertificat || 'Port-au-Prince, Haïti',
+    institutionWeb: p.institutionWeb || process.env.BASE_URL || '',
+    institutionEmail: p.institutionEmail || process.env.MAIL_FROM || '',
+    institutionTelephone: p.institutionTelephone || ''
   };
 }
 function urlVerification(req, enrId) {
@@ -661,6 +664,7 @@ async function handle(req, res) {
       db.parametres.signataireNom = String(data.signataireNom || '').slice(0, 100);
       db.parametres.signataireTitre = String(data.signataireTitre || '').slice(0, 120);
       db.parametres.villeCertificat = String(data.villeCertificat || '').slice(0, 60);
+      for(const key of ['institutionWeb','institutionEmail','institutionTelephone'])if(data[key]!==undefined)db.parametres[key]=String(data[key]||'').trim().slice(0,key==='institutionTelephone'?60:200);
       audit(a.id, 'parametres.certificat', null);
       save();
       return U.redirect(res, '/admin/parametres?ok=' + encodeURIComponent('Paramètres du certificat enregistrés.'));
@@ -1220,7 +1224,7 @@ async function handle(req, res) {
     const formateur = db.users.find(x => x.id === cours.formateurId) || { name: 'Oasis' };
     const urlVerif = urlVerification(req, enr.id);
     return U.sendHTML(res, 200, E.releveNotes(enr, cours, titulaire, formateur,
-      releveDeNotes(enr, cours), parametresCertificat(db),
+      releveDeNotes(enr, cours), { ...parametresCertificat(db), institutionWeb: db.parametres?.institutionWeb || U.baseUrl(req) },
       { svg: QR.qrSvg(urlVerif, { taille: 132, couleur: '#000000' }), url: urlVerif }));
   }
 
@@ -1234,7 +1238,7 @@ async function handle(req, res) {
     if (!cours || !titulaire) return notFound(res, user);
     const urlV = urlVerification(req, enr.id);
     return U.sendHTML(res, 200, E.certificat(enr, cours, titulaire, formateur,
-      bilanNotes(enr, cours), parametresCertificat(db),
+      bilanNotes(enr, cours), { ...parametresCertificat(db), institutionWeb: db.parametres?.institutionWeb || U.baseUrl(req) },
       { svg: QR.qrSvg(urlV, { taille: 132, couleur: '#000000' }), url: urlV }));
   }
 

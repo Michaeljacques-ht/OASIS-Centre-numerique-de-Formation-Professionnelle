@@ -732,11 +732,12 @@ function certificat(enr, cours, user, formateur, bilan = null, params = {}, qr =
     <img class="marque" src="/assets/logo-oasis.png" alt="">
     <p class="marque-txt">OASIS · CENTRE NUMÉRIQUE DE FORMATION PROFESSIONNELLE</p>
     <h1>CERTIFICAT DE RÉUSSITE</h1>
+    <p style="font-family:Arial,sans-serif;font-size:10px;line-height:1.6;overflow-wrap:anywhere;color:#52637b;margin:10px auto;max-width:440px">Site web : ${esc(params.institutionWeb || '—')}<br>Email : ${esc(params.institutionEmail || '—')} · Téléphone : ${esc(params.institutionTelephone || '—')}</p>
     <p class="grand">Ce certificat est décerné à</p>
     <p class="nom">${esc(user.name)}</p>
     <p>pour avoir complété avec succès la formation</p>
     <p style="font-size:20px"><b>« ${esc(cours.titre)} »</b></p>
-    <p><small>Durée : ${esc(cours.duree)} · Niveau : ${esc(cours.niveau)} · Terminée le ${enr.completedAt.slice(0, 10)}</small></p>
+    <p><small>Durée : ${esc(cours.duree)} · Volume : ${esc(require('../lib/formation-details').heures(cours))} · Niveau : ${esc(cours.niveau)} · Terminée le ${enr.completedAt.slice(0, 10)}</small></p>
     ${bilan && bilan.aEvaluations ? `<p><small><b>Note globale obtenue : ${bilan.note} %</b> (seuil requis : ${bilan.cfg.seuil} %)</small></p>` : ''}
     <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-top:34px">
       <div style="flex:1;text-align:center">
@@ -1196,6 +1197,10 @@ function adminParametres(user, p, flash) {
         <input name="signataireTitre" maxlength="120" value="${esc(p.signataireTitre)}">
         <label>Fait à (ville)</label>
         <input name="villeCertificat" maxlength="60" value="${esc(p.villeCertificat)}">
+        <h3>Coordonnées de l’institution sur les certificats et relevés</h3>
+        <label>Adresse web</label><input name="institutionWeb" type="url" maxlength="200" value="${esc(p.institutionWeb || '')}" placeholder="https://…">
+        <label>Email de l’institution</label><input name="institutionEmail" type="email" maxlength="200" value="${esc(p.institutionEmail || '')}">
+        <label>Téléphone de l’institution</label><input name="institutionTelephone" type="tel" maxlength="60" value="${esc(p.institutionTelephone || '')}">
         <label>Nouveau sceau officiel (PNG/JPG/WebP, fond transparent conseillé)</label>
         <input name="sceau" type="file" accept="image/png,image/jpeg,image/webp">
         <label>Nouvelle signature (PNG à fond transparent ou blanc)</label>
@@ -1323,6 +1328,7 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
 
     <h1>RELEVÉ DE NOTES</h1>
     <p class="soustitre">Document officiel · ${esc(params.villeCertificat || 'Port-au-Prince, Haïti')}</p>
+    <div style="text-align:center;font-size:12px;line-height:1.8;margin:12px 0 20px;overflow-wrap:anywhere"><b>Site web :</b> ${esc(params.institutionWeb || '—')}<br><b>Email de l’institution :</b> ${esc(params.institutionEmail || '—')} · <b>Téléphone :</b> ${esc(params.institutionTelephone || '—')}</div>
 
     <div class="fiche">
       <div><b>Apprenant</b> <span>${esc(user.name)}</span></div>
@@ -1337,7 +1343,7 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
         : 'En cours (' + rel.leconsFaites + '/' + rel.nbLecons + ' leçons)'}</span></div>
     </div>
 
-    <h2>Modules et compétences</h2>
+    <h2>Modules</h2>
     <table>
       <tr><th>Code</th><th>Module</th><th class="n">Note</th><th class="n">Sur</th>
           <th class="n">%</th><th class="n">Leçons</th><th>Statut</th></tr>
@@ -1354,8 +1360,8 @@ function releveNotes(enr, cours, user, formateur, rel, params = {}, qr = null) {
     <h2>Relevé des compétences</h2>
     <p>Le statut suit la progression du module : les compétences sont acquises lorsque ses leçons sont terminées et son évaluation réussie, si elle est prévue.</p>
     ${rel.modules.map(m => m.grilleCompetences.length ? `<h3>${esc(m.titre)}</h3><div style="max-width:100%;overflow-x:auto"><table>
-      <thead><tr><th>Code</th><th>Compétences</th><th>Description</th><th>Statut</th></tr></thead>
-      <tbody>${m.grilleCompetences.map(k => `<tr><td class="code">${esc(k.code)}</td><td><b>${esc(k.intitule)}</b></td><td style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(k.description || '—')}</td><td>${statutMod(m.statut)}</td></tr>`).join('')}</tbody>
+      <thead><tr><th>Code</th><th>Compétences</th><th>Statut</th></tr></thead>
+      <tbody>${m.grilleCompetences.map(k => `<tr><td class="code">${esc(k.code)}</td><td><b>${esc(k.intitule)}</b></td><td>${statutMod(m.statut)}</td></tr>`).join('')}</tbody>
     </table></div>` : '').join('') || '<p>Aucune compétence renseignée.</p>'}
 
     ${rel.epreuves.length ? `<h2>Évaluation finale</h2>
