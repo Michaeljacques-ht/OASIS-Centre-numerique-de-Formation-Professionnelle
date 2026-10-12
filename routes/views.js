@@ -426,7 +426,7 @@ function etoiles(n) {
   return '★'.repeat(v) + '☆'.repeat(5 - v);
 }
 
-function layout(title, content, { user = null, active = '', social = null } = {}) {
+function layout(title, content, { user = null, active = '', social = null, workspace = false } = {}) {
   const roleDest = { formateur: '/formateur', entreprise: '/entreprise', apprenant: '/apprenant', admin: '/formateur' };
   const groupes = [
     { titre: 'Plateforme', liens: [
@@ -473,8 +473,8 @@ ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="descript
 @media(max-width:480px){.social-actions a,.social-actions button{min-height:44px}.course-share{padding:12px!important}.social-toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.social-toolbar a,.social-toolbar button{padding:8px 5px!important;gap:4px;font-size:11px!important}}
 @media(prefers-reduced-motion:reduce){.social-actions a,.social-actions button{transition:none;transform:none!important}}
 
-</style></head><body>
-<div class="cadre">
+</style>${workspace?'<style>.cadre.workspace-layout{grid-template-columns:minmax(0,1fr)!important}.workspace-layout>.rail{display:none!important}.workspace-layout .barre-mobile .burger{display:none}.workspace-layout main{max-width:none;width:100%;box-sizing:border-box}.workspace-layout .colonne{min-width:0}</style>':''}</head><body>
+<div class="cadre ${workspace?'workspace-layout':''}">
   <input type="checkbox" id="ouvrir-menu" class="bascule-menu" hidden>
   <aside class="rail">
     <a class="logo" href="/" aria-label="Oasis, Centre Numérique de Formation Professionnelle — accueil">

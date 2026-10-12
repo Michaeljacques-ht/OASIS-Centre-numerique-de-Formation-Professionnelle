@@ -46,9 +46,10 @@ const { layout, avatarHtml, etoiles } = require('./views');
 
 /* ---------- Coquille à barre latérale ---------- */
 function shell(title, user, menu, activeHref, content, { sombre = false, sousTitre = '', horizontal = false } = {}) {
-  const espaceMenu = user.role === 'admin' && menu === MENU_F
+  const espaceMenuBase = user.role === 'admin' && menu === MENU_F
     ? [...MENU_F, ['/admin', '⚙️', 'Administration générale'], ['/admin/parametres', '⚙️', 'Paramètres'], ['/gestion', '🏛️', 'Gestion de l’institution']]
     : menu;
+  const espaceMenu=user.role==='admin'?[['/','🏠','Accueil'],['/formations','🔎','Catalogue'],...espaceMenuBase]:espaceMenuBase;
   const activityCounts=require('../lib/espace-activites').counts(user);
   const inner = `
   <div class="shell ${horizontal?'shell-horizontal':''}">
@@ -60,7 +61,7 @@ function shell(title, user, menu, activeHref, content, { sombre = false, sousTit
     </aside>
     <section>${content}</section>
   </div><script>(()=>{const url=${JSON.stringify((user.role==='apprenant'?'/apprenant':'/formateur')+'/activites-compteurs')};setInterval(async()=>{try{const r=await fetch(url);if(!r.ok)return;const c=await r.json();document.querySelectorAll('[data-activity]').forEach(el=>{const n=c[el.dataset.activity]||0;el.textContent=n;el.hidden=!n;});}catch{}},20000);})();</script>`;
-  return layout(title, inner, { user });
+  return layout(title, inner, { user, workspace:user.role==='admin' });
 }
 
 const MENU_F = [
@@ -327,6 +328,12 @@ function gererFormation(user, c, flash, annonces = []) {
         <div style="display:flex;justify-content:flex-end;align-items:center">
           <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/supprimer">
             <button class="btn petit" style="background:var(--rouge)">Supprimer</button></form></div>
+        <details class="panneau" style="margin-top:10px"><summary>🎯 Compétences visées par ce module</summary>
+          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/competences" style="margin-top:8px"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}">
+          ${require('../lib/module-competences').fields(m,m.id)}<button class="btn ligne petit">Enregistrer la grille</button></form>
+          <p class="aide" style="margin-top:6px">Une compétence est marquée « acquise » quand l'apprenant a terminé
+          toutes les leçons du module et réussi son quiz (s'il existe).</p>
+        </details>
         <details class="panneau" style="margin:12px 0"><summary>🖼️ Vignette du module</summary>
           ${m.image?`<img src="${esc(m.image)}" alt="Vignette de ${esc(m.titre)}" style="display:block;width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:10px 0">`:''}
           <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/image" enctype="multipart/form-data"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif" required><button class="btn ligne petit" style="margin-top:8px">${m.image?'Remplacer la vignette':'Ajouter une vignette'}</button></form><p class="aide">JPG, PNG, WebP ou GIF · 5 Mo maximum · format 16:9 recommandé.</p>
@@ -358,12 +365,7 @@ function gererFormation(user, c, flash, annonces = []) {
           <details class="panneau"><summary>Créer des QCM manuellement</summary>${formQuestion(`/formateur/formation/${c.id}/module/${m.id}/quiz`)}</details>
         </div></details>
 
-        <details class="panneau" style="margin-top:10px"><summary>🎯 Compétences visées par ce module</summary>
-          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/competences" style="margin-top:8px"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}">
-          ${require('../lib/module-competences').fields(m,m.id)}<button class="btn ligne petit">Enregistrer la grille</button></form>
-          <p class="aide" style="margin-top:6px">Une compétence est marquée « acquise » quand l'apprenant a terminé
-          toutes les leçons du module et réussi son quiz (s'il existe).</p>
-        </details>
+
       </div></details>`).join('')}
       <div class="carte" id="ajouter-module">
         <b>＋ Ajouter un module</b>
