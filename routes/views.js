@@ -688,7 +688,7 @@ function catalogue(courses, { cat, q, fmt, mod }, user) {
       ${MODALITES.map(m => `<option value="${m.id}" ${mod === m.id ? 'selected' : ''}>${m.emoji} ${esc(m.label)}</option>`).join('')}</select></div>
     <button class="btn">Filtrer</button>
   </form>
-  <div class="grille g4">${courses.map(c=>carteCours(c,user)).join('') ||
+  <div class="grille g4">${courses.map(c=>carteCours(c,user,true)).join('') ||
     '<p style="color:var(--sourd)">Aucune formation ne correspond à votre recherche.</p>'}</div>`,
   { user, active: '/formations' });
 }

@@ -1,3 +1,39 @@
+function ressourcesLecon(c,m,l,user){return `        <div class="panneau" style="margin-top:12px">
+          <b>📎 Ressources de la leçon</b> <small class="aide">(PDF, image, vidéo MP4/WebM, audio MP3)</small>
+          ${(m.fichiers || []).filter(f=>l?f.leconId===l.id:!f.leconId).map(f => `<div style="border-bottom:1px solid var(--ligne);padding:6px 2px">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+            <span>${f.type === 'lien' ? '🔗' : f.type === 'pdf' ? '📄' : f.type === 'video' ? '🎬' : f.type === 'audio' ? '🎧' : '🖼️'}
+              <a href="${esc(f.url)}" target="_blank"><b>${esc(f.titreAffiche || f.nomOriginal)}</b></a>
+              <small class="aide">${f.type === 'lien' ? esc(String(f.url).replace(/^https?:\/\//, '').slice(0, 38)) : '(' + (f.taille / 1024 / 1024).toFixed(1) + ' Mo)'}</small>
+              ${f.description ? `<br><small class="aide">📝 ${esc(String(f.description).slice(0, 85))}${String(f.description).length > 85 ? '…' : ''}</small>` : ''}</span>
+            <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/fichier/${f.id}/supprimer">
+              <button class="btn-sup" style="background:none;border:none;color:var(--rouge);cursor:pointer;font-weight:700">✕</button></form>
+            </div>
+            <details style="margin-top:2px"><summary style="cursor:pointer;font-size:12px;color:var(--violet)">⚙️ Paramétrer l'affichage pour les apprenants</summary>
+              <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/fichier/${f.id}/parametres" style="margin-top:6px">
+                <label>Leçon associée</label><select name="leconId"><option value="">Ressource commune au module</option>${m.lecons.map(lesson=>`<option value="${esc(lesson.id)}" ${f.leconId===lesson.id?'selected':''}>${esc(lesson.titre)}</option>`).join('')}</select><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><input name="titre" maxlength="120" value="${esc(f.titreAffiche || f.nomOriginal)}" placeholder="Titre affiché aux apprenants">
+                <input name="description" maxlength="500" value="${esc(f.description || '')}" style="margin-top:6px"
+                  placeholder="Description pédagogique : à quoi sert cette ressource, quand la consulter…">
+                <button class="btn ligne petit" style="margin-top:6px">Enregistrer</button>
+              </form></details>
+          </div>`).join('') || '<p class="aide" style="margin:6px 0">Aucune ressource.</p>'}
+          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/fichier"
+            enctype="multipart/form-data" style="display:flex;gap:8px;margin-top:8px;align-items:center">
+            <input type="hidden" name="leconId" value="${l?esc(l.id):''}"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><input name="fichier" type="file" required style="flex:1"
+              accept="application/pdf,image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,audio/mpeg">
+            <button class="btn ligne petit" style="white-space:nowrap">⬆️ Téléverser</button>
+          </form>
+          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/lien" style="margin-top:8px">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <input type="hidden" name="leconId" value="${l?esc(l.id):''}"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><input name="url" required placeholder="https://… (article, vidéo YouTube, document en ligne)" style="flex:2;min-width:190px">
+              <input name="titre" maxlength="120" placeholder="Titre affiché" style="flex:1;min-width:120px">
+              <button class="btn ligne petit" style="white-space:nowrap">🔗 Ajouter le lien</button>
+            </div>
+            <input name="description" maxlength="500" placeholder="Description pour les apprenants (facultatif)" style="margin-top:6px">
+          </form>
+        </div>
+`;}
+
 'use strict';
 /* ============================================================
    OASIS — Gabarits des espaces connectés
@@ -271,7 +307,7 @@ function gererFormation(user, c, flash, annonces = []) {
   const cat = categorie(c.categorie);
   return shell('Gérer — ' + c.titre, user, MENU_F, '/formateur/formations', `
   <a href="/formateur/formations" style="font-size:13.5px">← Retour à mes formations</a>
-  <h1>${cat.emoji} ${esc(c.titre)}</h1>
+  <header class="editor-hero"><span class="badge">ÉDITEUR DE FORMATION</span><h1>${cat.emoji} ${esc(c.titre)}</h1><p>Organisez vos modules, leçons, ressources et évaluations.</p></header>
   ${require('./programmes').courseEditor(c,user)}
   <div class="actions-h" style="margin:12px 0">${require('./suppression-formations').button(c,user)}</div>
   <p class="sous">${esc(c.sousTitre || '')} —
@@ -283,21 +319,20 @@ function gererFormation(user, c, flash, annonces = []) {
     <span class="et ${c.statut === 'publiee' ? 'on' : ''}"><i>3</i> Publication</span>
   </div>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
-  <style>.gestion-grid{grid-template-columns:minmax(0,1.5fr) minmax(0,.9fr);align-items:start;width:100%;max-width:100%}.gestion-grid>*{min-width:0}.gestion-grid .carte,.gestion-grid .panneau,.gestion-grid form,.gestion-grid .competence-editor{min-width:0;max-width:100%}.gestion-grid input,.gestion-grid textarea,.gestion-grid select{min-width:0;max-width:100%;box-sizing:border-box}.gestion-grid input[type=file]{display:block;width:100%;overflow:hidden}.gestion-grid input[type=file]::file-selector-button{max-width:100%;white-space:normal}.gestion-grid .lecon-row{flex-wrap:wrap;overflow-wrap:anywhere}.gestion-grid .lecon-row>span{min-width:0;flex:1 1 180px}.gestion-grid p,.gestion-grid h2,.gestion-grid b,.gestion-grid a{overflow-wrap:anywhere}.gestion-grid .btn{white-space:normal}.gestion-grid .grille{grid-template-columns:minmax(0,1.3fr) minmax(0,.5fr)!important}.gestion-grid .g2{grid-template-columns:repeat(2,minmax(0,1fr))!important}.gestion-grid .competence-table{min-width:540px}.gestion-grid .competence-editor>div{max-width:100%;overflow-x:auto}@media(max-width:1250px){.gestion-grid{grid-template-columns:minmax(0,1fr)!important}}@media(max-width:600px){.gestion-grid .grille{grid-template-columns:minmax(0,1fr)!important}.gestion-grid .carte{padding:16px}.gestion-grid form[style*="display:flex"]{flex-wrap:wrap}.gestion-grid form[style*="display:flex"]>input{flex:1 1 100%}}</style><div class="grille gestion-grid">
+  <style>.gestion-grid{grid-template-columns:minmax(0,1.5fr) minmax(0,.9fr);align-items:start;width:100%;max-width:100%}.gestion-grid>*{min-width:0}.gestion-grid .carte,.gestion-grid .panneau,.gestion-grid form,.gestion-grid .competence-editor{min-width:0;max-width:100%}.gestion-grid input,.gestion-grid textarea,.gestion-grid select{min-width:0;max-width:100%;box-sizing:border-box}.gestion-grid input[type=file]{display:block;width:100%;overflow:hidden}.gestion-grid input[type=file]::file-selector-button{max-width:100%;white-space:normal}.gestion-grid .lecon-row{flex-wrap:wrap;overflow-wrap:anywhere}.gestion-grid .lecon-row>span{min-width:0;flex:1 1 180px}.gestion-grid p,.gestion-grid h2,.gestion-grid b,.gestion-grid a{overflow-wrap:anywhere}.gestion-grid .btn{white-space:normal}.gestion-grid .grille{grid-template-columns:minmax(0,1.3fr) minmax(0,.5fr)!important}.gestion-grid .g2{grid-template-columns:repeat(2,minmax(0,1fr))!important}.gestion-grid .competence-table{min-width:540px}.gestion-grid .competence-editor>div{max-width:100%;overflow-x:auto}@media(max-width:1250px){.gestion-grid{grid-template-columns:minmax(0,1fr)!important}}@media(max-width:600px){.gestion-grid .grille{grid-template-columns:minmax(0,1fr)!important}.gestion-grid .carte{padding:16px}.gestion-grid form[style*="display:flex"]{flex-wrap:wrap}.gestion-grid form[style*="display:flex"]>input{flex:1 1 100%}}</style><div class="editor-toolbar"><a class="btn ligne petit" href="#ajouter-module">＋ Ajouter un module</a><a class="btn ligne petit" href="/formation/${c.id}">Voir la formation</a><button class="btn ligne petit" type="button" id="toggle-editor-panel">Masquer / afficher le panneau</button></div><div class="grille gestion-grid" id="editor-grid">
     <div>
-      ${c.modules.map((m, i) => `<div class="carte" style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <b>Module ${i + 1} — ${esc(m.titre)}</b>
+      ${require('../lib/travaux-outils').publisher(c,null,user)}
+      <div class="editor-heading"><h2>Modules de formation</h2><input type="search" id="module-search" placeholder="Rechercher un module ou une leçon…" aria-label="Rechercher un module ou une leçon"></div>
+      ${c.modules.map((m, i) => `<details class="carte module-editor" data-search="${esc((m.titre+' '+m.lecons.map(l=>l.titre).join(' ')).toLowerCase())}" ${i===0?'open':''}><summary><span class="module-number">${i+1}</span><span><b>${esc(m.titre)}</b><small>${m.lecons.length} leçon(s) · ${m.lecons.reduce((t,l)=>t+Number(l.duree||0),0)} min</small></span><span class="module-open">Ouvrir / Modifier ⌄</span></summary><div class="module-body">
+        <div style="display:flex;justify-content:flex-end;align-items:center">
           <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/supprimer">
             <button class="btn petit" style="background:var(--rouge)">Supprimer</button></form></div>
-        <div class="panneau" style="margin:12px 0"><b>🖼️ Vignette du module</b>
+        <details class="panneau" style="margin:12px 0"><summary>🖼️ Vignette du module</summary>
           ${m.image?`<img src="${esc(m.image)}" alt="Vignette de ${esc(m.titre)}" style="display:block;width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:10px 0">`:''}
           <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/image" enctype="multipart/form-data"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif" required><button class="btn ligne petit" style="margin-top:8px">${m.image?'Remplacer la vignette':'Ajouter une vignette'}</button></form><p class="aide">JPG, PNG, WebP ou GIF · 5 Mo maximum · format 16:9 recommandé.</p>
           ${m.image?`<form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/image/supprimer"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><button class="btn ligne petit">Retirer la vignette</button></form>`:''}
-        </div>
-        ${m.lecons.map(l => `<div class="lecon-row"><span>▸ <b>${esc(l.titre)}</b>
-          <small style="color:var(--sourd)"> · ${l.duree} min</small><br>
-          <small style="color:var(--sourd)">${esc(String(l.contenu).slice(0, 110))}${String(l.contenu).length > 110 ? '…' : ''}</small></span></div>`).join('')}
+        </details>
+        ${m.lecons.map((l,li) => `<details class="lesson-editor"><summary><span class="lesson-number">${li+1}</span><b>${esc(l.titre)}</b><small>${l.duree} min · ${(m.fichiers||[]).filter(f=>f.leconId===l.id).length} ressource(s)</small></summary><div class="lesson-body"><p style="white-space:pre-wrap">${esc(String(l.contenu))}</p>${ressourcesLecon(c,m,l,user)}</div></details>`).join('')}
         <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/lecon" style="margin-top:10px">
           <div class="grille" style="grid-template-columns:1.3fr .5fr">
             <input name="titre" required placeholder="Titre de la nouvelle leçon" maxlength="120">
@@ -306,43 +341,11 @@ function gererFormation(user, c, flash, annonces = []) {
           <button class="btn ligne petit" style="margin-top:8px">+ Ajouter la leçon</button>
         </form>
 
-        <div class="panneau" style="margin-top:12px">
-          <b>📎 Ressources du module</b> <small class="aide">(PDF, image, vidéo MP4/WebM, audio MP3)</small>
-          ${(m.fichiers || []).map(f => `<div style="border-bottom:1px solid var(--ligne);padding:6px 2px">
-            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-            <span>${f.type === 'lien' ? '🔗' : f.type === 'pdf' ? '📄' : f.type === 'video' ? '🎬' : f.type === 'audio' ? '🎧' : '🖼️'}
-              <a href="${esc(f.url)}" target="_blank"><b>${esc(f.titreAffiche || f.nomOriginal)}</b></a>
-              <small class="aide">${f.type === 'lien' ? esc(String(f.url).replace(/^https?:\/\//, '').slice(0, 38)) : '(' + (f.taille / 1024 / 1024).toFixed(1) + ' Mo)'}</small>
-              ${f.description ? `<br><small class="aide">📝 ${esc(String(f.description).slice(0, 85))}${String(f.description).length > 85 ? '…' : ''}</small>` : ''}</span>
-            <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/fichier/${f.id}/supprimer">
-              <button class="btn-sup" style="background:none;border:none;color:var(--rouge);cursor:pointer;font-weight:700">✕</button></form>
-            </div>
-            <details style="margin-top:2px"><summary style="cursor:pointer;font-size:12px;color:var(--violet)">⚙️ Paramétrer l'affichage pour les apprenants</summary>
-              <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/fichier/${f.id}/parametres" style="margin-top:6px">
-                <input name="titre" maxlength="120" value="${esc(f.titreAffiche || f.nomOriginal)}" placeholder="Titre affiché aux apprenants">
-                <input name="description" maxlength="500" value="${esc(f.description || '')}" style="margin-top:6px"
-                  placeholder="Description pédagogique : à quoi sert cette ressource, quand la consulter…">
-                <button class="btn ligne petit" style="margin-top:6px">Enregistrer</button>
-              </form></details>
-          </div>`).join('') || '<p class="aide" style="margin:6px 0">Aucune ressource.</p>'}
-          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/fichier"
-            enctype="multipart/form-data" style="display:flex;gap:8px;margin-top:8px;align-items:center">
-            <input name="fichier" type="file" required style="flex:1"
-              accept="application/pdf,image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,audio/mpeg">
-            <button class="btn ligne petit" style="white-space:nowrap">⬆️ Téléverser</button>
-          </form>
-          <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/lien" style="margin-top:8px">
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <input name="url" required placeholder="https://… (article, vidéo YouTube, document en ligne)" style="flex:2;min-width:190px">
-              <input name="titre" maxlength="120" placeholder="Titre affiché" style="flex:1;min-width:120px">
-              <button class="btn ligne petit" style="white-space:nowrap">🔗 Ajouter le lien</button>
-            </div>
-            <input name="description" maxlength="500" placeholder="Description pour les apprenants (facultatif)" style="margin-top:6px">
-          </form>
-        </div>
+        ${(m.fichiers||[]).some(f=>!f.leconId)?`<details class="panneau"><summary>Ressources communes existantes — affecter à une leçon</summary>${ressourcesLecon(c,m,null,user)}</details>`:''}
 
-        <div class="panneau" style="margin-top:10px">
-          <b>📝 Évaluation interactive du module</b><p class="aide">Présentée automatiquement après les leçons. Correction immédiate et déblocage du module suivant après réussite au seuil configuré dans le barème.</p>
+        ${require('../lib/travaux-outils').publisher(c,m,user)}
+        <details class="evaluation-menu panneau" style="margin-top:14px"><summary class="btn">📝 Évaluation du module — choisir une option ⌄</summary><div class="evaluation-content">
+          <p><b>Évaluation interactive du module</b></p><p class="aide">Présentée automatiquement après les leçons. Correction immédiate et déblocage du module suivant après réussite au seuil configuré dans le barème.</p>
           ${(m.quiz && m.quiz.questions || []).map((q, qi) => `<div class="lecon-row">
             <span><b>Q${qi + 1}.</b> ${esc(q.question)}<br>
             <small class="aide">${q.options.map((o, oi) =>
@@ -352,25 +355,24 @@ function gererFormation(user, c, flash, annonces = []) {
           </div>`).join('') || '<p class="aide" style="margin:6px 0">Aucune question — les apprenants verront le quiz dès la première question ajoutée.</p>'}
           ${require('../lib/evaluation-ia').form(c,m,user)}
           ${require('./evaluations-html').uploadForm(c,user,m)}
-          ${formQuestion(`/formateur/formation/${c.id}/module/${m.id}/quiz`)}
-        </div>
+          <details class="panneau"><summary>Créer des QCM manuellement</summary>${formQuestion(`/formateur/formation/${c.id}/module/${m.id}/quiz`)}</details>
+        </div></details>
 
-        <div class="panneau" style="margin-top:10px">
-          <b>🎯 Compétences visées par ce module</b>
+        <details class="panneau" style="margin-top:10px"><summary>🎯 Compétences visées par ce module</summary>
           <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/competences" style="margin-top:8px"><input type="hidden" name="csrf" value="${user.moduleImageCsrf}">
           ${require('../lib/module-competences').fields(m,m.id)}<button class="btn ligne petit">Enregistrer la grille</button></form>
           <p class="aide" style="margin-top:6px">Une compétence est marquée « acquise » quand l'apprenant a terminé
           toutes les leçons du module et réussi son quiz (s'il existe).</p>
-        </div>
-      </div>`).join('')}
-      <div class="carte">
-        <b>Nouveau module</b>
+        </details>
+      </div></details>`).join('')}
+      <div class="carte" id="ajouter-module">
+        <b>＋ Ajouter un module</b>
         <form method="POST" action="/formateur/formation/${c.id}/module" style="margin-top:8px">
           <input name="titre" required placeholder="Titre du module (ex : Introduction)" maxlength="120">
           <input type="hidden" name="csrf" value="${user.moduleImageCsrf}"><h3>Compétences du nouveau module</h3>${require('../lib/module-competences').fields({},'new')}<button class="btn violet petit" style="white-space:nowrap">+ Ajouter le module</button></form>
       </div>
     </div>
-    <div>
+    <aside class="editor-panel">
       <div class="carte">
         <h2 style="margin-top:0">Publication</h2>
         <p class="aide">${c.modules.length} module(s) · ${nbLecons(c)} leçon(s) · Statut :
@@ -493,8 +495,8 @@ function gererFormation(user, c, flash, annonces = []) {
           <button class="btn violet petit" style="margin-top:12px">Enregistrer</button>
         </form>
       </div>
-    </div>
-  </div>`, { sousTitre: 'Formateur' });
+    </aside>
+  </div><style>.editor-hero{background:linear-gradient(120deg,#062d52,#087eaa);padding:26px;border-radius:20px;color:white;margin:16px 0}.editor-hero h1{color:white;margin:12px 0}.editor-hero p{margin:0;color:#d9edf7}.editor-toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}.editor-heading{display:flex;justify-content:space-between;gap:18px;align-items:center;margin:10px 0 18px}.editor-heading input{max-width:330px}.gestion-grid{grid-template-columns:minmax(0,1fr) 280px!important;gap:18px}.gestion-grid.panel-hidden{grid-template-columns:minmax(0,1fr)!important}.panel-hidden .editor-panel{display:none}.module-editor{padding:0!important;border:1px solid #d8e6f1;box-shadow:0 8px 25px #12325108;overflow:hidden}.module-editor>summary{padding:20px;display:flex;gap:14px;align-items:center;cursor:pointer;background:#f0f7fc;list-style:none}.module-editor>summary small{display:block;color:#64768b;margin-top:5px}.module-number,.lesson-number{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:40px;height:40px;border-radius:12px;background:#0868bb;color:white;font-weight:700}.module-open{margin-left:auto;color:#0868bb;font-size:12px}.module-body{padding:20px}.lesson-editor{margin:12px 0;border:1px solid #dfebf3;border-radius:14px;overflow:hidden}.lesson-editor>summary{padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;background:#fbfdff}.lesson-editor>summary small{margin-left:auto;color:#6c7c90;font-size:12px}.lesson-number{width:28px;height:28px;background:#e1effa;color:#1266ab}.lesson-body{padding:16px}.evaluation-menu>summary{display:block;cursor:pointer}.evaluation-content{padding:16px 0}.editor-panel{min-width:0}.module-editor[hidden]{display:none!important}@media(max-width:1250px){.gestion-grid{grid-template-columns:minmax(0,1fr)!important}.editor-panel{order:2}}@media(max-width:600px){.editor-heading{display:block}.editor-heading input{max-width:100%}.module-body{padding:12px}.module-editor>summary{flex-wrap:wrap}.lesson-editor>summary{flex-wrap:wrap}.module-open{margin-left:0}.editor-hero{padding:18px}}</style><script>document.getElementById('toggle-editor-panel').addEventListener('click',()=>document.getElementById('editor-grid').classList.toggle('panel-hidden'));document.getElementById('module-search').addEventListener('input',e=>{const term=e.target.value.trim().toLowerCase();document.querySelectorAll('.module-editor').forEach(m=>{m.hidden=!m.dataset.search.includes(term);if(term&&!m.hidden)m.open=true;});});</script>`, { sousTitre: 'Formateur' });
 }
 
 function revenusF(user, d, flash) {
@@ -659,8 +661,8 @@ function lecteurCours(user, c, enr, leconActive, annonces = [], bilan = null) {
       ${cur ? `<span class="badge b-bleu">Module ${cur.mi + 1} — ${esc(cur.m.titre)}</span>
       <h2 style="margin:10px 0">${esc(cur.l.titre)}</h2>
       <p style="white-space:pre-wrap">${esc(cur.l.contenu)}</p>
-      ${(cur.m.fichiers || []).length ? `<h2 style="font-size:15px">📎 Ressources du module</h2>
-        ${cur.m.fichiers.map(f => {
+      ${(cur.m.fichiers || []).filter(f=>!f.leconId||f.leconId===cur.l.id).length ? `<h2 style="font-size:15px">📎 Ressources de la leçon</h2>
+        ${cur.m.fichiers.filter(f=>!f.leconId||f.leconId===cur.l.id).map(f => {
           const titre = esc(f.titreAffiche || f.nomOriginal);
           const desc = f.description ? `<p class="aide" style="margin:2px 0 8px">📝 ${esc(f.description)}</p>` : '';
           if (f.type === 'lien') {
@@ -1203,6 +1205,7 @@ function adminParametres(user, p, flash) {
   <p class="sous">Coordonnées de l’institution, documents officiels et service de photo de graduation.</p>
   <section class="carte" style="margin:18px 0"><h2>🎓 Photos de graduation</h2><p><span class="badge ${process.env.OPENAI_API_KEY?'b-vert':'b-orange'}">${process.env.OPENAI_API_KEY?'Clé API configurée':'À configurer'}</span></p><p class="aide">Pour activer la transformation des portraits, renseignez OPENAI_API_KEY dans Environment sur Render, puis redéployez. La clé reste sur le serveur. Une clé présente ne garantit pas que les crédits et l’accès au modèle sont disponibles.</p><p>Limite quotidienne : <b>${Math.max(1,Math.min(20,Number(process.env.GRADUATION_DAILY_LIMIT)||3))} tentatives par utilisateur</b>. Modifiez GRADUATION_DAILY_LIMIT sur Render pour ajuster cette limite.</p>${require('../lib/graduation-settings').admin(user)}</section>
   ${require('../lib/institutions-confiance').admin(user)}
+  ${require('../lib/travaux-outils').toolsAdmin(user)}
   ${require('../lib/certification').settings(user)}
   <h2>Institution et certificats</h2>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}

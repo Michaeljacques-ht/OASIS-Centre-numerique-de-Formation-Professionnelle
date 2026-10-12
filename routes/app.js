@@ -266,6 +266,7 @@ async function handle(req, res) {
   const path = req.pathname;
   const method = req.method;
   const user = currentUser(req);
+  if(await require('../lib/travaux-outils').handle(req,res,user))return;
   if(await require('../lib/espace-activites').handle(req,res,user))return;
   if(await require('../lib/institutions-confiance').handle(req,res,user))return;
   const admission=require('../lib/admissions');
@@ -1398,9 +1399,12 @@ async function handle(req, res) {
       const fic = mp && mp.files.find(f => f.field === 'fichier' && f.filename);
       if (!fic) return U.redirect(res, `/formateur/formation/${c.id}?ok=` +
         encodeURIComponent('Aucun fichier reçu ou fichier trop volumineux (' + F.LIMITES_LISIBLES + ').'));
+      if(mp.fields.leconId&&!mod.lecons.some(l=>l.id===mp.fields.leconId))return U.sendHTML(res,422,'Leçon invalide.');
+      if(mp.fields.leconId&&mp.fields.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');
       const r = F.saveUpload(fic, ['image', 'pdf', 'video', 'audio']);
       if (!r.ok) return U.redirect(res, `/formateur/formation/${c.id}?ok=` + encodeURIComponent(r.error));
       mod.fichiers = mod.fichiers || [];
+      r.fichier.leconId=mp.fields.leconId||null;
       mod.fichiers.push(r.fichier);
       audit(u.id, 'module.fichier', { module: mod.id, type: r.fichier.type });
       save();
@@ -1412,13 +1416,15 @@ async function handle(req, res) {
       const mod = c.modules.find(x => x.id === mm2[1]);
       if (!mod) return notFound(res, u);
       const { data } = await U.readBody(req);
+      if(data.leconId&&!mod.lecons.some(l=>l.id===data.leconId))return U.sendHTML(res,422,'Leçon invalide.');
+      if(data.leconId&&data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');
       let url;
       try { url = new URL(String(data.url || '').trim()); if (!/^https?:$/.test(url.protocol)) throw 0; }
       catch { return U.redirect(res, `/formateur/formation/${c.id}?ok=` +
         encodeURIComponent('Lien invalide : indiquez une URL complète en http(s)://')); }
       mod.fichiers = mod.fichiers || [];
       mod.fichiers.push({
-        id: U.rid('fic', 9), type: 'lien', url: url.toString().slice(0, 500),
+        leconId:data.leconId||null, id: U.rid('fic', 9), type: 'lien', url: url.toString().slice(0, 500),
         nomOriginal: String(data.titre || url.hostname).slice(0, 120),
         titreAffiche: String(data.titre || '').slice(0, 120) || url.hostname,
         description: String(data.description || '').slice(0, 500),
@@ -1435,6 +1441,7 @@ async function handle(req, res) {
       const fic = mod && (mod.fichiers || []).find(f => f.id === mm2[2]);
       if (!fic) return notFound(res, u);
       const { data } = await U.readBody(req);
+      if(data.leconId!==undefined){if(data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');if(data.leconId&&!mod.lecons.some(l=>l.id===data.leconId))return U.sendHTML(res,422,'Leçon invalide.');fic.leconId=data.leconId||null;}
       fic.titreAffiche = String(data.titre || '').slice(0, 120) || fic.nomOriginal;
       fic.description = String(data.description || '').slice(0, 500);
       save();
