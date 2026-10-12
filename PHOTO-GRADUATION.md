@@ -32,3 +32,6 @@ Le logo de l’institution est demandé en miniature dans le décor, en haut à 
 Chaque photo peut être supprimée par son propriétaire après confirmation, y compris la photo précédente. Le fichier privé est effacé du serveur ; la création déjà utilisée reste comptabilisée. Les copies téléchargées ne sont pas effacées.
 
 Le bouton de suppression des photos a été retiré de l’interface à la demande de l’institution.
+
+## Modèle institutionnel de photo
+Dans Paramètres > Photos de graduation, téléverser une image du modèle (JPG, PNG ou WebP, maximum 5 Mo). Un aperçu réservé à l’administration permet de contrôler l’image. Elle est conservée dans le stockage privé et transmise comme dernière image de référence au service IA. Le modèle impose la tenue, les couleurs, le décor et le cadrage aux nouvelles générations, tout en préservant l’identité de l’apprenant et son document choisi. Il est possible de remplacer ou retirer le modèle. Les photos déjà créées ne sont pas modifiées. La référence harmonise le résultat sans garantir une reproduction exacte au pixel près.

@@ -177,9 +177,7 @@ function releveDeNotes(enr, c) {
   const totalComp = modules.reduce((n, m) => n + m.competences.length, 0);
   const totalAcq = modules.reduce((n, m) => n + m.acquises.length, 0);
   const note = bilan.note;
-  const mention = note === null ? '—'
-    : note >= 90 ? 'Excellent' : note >= 80 ? 'Très bien' : note >= 70 ? 'Bien'
-    : note >= 60 ? 'Assez bien' : note >= bilan.cfg.seuil ? 'Passable' : 'Insuffisant';
+  const mention = require('../lib/certification').mention(note,bilan.cfg.seuil);
   const heures = c.modules.reduce((t, m) => t + m.lecons.reduce((x, l) => x + (Number(l.duree) || 0), 0), 0);
 
   return { code, modules, epreuves, bilan, mention, totalComp, totalAcq,
@@ -255,9 +253,9 @@ function pctEnrollment(e, course) {
 function statsPubliques(db) {
   return {
     nbCours: db.courses.filter(c => c.statut === 'publiee').length,
-    nbApprenants: db.users.filter(u => u.role === 'apprenant').length + 15200,
-    nbFormateurs: db.users.filter(u => u.role === 'formateur').length + 420,
-    nbEntreprises: db.users.filter(u => u.role === 'entreprise').length + 200
+    nbApprenants: db.users.filter(u => u.role === 'apprenant').length,
+    nbFormateurs: db.users.filter(u => u.role === 'formateur').length,
+    nbEntreprises: db.users.filter(u => u.role === 'entreprise').length
   };
 }
 
@@ -268,6 +266,16 @@ async function handle(req, res) {
   const path = req.pathname;
   const method = req.method;
   const user = currentUser(req);
+  if(await require('../lib/espace-activites').handle(req,res,user))return;
+  if(await require('../lib/institutions-confiance').handle(req,res,user))return;
+  const admission=require('../lib/admissions');
+  if(await admission.handle(req,res,user))return;
+  const admissionAccess=path.match(/^\/(?:acheter|apprenant\/cours)\/(crs_[a-z0-9]+)(?:\/|$)/i);
+  if(user&&admissionAccess){const c=db.courses.find(c=>c.id===admissionAccess[1]);if(c&&!admission.approved(user,c))return U.redirect(res,'/admission/'+c.id);}
+  if(user&&path.startsWith('/fichiers/')){const name=path.split('/').pop(),c=db.courses.find(c=>c.parcoursType==='programme_long'&&JSON.stringify(c.modules||[]).includes(name));if(c&&user.role!=='admin'&&c.formateurId!==user.id&&!admission.approved(user,c))return U.sendHTML(res,403,'Admission requise.');}
+  if(await require('../lib/certification').handle(req,res,user))return;
+  if(await require('../lib/evaluation-ia').handle(req,res,user))return;
+  if(await require('../lib/rencontres-outils').handle(req,res,user))return;
   const flash = req.query.get('ok');
   let m;
 
@@ -1194,6 +1202,8 @@ async function handle(req, res) {
     const formateur = db.users.find(x => x.id === cours.formateurId) || { name: 'Oasis' };
     const bilan = bilanNotes(enr, cours);
     const rel = releveDeNotes(enr, cours);
+    const cert=require('../lib/certification').record(enr,cours);
+    if(cert&&cert.status!=='valide')return U.sendHTML(res,200,V.securityPage('Vérification', '<h1>'+ (cert.status==='revoque'?'Certificat révoqué':'Certification en attente')+'</h1>',user));
     return U.sendHTML(res, 200, V.verification({
       id: enr.id,
       titulaire: titulaire.name,
@@ -1239,9 +1249,11 @@ async function handle(req, res) {
     const titulaire = db.users.find(u2 => u2.id === enr.userId);
     const formateur = db.users.find(u2 => u2.id === (cours || {}).formateurId) || { name: 'Oasis' };
     if (!cours || !titulaire) return notFound(res, user);
+    const cert = require('../lib/certification').record(enr,cours);
+    if(cert.status!=='valide')return U.sendHTML(res,403,V.securityPage('Certification',cert.status==='revoque'?'<h1>Certificat révoqué</h1>':'<h1>Certification en attente d’approbation administrative</h1>',user));
     const urlV = urlVerification(req, enr.id);
     return U.sendHTML(res, 200, E.certificat(enr, cours, titulaire, formateur,
-      bilanNotes(enr, cours), { ...parametresCertificat(db), institutionWeb: db.parametres?.institutionWeb || U.baseUrl(req) },
+      bilanNotes(enr, cours), { certification:cert,mention:releveDeNotes(enr,cours).mention, ...parametresCertificat(db), institutionWeb: db.parametres?.institutionWeb || U.baseUrl(req) },
       { svg: QR.qrSvg(urlV, { taille: 132, couleur: '#000000' }), url: urlV }));
   }
 

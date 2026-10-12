@@ -13,16 +13,17 @@ function shell(title, user, menu, activeHref, content, { sombre = false, sousTit
   const espaceMenu = user.role === 'admin' && menu === MENU_F
     ? [...MENU_F, ['/admin', '⚙️', 'Administration générale'], ['/admin/parametres', '⚙️', 'Paramètres'], ['/gestion', '🏛️', 'Gestion de l’institution']]
     : menu;
+  const activityCounts=require('../lib/espace-activites').counts(user);
   const inner = `
   <div class="shell">
     <aside class="side ${sombre ? 'sombre' : ''}">
       <div class="qui">${avatarHtml(user.name, sombre ? 'var(--vert)' : 'var(--violet)')}
         <span><b>${esc(user.name)}</b><small>${esc(sousTitre)}</small></span></div>
       <nav>${espaceMenu.map(([href, icon, label]) =>
-        `<a href="${href}" class="${href === activeHref ? 'on' : ''}">${icon} ${label}</a>`).join('')}</nav>
+        `<a href="${href}" class="${href === activeHref ? 'on' : ''}">${icon} ${label}${/\/(messages|notifications|taches)$/.test(href)?` <span class="badge b-orange" data-activity="${href.split('/').pop()}" ${activityCounts[href.split('/').pop()]?'':'hidden'}>${activityCounts[href.split('/').pop()]||0}</span>`:''}</a>`).join('')}</nav>
     </aside>
     <section>${content}</section>
-  </div>`;
+  </div><script>(()=>{const url=${JSON.stringify((user.role==='apprenant'?'/apprenant':'/formateur')+'/activites-compteurs')};setInterval(async()=>{try{const r=await fetch(url);if(!r.ok)return;const c=await r.json();document.querySelectorAll('[data-activity]').forEach(el=>{const n=c[el.dataset.activity]||0;el.textContent=n;el.hidden=!n;});}catch{}},20000);})();</script>`;
   return layout(title, inner, { user });
 }
 
@@ -31,6 +32,12 @@ const MENU_F = [
   ['/formateur/formations', '📚', 'Mes formations'],
   ['/formateur/creer', '➕', 'Créer une formation'],
   ['/formateur/programmes', '🎓', 'Programmes longs / diplômes'],
+  ['/formateur/admissions', '📋', 'Dossiers d’admission'],
+  ['/formateur/messages', '✉️', 'Messages'],
+  ['/formateur/notifications', '🔔', 'Notifications'],
+  ['/formateur/taches', '✅', 'Tâches à faire'],
+  ['/formateur/rendez-vous', '📅', 'Rendez-vous'],
+  ['/formateur/outils', '🛠️', 'Outils'],
   ['/formateur/revenus', '💰', 'Mes revenus'],
   ['/formateur/abonnes', '👥', 'Abonnés'],
   ['/formateur/avis', '⭐', 'Avis & évaluations'],
@@ -40,6 +47,11 @@ const MENU_F = [
 const MENU_A = [
   ['/apprenant', '📖', 'Mes formations'],
   ['/formations', '🔎', 'Explorer le catalogue'],
+  ['/apprenant/messages', '✉️', 'Messages'],
+  ['/apprenant/notifications', '🔔', 'Notifications'],
+  ['/apprenant/taches', '✅', 'Tâches à faire'],
+  ['/apprenant/rendez-vous', '📅', 'Rendez-vous'],
+  ['/apprenant/outils', '🛠️', 'Outils'],
   ['/apprenant/certificats', '🎖️', 'Mes certificats']
 ];
 const MENU_ADMIN = [
@@ -338,6 +350,7 @@ function gererFormation(user, c, flash, annonces = []) {
             <form method="POST" action="/formateur/formation/${c.id}/module/${m.id}/quiz/${q.id}/supprimer">
               <button style="background:none;border:none;color:var(--rouge);cursor:pointer;font-weight:700">✕</button></form>
           </div>`).join('') || '<p class="aide" style="margin:6px 0">Aucune question — les apprenants verront le quiz dès la première question ajoutée.</p>'}
+          ${require('../lib/evaluation-ia').form(c,m,user)}
           ${require('./evaluations-html').uploadForm(c,user,m)}
           ${formQuestion(`/formateur/formation/${c.id}/module/${m.id}/quiz`)}
         </div>
@@ -720,38 +733,27 @@ function certificatsA(user, list) {
 
 function certificat(enr, cours, user, formateur, bilan = null, params = {}, qr = null) {
   return `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Certificat — ${esc(user.name)}</title>
-  <style>body{font-family:Georgia,'Times New Roman',serif;background:#F6F9FC;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
-  .cert{background:#fff;border:3px solid #001C4A;border-radius:10px;padding:0 0 46px;max-width:780px;
-  text-align:center;box-shadow:0 14px 44px rgba(0,28,74,.14);position:relative;overflow:hidden}
-  .cert::before{content:'';position:absolute;top:0;left:0;right:0;height:9px;
-  background:linear-gradient(90deg,#001C4A 0%,#0166C2 42%,#06C994 76%,#FC9F1E 100%)}
-  .cert .dedans{padding:40px 62px 0;position:relative}
-  .cert .marque{width:86px;height:86px;object-fit:contain;margin:6px auto 2px;display:block}
-  .cert .marque-txt{color:#001C4A;letter-spacing:.11em;font-size:10px;font-weight:700;
-  margin:2px auto 0;max-width:430px;line-height:1.5}
-  .cert h1{color:#0166C2;letter-spacing:.2em;font-size:17px;margin:10px auto 0;font-weight:700;max-width:430px}
-  .cert .grand{font-size:32px;margin:20px 0 6px;color:#0B1F3F}
-  .cert .nom{font-size:29px;color:#001C4A;font-style:italic;margin:14px 0;font-weight:bold}
-  .cert .ligne{width:220px;border-top:1.5px solid #9AA8BC;margin:34px auto 6px}
-  .cert small{color:#6B7A90}
-  .cert .qr-coin{position:absolute;top:26px;right:16px;line-height:0;text-align:center;
-  border:1px solid #E3EAF3;border-radius:8px;padding:5px 5px 2px;background:#fff}
-  .cert .qr-coin span{display:block;font-family:Arial,Helvetica,sans-serif;font-size:9px;
-  letter-spacing:.09em;color:#0166C2;text-transform:uppercase;font-weight:700;line-height:1.9}
-  @media print{body{background:#fff}.cert{box-shadow:none}.no-print{display:none}}</style></head><body>
-  <div class="cert"><div class="dedans">
+  <meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font-family:Georgia,'Times New Roman',serif;background:#eaf0f5;color:#18334b;margin:0;padding:28px 12px}.certificate-stage{margin:auto;position:relative}.cert{width:1122px;height:794px;background:#fffdf7;position:relative;overflow:hidden;text-align:center;border:2px solid #b99540;box-shadow:0 16px 50px #12334b20;transform-origin:top left}.cert::before{content:'';position:absolute;inset:14px;border:1px solid #c5a655;pointer-events:none}.cert::after{content:'';position:absolute;inset:20px;border:1px solid #e0cf9a;pointer-events:none}.cert .decor{position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,#092c53 0%,#006e9e 46%,#11a58f 100%);clip-path:polygon(0 0,290px 0,0 205px,0 0,100% 100%,calc(100% - 270px) 100%,100% calc(100% - 195px))}.cert .corner-top,.cert .corner-bottom{position:absolute;width:255px;height:170px;background:linear-gradient(135deg,#082c51,#007fa8,#12a890);pointer-events:none}.corner-top{left:0;top:0;clip-path:polygon(0 0,100% 0,0 100%)}.corner-bottom{right:0;bottom:0;clip-path:polygon(100% 0,100% 100%,0 100%)}.cert .gold-top,.cert .gold-bottom{position:absolute;width:275px;height:185px;background:#c7a54d;pointer-events:none}.gold-top{left:0;top:0;clip-path:polygon(0 175px,260px 0,275px 0,0 185px)}.gold-bottom{right:0;bottom:0;clip-path:polygon(0 185px,275px 0,275px 10px,15px 185px)}.cert .dedans{position:relative;padding:34px 100px 24px}.cert .marque{width:76px;height:76px;object-fit:contain;display:block;margin:0 auto 4px}.cert .marque-txt{font-family:Arial,sans-serif;letter-spacing:.13em;font-size:12px;color:#123b59;font-weight:700;max-width:700px;margin:4px auto;line-height:1.3}.cert h1{font-size:29px;letter-spacing:.15em;color:#143957;margin:22px 0 8px;font-weight:500}.cert h1::after{content:'';display:block;width:100px;height:3px;background:#ba953d;margin:12px auto}.cert .grand{font-size:18px;margin:22px 0 8px}.cert .nom{font-size:38px;font-style:italic;color:#073856;margin:8px auto 12px;max-width:800px;overflow-wrap:anywhere}.cert p{margin:12px 0}.cert small{font-size:12px;color:#526476}.cert .qr-coin{position:absolute;right:44px;top:35px;background:#fff;padding:6px;border:1px solid #dfd2ab;border-radius:4px;line-height:0}.cert .qr-coin svg{width:95px;height:95px}.cert .qr-coin span{font:8px Arial,sans-serif;letter-spacing:.1em;display:block;color:#184760;line-height:1.8}.cert .no-print{position:fixed;top:810px;left:0;width:1122px;margin:0!important;padding:12px;background:#fff;display:flex;justify-content:center;align-items:center;gap:14px;font:14px Arial,sans-serif}.cert{overflow:visible}.certificate-art{position:absolute;inset:0;overflow:hidden;pointer-events:none}.cert .dedans{height:100%}.cert .signature-row{margin-top:24px!important}.cert .footer-verification{font-family:Arial,sans-serif;font-size:10px;line-height:1.4;overflow-wrap:anywhere;max-width:780px;margin:18px auto 0!important;padding-top:12px!important;border-color:#ddcfac!important}.cert .institution-contact{font:10px/1.3 Arial,sans-serif;max-width:680px;margin:5px auto;color:#607284;overflow-wrap:anywhere}@page{size:A4 landscape;margin:0}@media print{body{background:white;padding:0}.certificate-stage{width:297mm!important;height:210mm!important}.cert{width:297mm;height:210mm;transform:none!important;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}.no-print{display:none!important}}
+
+.cert.modele-A .themes,.cert.modele-A .medaille{display:none}.cert.modele-A .dedans{padding-left:165px}.cert.modele-B{background:#f6fbfd}.cert.modele-B h1{font-size:48px}.cert.modele-B h1 span{font-size:22px}.cert.modele-C h1{font-size:48px}.cert.modele-C h1 span{font-size:23px}.cert .grand{font-size:15px!important;margin-top:12px!important}.cert .nom{font-size:32px!important}.cert .institution-contact{line-height:1!important}
+/* Modèle Oasis bleu et or : rubans courbes, bande latérale et médaille. */
+.cert{background:#fffdf8;border:0;color:#071f38}.cert::before,.cert::after{display:none}.cert .dedans{padding:26px 155px 20px 185px}.cert .corner-top,.cert .corner-bottom,.cert .gold-top,.cert .gold-bottom{display:none}.certificate-art svg{width:100%;height:100%}.cert .marque{width:68px;height:68px;float:left;margin:0 12px 0 110px}.cert .marque-txt{font-size:13px;letter-spacing:.08em;padding-top:13px;min-height:68px;text-align:left;margin:0 auto 5px;max-width:620px}.cert .devise{clear:both;font:10px Arial,sans-serif;letter-spacing:.35em;border-top:1px solid #b58a2d;padding-top:10px;margin:6px auto 0;color:#183e5d}.cert h1{font-size:59px;letter-spacing:.025em;margin:18px 0 4px;line-height:1}.cert h1 span{display:block;color:#ad8025;font:27px Arial,sans-serif;letter-spacing:.2em;margin-top:8px}.cert h1::after{display:none}.cert .institution-contact{font-size:9px;margin:9px auto;line-height:1.2}.cert .grand{font-size:18px;margin:18px 0 8px}.cert .nom{font-family:'Brush Script MT','Segoe Script',Georgia,serif;font-size:38px;font-style:italic;border-bottom:1px solid #b58a2d;padding-bottom:8px;margin:8px auto 14px;line-height:1.15}.cert p{margin:10px 0}.cert .signature-row{position:absolute;bottom:83px;left:185px;right:155px;margin:0!important}.cert .footer-verification{position:absolute;bottom:22px;left:185px;right:155px;margin:0!important;font-size:9px}.cert .qr-coin{right:18px;top:22px;border:0;background:transparent}.cert .qr-coin svg{width:76px;height:76px}.cert .medaille{position:absolute;right:24px;top:235px;width:108px;height:108px;border:5px double #896213;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fff0a3,#dbad36 65%,#a77615);box-shadow:0 0 0 7px #e8c15b;color:#312408;display:flex;align-items:center;justify-content:center;font:bold 10px/1.5 Georgia,serif}.cert .medaille::after{content:'';position:absolute;z-index:-1;top:88px;width:80px;height:75px;background:linear-gradient(90deg,#b88b23 0 12%,#063458 12% 44%,#d2a33b 44% 56%,#063458 56% 88%,#b88b23 88%);clip-path:polygon(0 0,100% 0,100% 100%,75% 80%,50% 100%,25% 80%,0 100%)}.cert .themes{position:absolute;left:12px;top:260px;width:108px;color:#fff;font:11px/1.4 Georgia,serif}.cert .themes div{margin:0 0 35px}.cert .themes b{display:block;font:28px Arial,sans-serif;color:#bdd8e9;margin-bottom:8px}
+</style></head><body>
+  <div class="certificate-stage"><div class="cert modele-${params.certification?.model||'A'}"><div class="certificate-art"><svg viewBox="0 0 1122 794" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="bleu"><stop stop-color="#05223e"/><stop offset="1" stop-color="#0873a1"/></linearGradient><linearGradient id="or"><stop stop-color="#ae7918"/><stop offset=".5" stop-color="#f5d46e"/><stop offset="1" stop-color="#b98421"/></linearGradient></defs><path fill="url(#or)" d="M0 0H290Q85 110 135 315Q225 630 67 794H0Z"/><path fill="url(#bleu)" d="M0 0H267Q70 100 125 315Q210 630 56 794H0Z"/><path fill="url(#or)" d="M1122 470V794H865Q1050 690 1122 470Z"/><path fill="url(#bleu)" d="M1122 495V794H891Q1060 700 1122 495Z"/><path fill="none" stroke="#58a5c6" stroke-width=".7" d="M0 70L90 0M0 170L210 0M0 765L110 670M955 794L1122 620"/></svg></div><div class="themes"><div><b>▱</b>FORMATIONS<br>NUMÉRIQUES</div><div><b>♧</b>ACCOMPAGNEMENT<br>PERSONNALISÉ</div><div><b>▥</b>COMPÉTENCES<br>POUR L’EMPLOI</div><div><b>☼</b>INNOVATION<br>ET OPPORTUNITÉS</div></div><div class="medaille">★ ★ ★<br>RÉUSSITE<br>COMPÉTENCES<br>AVENIR</div><div class="dedans">
     ${qr ? `<div class="qr-coin">${qr.svg}<span>Vérifier</span></div>` : ''}
     <img class="marque" src="/assets/logo-oasis.png" alt="">
     <p class="marque-txt">OASIS · CENTRE NUMÉRIQUE DE FORMATION PROFESSIONNELLE</p>
-    <h1>CERTIFICAT DE RÉUSSITE</h1>
-    <p style="font-family:Arial,sans-serif;font-size:10px;line-height:1.6;overflow-wrap:anywhere;color:#52637b;margin:10px auto;max-width:440px">Site web : ${esc(params.institutionWeb || '—')}<br>Email : ${esc(params.institutionEmail || '—')} · Téléphone : ${esc(params.institutionTelephone || '—')}</p>
-    <p class="grand">Ce certificat est décerné à</p>
+    <p class="devise">APPRENDRE · SE FORMER · ÉVOLUER · RÉUSSIR</p><h1>CERTIFICAT<span>${esc((require('../lib/certification').titles[params.certification?.model||'A']).replace(/^Certificat /i,''))}</span></h1>
+    <p class="institution-contact">${esc(params.villeCertificat || 'Port-au-Prince, Haïti')}<br>Site web : ${esc(params.institutionWeb || '—')}<br>Email : ${esc(params.institutionEmail || '—')} · Téléphone : ${esc(params.institutionTelephone || '—')}</p>
+    <p class="grand">La Direction d’OASIS Centre numérique de formation professionnelle<br>certifie que</p>
     <p class="nom">${esc(user.name)}</p>
-    <p>pour avoir complété avec succès la formation</p>
+    <p>a suivi avec succès le programme de formation intitulé</p>
     <p style="font-size:20px"><b>« ${esc(cours.titre)} »</b></p>
     <p><small>Durée : ${esc(cours.duree)} · Volume : ${esc(require('../lib/formation-details').heures(cours))} · Niveau : ${esc(cours.niveau)} · Terminée le ${enr.completedAt.slice(0, 10)}</small></p>
     ${bilan && bilan.aEvaluations ? `<p><small><b>Note globale obtenue : ${bilan.note} %</b> (seuil requis : ${bilan.cfg.seuil} %)</small></p>` : ''}
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-top:34px">
+    <p style="font-size:12px">A satisfait aux exigences pédagogiques, théoriques et pratiques définies par le programme.<br><b>Mention : ${esc(params.mention||'—')}</b> · Heures validées : ${params.certification?.validatedHours===undefined?'Non renseignées':esc(params.certification.validatedHours)}<br><i>Certificat institutionnel délivré par OASIS Centre numérique de formation professionnelle.</i></p>
+    <div class="signature-row" style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-top:34px">
       <div style="flex:1;text-align:center">
         <div style="height:64px;display:flex;align-items:flex-end;justify-content:center">
           <img src="${esc(params.signatureUrl || '/assets/signature.png')}" alt="Signature"
@@ -762,22 +764,22 @@ function certificat(enr, cours, user, formateur, bilan = null, params = {}, qr =
       <div style="flex:0 0 auto">
         <img src="${esc(params.sceauUrl || '/assets/sceau-oasis.png')}"
           alt="Sceau officiel Oasis Centre Numérique de Formation Professionnelle"
-          style="width:132px;height:132px;object-fit:contain"></div>
+          style="width:104px;height:104px;object-fit:contain"></div>
       <div style="flex:1;text-align:center">
         <div style="height:64px"></div>
         <div style="width:200px;border-top:1.5px solid #9AA8BC;margin:4px auto 4px"></div>
         <small><b>${esc(formateur.name)}</b><br>Formateur</small>
       </div>
     </div>
-    <small style="display:block;margin-top:24px;padding-top:16px;border-top:1px solid #E3EAF3">
+    <small class="footer-verification" style="display:block;margin-top:24px;padding-top:16px;border-top:1px solid #E3EAF3">
       Fait à ${esc(params.villeCertificat || 'Port-au-Prince, Haïti')}, le ${enr.completedAt.slice(0, 10)}
-      · Certificat n° ${esc(enr.id).toUpperCase()}<br>
+      · Certificat n° ${esc(params.certification?.number||enr.id).toUpperCase()} · Délivré le ${esc((params.certification?.issuedAt||enr.completedAt).slice(0,10))}<br>
       Authenticité vérifiable en scannant le QR code${qr ? ' ou sur ' + esc(qr.url) : ''}</small>
     <p class="no-print" style="margin-top:24px"><button onclick="print()" style="padding:10px 22px;font-size:15px;cursor:pointer;border:0;border-radius:10px;background:#001C4A;color:#fff;font-weight:600">🖨️ Imprimer / PDF</button>
     <a href="/releve/${esc(enr.id)}" style="margin-left:12px">📄 Relevé de notes</a>
     <a href="/apprenant/certificats" style="margin-left:12px">Retour</a></p>
     </div>
-  </div></body></html>`;
+  </div></div><script>(()=>{const stage=document.querySelector('.certificate-stage'),cert=document.querySelector('.cert');function fit(){const scale=Math.min(1,(innerWidth-24)/1122);cert.style.transform='scale('+scale+')';stage.style.width=(1122*scale)+'px';stage.style.height=(865*scale)+'px';}addEventListener('resize',fit);fit();})();</script></body></html>`;
 }
 
 /* =============== ESPACE ENTREPRISE =============== */
@@ -1200,6 +1202,8 @@ function adminParametres(user, p, flash) {
   <h1>Paramètres</h1>
   <p class="sous">Coordonnées de l’institution, documents officiels et service de photo de graduation.</p>
   <section class="carte" style="margin:18px 0"><h2>🎓 Photos de graduation</h2><p><span class="badge ${process.env.OPENAI_API_KEY?'b-vert':'b-orange'}">${process.env.OPENAI_API_KEY?'Clé API configurée':'À configurer'}</span></p><p class="aide">Pour activer la transformation des portraits, renseignez OPENAI_API_KEY dans Environment sur Render, puis redéployez. La clé reste sur le serveur. Une clé présente ne garantit pas que les crédits et l’accès au modèle sont disponibles.</p><p>Limite quotidienne : <b>${Math.max(1,Math.min(20,Number(process.env.GRADUATION_DAILY_LIMIT)||3))} tentatives par utilisateur</b>. Modifiez GRADUATION_DAILY_LIMIT sur Render pour ajuster cette limite.</p>${require('../lib/graduation-settings').admin(user)}</section>
+  ${require('../lib/institutions-confiance').admin(user)}
+  ${require('../lib/certification').settings(user)}
   <h2>Institution et certificats</h2>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}
   <div class="grille" style="grid-template-columns:1.3fr .9fr;align-items:start">
@@ -1480,3 +1484,5 @@ function dashAdmin(user, db) {
 module.exports.dashAdmin = dashAdmin;
 
 module.exports.programmeShell=(title,user,content)=>shell(title,user,MENU_F,'/formateur/programmes',content,{sousTitre:'Formateur'});
+
+module.exports.activitesShell=(kind,user,content)=>shell(kind,user,user.role==='apprenant'?MENU_A:MENU_F,(user.role==='apprenant'?'/apprenant':'/formateur')+'/'+kind,content,{sousTitre:user.role==='apprenant'?'Apprenant':'Formateur'});

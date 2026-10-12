@@ -233,8 +233,8 @@ background-clip:text;color:transparent}
 .eyebrow{display:inline-block;background:var(--bleu-pale);border:0;border-radius:99px;
 padding:6px 15px;font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--marine);
 margin-bottom:18px;text-transform:uppercase}
-.stats-h{display:flex;gap:32px;margin-top:28px;flex-wrap:wrap}
-.stats-h>div{margin-right:30px;min-width:92px}
+.stats-h{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px}
+.stats-h>div{min-width:0;padding:14px 10px;background:#f3f8fb;border:1px solid #e1eaf0;border-radius:14px;text-align:center}.stats-h b{overflow-wrap:anywhere}.trust-section{margin-top:22px}.trust-section h2{font-size:16px;color:var(--sourd)}.trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.trust-grid>div{padding:16px;background:#f3f8fb;border-radius:12px;font-weight:700;overflow-wrap:anywhere;text-align:center}@media(max-width:480px){.stats-h{gap:6px}.stats-h>div{padding:12px 4px}.stats-h b{font-size:21px}.stats-h span{font-size:11px}.trust-grid{grid-template-columns:1fr}}
 .stats-h b{font-size:24px;color:var(--marine);font-weight:800;display:block}
 .stats-h span{display:block;font-size:13px;color:var(--sourd)}
 
@@ -455,7 +455,7 @@ function layout(title, content, { user = null, active = '', social = null } = {}
 <link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#145da0">
 ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
 <style>${CSS}
-.social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb} .cours{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}.cours .visuel{height:160px}.cours-link{flex:1;display:flex!important;flex-direction:column}.cours .titre{font-size:16px;min-height:44px}.cours .meta{line-height:1.6}.cours .prix{padding-top:12px}.cours a.cours-link:hover{text-decoration:none}.course-share{background:#f7fafc;margin-top:auto;padding:14px 18px}.course-share-menu summary{text-align:center;width:100%;box-sizing:border-box}.course-share-menu .social-actions{padding-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-share-menu .social-actions>*{min-width:0;text-align:center;justify-content:center;overflow-wrap:anywhere}.course-share-menu [data-copy]{grid-column:1/-1}.course-share-menu [hidden]{display:none!important}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
+.social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb} .cours{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}.cours .visuel{height:160px}.cours-link{flex:1;display:flex!important;flex-direction:column}.cours .titre{font-size:16px;min-height:44px}.cours .meta{line-height:1.6}.cours .prix{padding-top:12px}.cours a.cours-link:hover{text-decoration:none}.course-share{background:#f7fafc;margin-top:auto;padding:14px 18px}.course-start{display:block;text-align:center;margin-bottom:10px;width:100%;box-sizing:border-box}.course-share-menu summary{text-align:center;width:100%;box-sizing:border-box}.course-share-menu .social-actions{padding-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-share-menu .social-actions>*{min-width:0;text-align:center;justify-content:center;overflow-wrap:anywhere}.course-share-menu [data-copy]{grid-column:1/-1}.course-share-menu [hidden]{display:none!important}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
 
 /* Boutons de partage : couleurs, contraste et zones tactiles */
 .course-share{padding:14px!important;background:#f5f8fc;border-top:1px solid #e0e8f1!important}
@@ -550,7 +550,7 @@ function partage(path, title, install = false) {
  <button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details>`;
 }
 
-function carteCours(c, user = null) {
+function carteCours(c, user = null, demarrer = false) {
   const cat = categorie(c.categorie);
   const { note, count } = noteCours(c.id);
   return `<article class="cours"><a class="cours-link" href="/formation/${esc(c.id)}">
@@ -566,7 +566,7 @@ function carteCours(c, user = null) {
       </div>
       ${note ? `<div class="note">${etoiles(note)} ${note} <span style="color:var(--sourd);font-weight:500">(${count})</span></div>` : ''}
       <div class="prix">${c.prix === 0 ? '<span style="color:var(--vert)">Gratuit</span>' : fmtHTG(c.prix)}${c.prixBarre ? `<s>${fmtHTG(c.prixBarre)}</s>` : ''}</div>
-    </div></a><div class="course-share">${partage('/formation/' + c.id, c.titre + ' — ' + (c.description || c.sousTitre || '').slice(0, 200))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
+    </div></a><div class="course-share">${demarrer ? `<a class="btn course-start" href="/acheter/${esc(c.id)}" aria-label="Démarrer la formation ${esc(c.titre)}">Démarrer →</a>` : ''}${partage('/formation/' + c.id, c.titre + ' — ' + (c.description || c.sousTitre || '').slice(0, 200))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
 }
 
 function formationTicker(courses) {
@@ -620,9 +620,9 @@ function landing(courses, stats, user) {
       ressources numériques : montez en compétences à votre rythme, où que vous soyez, et faites-les valoir
       auprès des employeurs.</p>
       <div class="stats-h">
-        <div><b>${stats.nbCours}+</b><span>Formations</span></div>
-        <div><b>${stats.nbApprenants}+</b><span>Apprenants</span></div>
-        <div><b>${stats.nbFormateurs}+</b><span>Formateurs</span></div>
+        <div><b>${stats.nbCours}</b><span>Formations</span></div>
+        <div><b>${stats.nbApprenants}</b><span>Apprenants</span></div>
+        <div><b>${stats.nbFormateurs}</b><span>Formateurs</span></div>
       </div>
     </div>
     <div>
@@ -643,7 +643,7 @@ function landing(courses, stats, user) {
   </div>
 
   <h2>Formations à la une</h2>
-  <div class="grille g4">${courses.filter(c => c.statut === 'publiee').slice(0, 4).map(carteCours).join('')}</div>
+  <div class="grille g4">${courses.filter(c => c.statut === 'publiee').slice(0, 4).map(c=>carteCours(c,user,true)).join('')}</div>
 
   <div class="grille g2" style="margin-top:26px">
     <div class="carte" style="background:linear-gradient(135deg,#F5F3FF,#fff)">
@@ -660,11 +660,7 @@ function landing(courses, stats, user) {
     </div>
   </div>
 
-  <div class="carte" style="margin-top:22px;display:flex;gap:26px;flex-wrap:wrap;justify-content:space-between;align-items:center">
-    <span style="color:var(--sourd);font-size:13px;font-weight:700">ILS NOUS FONT CONFIANCE</span>
-    <b>SOGEBANK</b><b style="color:#E4002B">Digicel</b><b style="color:var(--bleu)">UNIBANK</b>
-    <b>BRH</b><b>Ministère de l'Éducation</b><b style="color:#0072BC">USAID</b>
-  </div>`, { user, active: '/' });
+  ${require('../lib/institutions-confiance').publicBlock()}`, { user, active: '/' });
 }
 function nbParCat(courses, catId) {
   return courses.filter(c => c.statut === 'publiee' && c.categorie === catId).length;
@@ -1173,10 +1169,10 @@ function aPropos(user, stats) {
     formateurs, apprenants et entreprises pour développer les compétences de demain.</p>
   </div>
   <div class="grille g4">
-    <div class="carte stat-carte"><span class="val">${stats.nbApprenants}+</span><span class="lib">Apprenants nous font confiance</span></div>
-    <div class="carte stat-carte"><span class="val">${stats.nbFormateurs}+</span><span class="lib">Formateurs experts partagent leur savoir</span></div>
-    <div class="carte stat-carte"><span class="val">${stats.nbEntreprises}+</span><span class="lib">Entreprises nous accompagnent</span></div>
-    <div class="carte stat-carte"><span class="val">${stats.nbCours}+</span><span class="lib">Formations en ligne disponibles</span></div>
+    <div class="carte stat-carte"><span class="val">${stats.nbApprenants}</span><span class="lib">Apprenants nous font confiance</span></div>
+    <div class="carte stat-carte"><span class="val">${stats.nbFormateurs}</span><span class="lib">Formateurs experts partagent leur savoir</span></div>
+    <div class="carte stat-carte"><span class="val">${stats.nbEntreprises}</span><span class="lib">Entreprises nous accompagnent</span></div>
+    <div class="carte stat-carte"><span class="val">${stats.nbCours}</span><span class="lib">Formations en ligne disponibles</span></div>
   </div>
   <div class="grille g2" style="margin-top:18px">
     <div class="carte">
