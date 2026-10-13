@@ -75,6 +75,7 @@ const MENU_F = [
   ['/formateur/taches', '✅', 'Tâches à faire'],
   ['/formateur/rendez-vous', '📅', 'Rendez-vous'],
   ['/formateur/outils', '🛠️', 'Outils'],
+  ['/formateur/jeux', '🎮', 'Jeux et simulations'],
   ['/formateur/revenus', '💰', 'Mes revenus'],
   ['/formateur/abonnes', '👥', 'Abonnés'],
   ['/formateur/avis', '⭐', 'Avis & évaluations'],
@@ -89,6 +90,8 @@ const MENU_A = [
   ['/apprenant/taches', '✅', 'Tâches à faire'],
   ['/apprenant/rendez-vous', '📅', 'Rendez-vous'],
   ['/apprenant/outils', '🛠️', 'Outils'],
+  ['/apprenant/progression', '🏅', 'Badges et missions'],
+  ['/apprenant/jeux', '🎮', 'Jeux et simulations'],
   ['/apprenant/certificats', '🎖️', 'Mes certificats']
 ];
 const MENU_ADMIN = [
@@ -589,6 +592,8 @@ function stylesCartesApprenant(){return `<style>
   </style>`;}
 function dashApprenant(user, list, flash) {
   return shell('Mes formations', user, MENU_A, '/apprenant', `
+ ${require('../lib/ludification').card(user)}
+
   ${stylesCartesApprenant()}${require('./programmes-pedagogie').learnerLinks(user)}
   <h1>Bonjour, ${esc(user.name.split(' ')[0])} ! 👋</h1>
   <p class="sous">Reprenez vos formations là où vous vous êtes arrêté.</p>
@@ -1212,6 +1217,7 @@ function adminParametres(user, p, flash) {
   <section class="carte" style="margin:18px 0"><h2>🎓 Photos de graduation</h2><p><span class="badge ${process.env.OPENAI_API_KEY?'b-vert':'b-orange'}">${process.env.OPENAI_API_KEY?'Clé API configurée':'À configurer'}</span></p><p class="aide">Pour activer la transformation des portraits, renseignez OPENAI_API_KEY dans Environment sur Render, puis redéployez. La clé reste sur le serveur. Une clé présente ne garantit pas que les crédits et l’accès au modèle sont disponibles.</p><p>Limite quotidienne : <b>${Math.max(1,Math.min(20,Number(process.env.GRADUATION_DAILY_LIMIT)||3))} tentatives par utilisateur</b>. Modifiez GRADUATION_DAILY_LIMIT sur Render pour ajuster cette limite.</p>${require('../lib/graduation-settings').admin(user)}</section>
   ${require('../lib/institutions-confiance').admin(user)}
   ${require('../lib/travaux-outils').toolsAdmin(user)}
+  ${require('../lib/ludification').admin(user)}
   ${require('../lib/certification').settings(user)}
   <h2>Institution et certificats</h2>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}

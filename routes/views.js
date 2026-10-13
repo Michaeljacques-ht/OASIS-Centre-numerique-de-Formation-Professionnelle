@@ -291,13 +291,14 @@ border:1px solid var(--ligne);border-radius:var(--r-champ);padding:10px 12px}
 .parcours-info b{font-size:14px}.parcours-info small{font-size:12px;overflow-wrap:anywhere}
 .pedagogie-details{margin-top:22px;border-left:4px solid var(--orange)}
 .pedagogie-details>h2{margin:0 0 18px}
-.pedagogie-grille{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.pedagogie-bloc{display:flex;align-items:flex-start;gap:12px;background:var(--orange-pale);border-radius:14px;padding:16px;min-width:0}
-.pedagogie-icon{font-size:22px;flex:0 0 auto}.pedagogie-bloc>div{min-width:0}
-.pedagogie-bloc h3{font-size:14px;line-height:1.5;color:#8A5200;margin:0 0 8px}
-.pedagogie-bloc p,.pedagogie-bloc ul{font-size:13px;line-height:1.7;margin:0;color:var(--encre);overflow-wrap:anywhere}
+.pedagogie-grille{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.pedagogie-bloc{display:grid;grid-template-columns:minmax(180px,28%) minmax(0,1fr);align-items:start;gap:24px;background:#fff;border:1px solid var(--ligne);border-left:4px solid #f08b28;border-radius:14px;padding:22px;min-width:0}
+.pedagogie-entete{display:flex;align-items:flex-start;gap:12px}.pedagogie-contenu{border-left:1px solid var(--ligne);padding-left:24px}
+.pedagogie-icon{font-size:24px;flex:0 0 auto}.pedagogie-bloc>div{min-width:0}
+.pedagogie-bloc h3{font-size:15px;line-height:1.5;color:var(--encre);margin:0}
+.pedagogie-bloc p,.pedagogie-bloc ul{font-size:15px;line-height:1.75;margin:0;color:var(--encre);overflow-wrap:anywhere}
 .pedagogie-bloc ul{padding-left:18px}.pedagogie-bloc li+li{margin-top:6px}.pedagogie-bloc li::marker{color:#b57616}
-@media(max-width:700px){.pedagogie-grille{grid-template-columns:1fr}.pedagogie-bloc{padding:14px}}
+@media(max-width:700px){.pedagogie-bloc{grid-template-columns:minmax(0,1fr);gap:14px;padding:18px}.pedagogie-contenu{border-left:0;border-top:1px solid var(--ligne);padding:14px 0 0}}
 /* ---- Socle transversal ---- */
 .carte.socle{border-left:4px solid var(--orange)}
 .socle-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:9px}
@@ -453,7 +454,7 @@ function layout(title, content, { user = null, active = '', social = null, works
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} — Oasis</title>
 <link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#145da0">
-${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
+${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
 <style>${CSS}
 .social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb} .cours{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}.cours .visuel{height:160px}.cours-link{flex:1;display:flex!important;flex-direction:column}.cours .titre{font-size:16px;min-height:44px;height:auto;white-space:normal;overflow:visible;overflow-wrap:anywhere}.cours .corps{height:auto}.cours .meta{white-space:normal;overflow:visible}.cours .meta{line-height:1.6}.cours .prix{padding-top:12px}.cours a.cours-link:hover{text-decoration:none}.course-share{background:#f7fafc;margin-top:auto;padding:14px 18px}.course-start{display:block;text-align:center;margin-bottom:10px;width:100%;box-sizing:border-box}.course-share-menu summary{text-align:center;width:100%;box-sizing:border-box}.course-share-menu .social-actions{padding-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-share-menu .social-actions>*{min-width:0;text-align:center;justify-content:center;overflow-wrap:anywhere}.course-share-menu [data-copy]{grid-column:1/-1}.course-share-menu [hidden]{display:none!important}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
 
@@ -564,7 +565,7 @@ function carteCours(c, user = null, demarrer = false) {
       </div>
       ${note ? `<div class="note">${etoiles(note)} ${note} <span style="color:var(--sourd);font-weight:500">(${count})</span></div>` : ''}
       <div class="prix">${c.prix === 0 ? '<span style="color:var(--vert)">Gratuit</span>' : fmtHTG(c.prix)}${c.prixBarre ? `<s>${fmtHTG(c.prixBarre)}</s>` : ''}</div>
-    </div></a><div class="course-share">${demarrer ? `<a class="btn course-start" href="/acheter/${esc(c.id)}" aria-label="Démarrer la formation ${esc(c.titre)}">Démarrer →</a>` : ''}${partage('/formation/' + c.id, require('../lib/partage-formation').text(c))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
+    </div></a><div class="course-share">${demarrer ? `<a class="btn course-start" href="/acheter/${esc(c.id)}" aria-label="Démarrer la formation ${esc(c.titre)}">Démarrer →</a>` : ''}${partage('/formation/' + c.id+'?partage=2', require('../lib/partage-formation').text(c))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
 }
 
 function formationTicker(courses) {
@@ -785,7 +786,7 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
           <br><a href="/formateurs/${esc(formateur.id || '')}" style="font-size:12.5px">Voir le profil complet →</a></span></div>
       </div>
     </div>
-  </div>`, { user, active: '/formations', social: { title: c.titre, description: require('../lib/partage-formation').description(c), url: shareUrl, image: new URL(c.image || '/assets/banniere-oasis.png', shareUrl).href } });
+  </div>`, { user, active: '/formations', social: { title: c.titre, description: require('../lib/partage-formation').description(c), url: shareUrl, image: require('../lib/image-partage').url(c,new URL(shareUrl).origin) } });
 }
 
 /* ---------- Checkout d'achat (passerelle PLOP PLOP) ---------- */

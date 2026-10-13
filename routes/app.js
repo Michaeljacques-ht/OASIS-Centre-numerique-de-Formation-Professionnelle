@@ -266,6 +266,8 @@ async function handle(req, res) {
   const path = req.pathname;
   const method = req.method;
   const user = currentUser(req);
+  if(await require('../lib/image-partage').handle(req,res))return;
+  if(await require('../lib/ludification').handle(req,res,user))return;
   if(await require('../lib/travaux-outils').handle(req,res,user))return;
   if(await require('../lib/espace-activites').handle(req,res,user))return;
   if(await require('../lib/institutions-confiance').handle(req,res,user))return;
@@ -361,7 +363,7 @@ async function handle(req, res) {
     }));
     const dejaInscrit = user && db.enrollments.some(e => e.userId === user.id && e.courseId === c.id);
     return U.sendHTML(res, 200, V.ficheCours(c, formateur, avisList, dejaInscrit, user,
-      U.baseUrl(req) + '/formation/' + c.id));
+      U.baseUrl(req) + '/formation/' + c.id+'?partage=2'));
   }
 
   if (path === '/tarifs' && method === 'GET') {
