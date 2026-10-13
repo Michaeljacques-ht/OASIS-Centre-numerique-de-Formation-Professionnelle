@@ -455,7 +455,7 @@ function layout(title, content, { user = null, active = '', social = null, works
 <link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#145da0">
 ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
 <style>${CSS}
-.social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb} .cours{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}.cours .visuel{height:160px}.cours-link{flex:1;display:flex!important;flex-direction:column}.cours .titre{font-size:16px;min-height:44px}.cours .meta{line-height:1.6}.cours .prix{padding-top:12px}.cours a.cours-link:hover{text-decoration:none}.course-share{background:#f7fafc;margin-top:auto;padding:14px 18px}.course-start{display:block;text-align:center;margin-bottom:10px;width:100%;box-sizing:border-box}.course-share-menu summary{text-align:center;width:100%;box-sizing:border-box}.course-share-menu .social-actions{padding-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-share-menu .social-actions>*{min-width:0;text-align:center;justify-content:center;overflow-wrap:anywhere}.course-share-menu [data-copy]{grid-column:1/-1}.course-share-menu [hidden]{display:none!important}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
+.social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb} .cours{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}.cours .visuel{height:160px}.cours-link{flex:1;display:flex!important;flex-direction:column}.cours .titre{font-size:16px;min-height:44px;height:auto;white-space:normal;overflow:visible;overflow-wrap:anywhere}.cours .corps{height:auto}.cours .meta{white-space:normal;overflow:visible}.cours .meta{line-height:1.6}.cours .prix{padding-top:12px}.cours a.cours-link:hover{text-decoration:none}.course-share{background:#f7fafc;margin-top:auto;padding:14px 18px}.course-start{display:block;text-align:center;margin-bottom:10px;width:100%;box-sizing:border-box}.course-share-menu summary{text-align:center;width:100%;box-sizing:border-box}.course-share-menu .social-actions{padding-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-share-menu .social-actions>*{min-width:0;text-align:center;justify-content:center;overflow-wrap:anywhere}.course-share-menu [data-copy]{grid-column:1/-1}.course-share-menu [hidden]{display:none!important}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
 
 /* Boutons de partage : couleurs, contraste et zones tactiles */
 .course-share{padding:14px!important;background:#f5f8fc;border-top:1px solid #e0e8f1!important}
@@ -473,7 +473,7 @@ ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="descript
 @media(max-width:480px){.social-actions a,.social-actions button{min-height:44px}.course-share{padding:12px!important}.social-toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.social-toolbar a,.social-toolbar button{padding:8px 5px!important;gap:4px;font-size:11px!important}}
 @media(prefers-reduced-motion:reduce){.social-actions a,.social-actions button{transition:none;transform:none!important}}
 
-</style>${workspace?'<style>.cadre.workspace-layout{grid-template-columns:minmax(0,1fr)!important}.workspace-layout>.rail{display:none!important}.workspace-layout .barre-mobile .burger{display:none}.workspace-layout main{max-width:none;width:100%;box-sizing:border-box}.workspace-layout .colonne{min-width:0}</style>':''}</head><body>
+</style>${workspace?'<style>.cadre.workspace-layout{grid-template-columns:minmax(0,1fr)!important}.workspace-layout>.rail{display:none!important}.workspace-layout .barre-mobile .burger{display:none}.workspace-layout main{max-width:none;width:100%;box-sizing:border-box}.workspace-layout .colonne{min-width:0}</style>':''}<style>.banniere-wrap{max-height:none!important;aspect-ratio:auto!important}.banniere{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important}.banniere-spot{display:none!important}</style></head><body>
 <div class="cadre ${workspace?'workspace-layout':''}">
   <input type="checkbox" id="ouvrir-menu" class="bascule-menu" hidden>
   <aside class="rail">
@@ -554,9 +554,7 @@ function carteCours(c, user = null, demarrer = false) {
   const cat = categorie(c.categorie);
   const { note, count } = noteCours(c.id);
   return `<article class="cours"><a class="cours-link" href="/formation/${esc(c.id)}">
-    <div class="visuel" style="background:linear-gradient(135deg,${cat.deg})${c.image ? `;background-image:url('${esc(c.image)}');background-size:cover;background-position:center` : ''}">
-      ${c.badge ? `<span class="badge ${c.badge === 'Bestseller' ? 'b-orange' : c.badge === 'Nouveau' ? 'b-vert' : 'b-violet'}">${esc(c.badge)}</span>` : ''}
-      ${c.image ? '' : cat.emoji}</div>
+    ${c.image?`<div class="visuel course-image-complete" style="height:auto;display:block;background:#f3f7fb;position:relative"><img src="${esc(c.image)}" alt="Présentation de ${esc(c.titre)}" loading="lazy" style="display:block;width:100%;height:auto;object-fit:contain">${c.badge?`<span class="badge" style="position:static;margin:8px 12px">${esc(c.badge)}</span>`:''}</div>`:`<div class="visuel" style="background:linear-gradient(135deg,${cat.deg})">${c.badge?`<span class="badge">${esc(c.badge)}</span>`:''}${cat.emoji}</div>`}
     <div class="corps">
       <div class="titre">${esc(c.titre)}</div>
       <div class="meta">${esc(cat.label)} · ${esc(c.niveau)} · ${esc(c.duree)}</div>
@@ -642,6 +640,7 @@ function landing(courses, stats, user) {
       <span>${nbParCat(courses, cat.id)} formation(s)</span></a>`).join('')}
   </div>
 
+  <section aria-label="Nouveautés" style="margin:26px 0"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h2>✨ Nouveautés</h2><a class="btn ligne petit" href="/formations?nouveautes=1">Voir les nouvelles formations →</a></div><p class="aide">Les formations publiées au cours des 30 derniers jours.</p><div class="grille g4">${courses.filter(c=>c.statut==='publiee'&&Date.parse(c.publishedAt||c.createdAt||'')>=Date.now()-30*86400000).sort((a,b)=>Date.parse(b.publishedAt||b.createdAt)-Date.parse(a.publishedAt||a.createdAt)).slice(0,4).map(c=>carteCours(c,user,true)).join('')||'<p>Aucune nouvelle formation publiée récemment.</p>'}</div></section>
   <h2>Formations à la une</h2>
   <div class="grille g4">${courses.filter(c => c.statut === 'publiee').slice(0, 4).map(c=>carteCours(c,user,true)).join('')}</div>
 
@@ -706,7 +705,7 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
   <div class="fiche-layout">
     <div>
       <div class="carte" style="padding:0;overflow:hidden">
-        <div class="fiche-cover" style="background:linear-gradient(135deg,${cat.deg})${c.image ? `;background-image:url('${esc(c.image)}');background-size:cover;background-position:center` : ''}">${c.image ? '' : cat.emoji}</div>
+        ${c.image?`<div class="fiche-cover" style="height:auto;display:block;background:#f3f7fb"><img src="${esc(c.image)}" alt="Présentation complète de ${esc(c.titre)}" style="display:block;width:100%;height:auto;object-fit:contain"></div>`:`<div class="fiche-cover" style="background:linear-gradient(135deg,${cat.deg})">${cat.emoji}</div>`}
         <div class="fiche-body">
           ${c.badge ? `<span class="badge b-orange">${esc(c.badge)}</span>` : ''}
           <h1 class="fiche-title">${esc(c.titre)}</h1>

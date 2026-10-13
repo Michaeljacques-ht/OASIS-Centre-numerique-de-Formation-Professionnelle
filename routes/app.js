@@ -275,6 +275,7 @@ async function handle(req, res) {
   if(user&&admissionAccess){const c=db.courses.find(c=>c.id===admissionAccess[1]);if(c&&!admission.approved(user,c))return U.redirect(res,'/admission/'+c.id);}
   if(user&&path.startsWith('/fichiers/')){const name=path.split('/').pop(),c=db.courses.find(c=>c.parcoursType==='programme_long'&&JSON.stringify(c.modules||[]).includes(name));if(c&&user.role!=='admin'&&c.formateurId!==user.id&&!admission.approved(user,c))return U.sendHTML(res,403,'Admission requise.');}
   if(await require('../lib/certification').handle(req,res,user))return;
+  if(await require('../lib/diagnostique').handle(req,res,user))return;
   if(await require('../lib/evaluation-ia').handle(req,res,user))return;
   if(await require('../lib/rencontres-outils').handle(req,res,user))return;
   const flash = req.query.get('ok');
@@ -340,6 +341,7 @@ async function handle(req, res) {
     const mod = req.query.get('modalite') || '';
     const q = (req.query.get('q') || '').toLowerCase();
     let list = db.courses.filter(c => c.statut === 'publiee');
+    if(req.query.get('nouveautes')==='1')list=list.filter(c=>Date.parse(c.publishedAt||c.createdAt||'')>=Date.now()-30*86400000).sort((a,b)=>Date.parse(b.publishedAt||b.createdAt)-Date.parse(a.publishedAt||a.createdAt));
     if (cat) list = list.filter(c => c.categorie === cat);
     if (fmt) list = list.filter(c => (c.format || 'certificat_pro') === fmt);
     if (mod) list = list.filter(c => (c.modalite || 'en_ligne') === mod);
@@ -691,6 +693,7 @@ async function handle(req, res) {
       const { data } = await U.readBody(req);
       const c = db.courses.find(x => x.id === data.id && x.statut === 'en_verification');
       if (c && ['publiee', 'brouillon'].includes(data.decision)) {
+        if(data.decision==='publiee'&&!c.publishedAt)c.publishedAt=new Date().toISOString();
         c.statut = data.decision;
         c.moderation = Object.assign({}, c.moderation, {
           decideeLe: new Date().toISOString(),
@@ -1115,6 +1118,7 @@ async function handle(req, res) {
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, c ? '/formation/' + c.id : '/formations');
     let leconActive = null;
+    if(require('../lib/diagnostique').active(c)&&!enr.diagnosticResult&&!enr.diagnosticSkippedAt)return U.redirect(res,'/apprenant/cours/'+c.id+'/diagnostique');
     const lid = req.query.get('lecon');
     if (lid) c.modules.forEach((mo, mi) => mo.lecons.forEach(l => {
       if (l.id === lid) leconActive = { m: mo, mi, l };
@@ -1541,6 +1545,7 @@ async function handle(req, res) {
           return U.redirect(res, back0 + '?ok=' + encodeURIComponent(
             '📋 Formation soumise à vérification — elle sera publiée après validation par l\u2019administration (délai habituel : 48 h).'));
         }
+        if(data.statut==='publiee'&&!c.publishedAt)c.publishedAt=new Date().toISOString();
         c.statut = data.statut;
         audit(u.id, 'course.statut', { id: c.id, statut: c.statut });
         save();
