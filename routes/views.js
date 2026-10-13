@@ -453,7 +453,7 @@ function layout(title, content, { user = null, active = '', social = null, works
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} — Oasis</title>
 <link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#145da0">
-${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
+${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
 <style>${CSS}
 .social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb} .cours{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}.cours .visuel{height:160px}.cours-link{flex:1;display:flex!important;flex-direction:column}.cours .titre{font-size:16px;min-height:44px;height:auto;white-space:normal;overflow:visible;overflow-wrap:anywhere}.cours .corps{height:auto}.cours .meta{white-space:normal;overflow:visible}.cours .meta{line-height:1.6}.cours .prix{padding-top:12px}.cours a.cours-link:hover{text-decoration:none}.course-share{background:#f7fafc;margin-top:auto;padding:14px 18px}.course-start{display:block;text-align:center;margin-bottom:10px;width:100%;box-sizing:border-box}.course-share-menu summary{text-align:center;width:100%;box-sizing:border-box}.course-share-menu .social-actions{padding-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-share-menu .social-actions>*{min-width:0;text-align:center;justify-content:center;overflow-wrap:anywhere}.course-share-menu [data-copy]{grid-column:1/-1}.course-share-menu [hidden]{display:none!important}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
 
@@ -564,7 +564,7 @@ function carteCours(c, user = null, demarrer = false) {
       </div>
       ${note ? `<div class="note">${etoiles(note)} ${note} <span style="color:var(--sourd);font-weight:500">(${count})</span></div>` : ''}
       <div class="prix">${c.prix === 0 ? '<span style="color:var(--vert)">Gratuit</span>' : fmtHTG(c.prix)}${c.prixBarre ? `<s>${fmtHTG(c.prixBarre)}</s>` : ''}</div>
-    </div></a><div class="course-share">${demarrer ? `<a class="btn course-start" href="/acheter/${esc(c.id)}" aria-label="Démarrer la formation ${esc(c.titre)}">Démarrer →</a>` : ''}${partage('/formation/' + c.id, c.titre + ' — ' + (c.description || c.sousTitre || '').slice(0, 200))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
+    </div></a><div class="course-share">${demarrer ? `<a class="btn course-start" href="/acheter/${esc(c.id)}" aria-label="Démarrer la formation ${esc(c.titre)}">Démarrer →</a>` : ''}${partage('/formation/' + c.id, require('../lib/partage-formation').text(c))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
 }
 
 function formationTicker(courses) {
@@ -697,7 +697,7 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
   const cat = categorie(c.categorie);
   const { note, count } = noteCours(c.id);
   const lien = encodeURIComponent(shareUrl || '');
-  const texte = encodeURIComponent(`Découvrez la formation « ${c.titre} » sur Oasis`);
+  const texte = encodeURIComponent(require('../lib/partage-formation').text(c));
   const nbQuiz = (c.modules || []).filter(m => m.quiz && m.quiz.questions && m.quiz.questions.length).length;
   const epreuves = epreuvesDe(c);
   const aExamen = epreuves.length;
@@ -785,7 +785,7 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
           <br><a href="/formateurs/${esc(formateur.id || '')}" style="font-size:12.5px">Voir le profil complet →</a></span></div>
       </div>
     </div>
-  </div>`, { user, active: '/formations', social: { title: c.titre, description: c.description || c.sousTitre || '', url: shareUrl, image: new URL(c.image || '/assets/banniere-oasis.png', shareUrl).href } });
+  </div>`, { user, active: '/formations', social: { title: c.titre, description: require('../lib/partage-formation').description(c), url: shareUrl, image: new URL(c.image || '/assets/banniere-oasis.png', shareUrl).href } });
 }
 
 /* ---------- Checkout d'achat (passerelle PLOP PLOP) ---------- */
