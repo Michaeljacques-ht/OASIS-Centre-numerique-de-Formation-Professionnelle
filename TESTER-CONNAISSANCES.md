@@ -1,0 +1,11 @@
+# Tester vos connaissances
+
+Dans l’espace formateur (accessible à l’administrateur), importer une activité HTML5 autonome ou un paquet H5P. Configurer son titre, type (quiz, jeu, simulation), catégorie, métier, niveau numérique de 1 à 10, intitulé du niveau, consignes et publication. Répéter l’import pour proposer plusieurs niveaux d’un même jeu. Modifier les paramètres ou remplacer le fichier depuis Paramétrer. Décocher Publier pour retirer l’activité du catalogue apprenant.
+
+Les apprenants connectés voient les activités publiées, avec filtres par catégorie, métier, niveau et type. Les niveaux indiquent la difficulté : ils n’imposent pas un verrouillage séquentiel. Les activités des modules existants restent accessibles dans une rubrique distincte et conservent leurs contrôles de progression.
+
+HTML5 : fichier .html/.htm de 5 Mo maximum. Utiliser un fichier autonome avec médias intégrés ou accessibles en HTTPS. L’activité s’exécute dans un iframe isolé sans accès aux cookies OASIS. Le fichier peut appeler OASIS.submit(score,total) pour enregistrer le dernier résultat d’entraînement de l’apprenant. Les scores fournis par le fichier ne sont pas des preuves certificatives et ne modifient ni les notes des formations ni les certificats. Remplacer le fichier ou ses paramètres renouvelle sa révision et masque le résultat précédent.
+
+H5P : paquet .h5p de 20 Mo maximum conservé comme fichier privé, téléchargeable par son gestionnaire. Cette version n’installe pas le moteur H5P natif, n’extrait pas ses bibliothèques et ne valide pas sa structure interne au-delà de la signature ZIP. Fournir l’URL HTTPS d’intégration d’une plateforme H5P compatible pour publier et jouer l’activité. Sans URL, conserver un brouillon. L’iframe externe affiche le contenu hébergé à cette URL : le paquet local n’est pas transmis automatiquement à la plateforme externe. Les résultats H5P externes ne sont pas synchronisés. La politique d’intégration de la plateforme externe doit autoriser l’iframe.
+
+Après remplacement du projet, redéployer Render. Les fichiers privés se trouvent dans DATA_DIR/activites-privees ; utiliser le disque persistant habituel. Aucun jeu métier prêt à l’emploi ni éditeur graphique de jeux n’est fourni : les activités sont créées avec l’outil de votre choix puis importées.

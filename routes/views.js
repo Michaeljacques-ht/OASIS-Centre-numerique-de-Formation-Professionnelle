@@ -6,7 +6,7 @@
    violet #7C3AED (espace formateur), vert #10B981 (entreprise).
    ============================================================ */
 const { esc, fmtHTG } = require('../lib/utils');
-const { CATEGORIES, FORMATS, MODALITES, SOCLE_TRANSVERSAL, PLANS, categorie, format: fmtDe, modalite: modDe, blocSocle, noteCours, nbInscrits, nbLecons, epreuvesDe, TYPES_EPREUVES } = require('../lib/db');
+const { categories, FORMATS, MODALITES, SOCLE_TRANSVERSAL, PLANS, categorie, format: fmtDe, modalite: modDe, blocSocle, noteCours, nbInscrits, nbLecons, epreuvesDe, TYPES_EPREUVES } = require('../lib/db');
 const PP = require('../lib/plopplop');
 
 const CSS = `
@@ -433,6 +433,7 @@ function layout(title, content, { user = null, active = '', social = null, works
     { titre: 'Plateforme', liens: [
       ['/', '🏠', 'Accueil'],
       ['/formations', '📚', 'Formations'],
+      ['https://oasis-centre-num-rique-d-apprentissage.onrender.com/', '📖', 'Bibliothèque'],
       ['/programmes', '🎓', 'Programmes longs'],
       ['/certifications', '🏅', 'Documents officiels'],
       ['/ressources-numeriques', '🧰', 'Ressources']
@@ -505,7 +506,7 @@ ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="descript
         <img src="/assets/logo-oasis.png" alt="">
         <span><strong>OASIS Centre numérique</strong><span>Formation professionnelle · Portail en ligne</span></span>
       </div>
-      <div class="topbar-actions">${active === '/' ? partage('/', 'OASIS — Centre numérique de formation professionnelle', true) : ''}${user
+      <div class="topbar-actions">${active === '/' ? partage(require('../lib/image-partage').sitePath(), 'OASIS — Formation professionnelle', true) : ''}${user
         ? `${avatarHtml(user.name, user.role === 'formateur' ? 'var(--violet)' : user.role === 'entreprise' ? 'var(--vert)' : 'var(--bleu)')}
            <a class="btn petit" href="${roleDest[user.role] || '/'}">Mon espace</a>
            <a class="btn ligne petit" href="/logout">Quitter</a>`
@@ -519,17 +520,25 @@ ${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="descript
       ${user ? `<a class="btn petit" href="${roleDest[user.role] || '/'}">Mon espace</a>`
              : `<a class="btn petit" href="/login">Se connecter</a>`}
     </header>
-    ${active === '/' ? `<div class="mobile-share">${partage('/', 'OASIS — Centre numérique de formation professionnelle', true)}</div>` : ''}
+    ${active === '/' ? `<div class="mobile-share">${partage(require('../lib/image-partage').sitePath(), 'OASIS — Formation professionnelle', true)}</div>` : ''}
     <label for="ouvrir-menu" class="voile"></label>
     <main>${content}</main>
     <footer>© 2026 <b>Oasis</b> · Centre Numérique de Formation Professionnelle — Port-au-Prince, Haïti<br>
     Paiement mobile sécurisé (MonCash · NatCash · Kashpaw) · Certificats vérifiés · Support 24/7</footer>
   </div>
 </div>
-<aside id="cookie-consent" class="cookie-consent" aria-label="Préférences de cookies" hidden><b>Vos préférences de cookies</b><p>Les cookies nécessaires permettent la connexion et la sécurité. Vous pouvez accepter ou refuser les cookies facultatifs. Aucun outil de suivi publicitaire ou statistique n’est actuellement activé.</p><div><button type="button" class="btn petit" data-cookie-choice="accepted">Accepter les cookies facultatifs</button><button type="button" class="btn ligne petit" data-cookie-choice="rejected">Refuser les cookies facultatifs</button></div></aside><style>.cookie-consent[hidden]{display:none}.cookie-consent{position:fixed;bottom:65px;left:16px;z-index:150;width:420px;max-width:calc(100vw - 32px);box-sizing:border-box;background:white;border:1px solid #d8e6ef;border-radius:18px;padding:20px;box-shadow:0 12px 45px #12325130}.cookie-consent p{font-size:13px;line-height:1.6;color:#52677c}.cookie-consent>div{display:flex;gap:8px;flex-wrap:wrap}</style><script src="/assets/social.js" defer></script></body></html>`;
+<aside id="cookie-consent" class="cookie-consent" aria-label="Préférences de cookies" hidden><b>Vos préférences de cookies</b><p>Les cookies nécessaires permettent la connexion et la sécurité. Vous pouvez accepter ou refuser les cookies facultatifs. Aucun outil de suivi publicitaire ou statistique n’est actuellement activé.</p><div><button type="button" class="btn petit" data-cookie-choice="accepted">Accepter les cookies facultatifs</button><button type="button" class="btn ligne petit" data-cookie-choice="rejected">Refuser les cookies facultatifs</button></div></aside><style>.cookie-consent[hidden]{display:none}.cookie-consent{position:fixed;bottom:65px;left:16px;z-index:150;width:420px;max-width:calc(100vw - 32px);box-sizing:border-box;background:white;border:1px solid #d8e6ef;border-radius:18px;padding:20px;box-shadow:0 12px 45px #12325130}.cookie-consent p{font-size:13px;line-height:1.6;color:#52677c}.cookie-consent>div{display:flex;gap:8px;flex-wrap:wrap}</style><style>
+.social-actions,.course-share-menu .social-actions,.social-dropdown-panel,.follow-links{grid-template-columns:none!important;display:flex!important;flex-wrap:wrap;gap:12px;align-items:center;justify-content:flex-start}
+.social-dropdown-panel strong,.social-dropdown-panel p{flex-basis:100%}
+.social-circle,.social-actions a.social-circle,.follow-links a.social-circle,.fiche-share a.social-circle{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 46px;width:46px!important;height:46px!important;min-width:46px;box-sizing:border-box;padding:0!important;border:0!important;border-radius:50%!important;color:white!important;background:#123251;font-size:0;box-shadow:0 4px 12px #12325122;text-decoration:none}
+.social-circle svg{width:23px;height:23px;flex-shrink:0}.social-circle:hover{transform:translateY(-2px)}.social-circle:focus-visible{outline:3px solid #f08b28;outline-offset:3px}
+.social-circle[data-network="facebook"],.social-circle[data-brand="facebook"]{background:#1877f2!important}.social-circle[data-network="whatsapp"],.social-circle[data-brand="whatsapp"]{background:#128c7e!important}.social-circle[data-network="x"],.social-circle[data-brand="x"]{background:#111827!important}.social-circle[data-network="linkedin"],.social-circle[data-brand="linkedin"]{background:#0a66c2!important}.social-circle[data-network="telegram"]{background:#229ed9!important}.social-circle[data-brand="instagram"]{background:linear-gradient(45deg,#f9a23b,#df287c,#7046c8)!important}.social-circle[data-brand="youtube"]{background:#ff0033!important}
+.fiche-share{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.fiche-share>*{width:auto}.fiche-share button{flex:0 1 auto!important;width:auto!important}.social-actions [data-copy]{flex-basis:100%}
+</style><script src="/assets/social.js" defer></script></body></html>`;
 }
 
 /* ---------- Carte formation ---------- */
+function socialIcon(name){const paths={facebook:'<path d="M14 22v-9h3l.5-4H14V7c0-1 .3-2 2-2h2V1h-3c-4 0-5 2-5 6v2H7v4h3v9z"/>',whatsapp:'<path fill="none" stroke="currentColor" stroke-width="1.8" d="M20 11.5a8.5 8.5 0 0 1-12.8 7.3L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 7c-2 3 4 9 7 7l-2-2-1 1-2-2 1-1z"/>',x:'<path fill="none" stroke="currentColor" stroke-width="2" d="M4 3l16 18M20 3L4 21M4 3h5l11 18h-5z"/>',linkedin:'<path d="M3 8h4v13H3zM3 3h4v4H3zM10 8h4v2c1-3 8-3 8 3v8h-4v-7c0-3-4-3-4 0v7h-4z"/>',telegram:'<path d="M22 3L2 11l7 3 3 7 3-5 5 4z"/>',instagram:'<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="6" r="1"/>',youtube:'<rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 8l6 4-6 4z" fill="#ff0033"/>'};return `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">${paths[name]||''}</svg>`;}
 function partage(path, title, install = false) {
  const icon=(body)=>`<svg class="social-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">${body}</svg>`;
  const facebook=icon('<path fill="currentColor" d="M14 22v-9h3l.5-4H14V7c0-1 .3-2 2-2h2V1h-3c-4 0-5 2-5 6v2H7v4h3v9z"/>');
@@ -538,15 +547,15 @@ function partage(path, title, install = false) {
  const copy=icon('<rect x="8" y="8" width="12" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 5V3H3v13h2" fill="none" stroke="currentColor" stroke-width="1.8"/>');
  if(install){
  const networks=[['Facebook','FACEBOOK'],['Instagram','INSTAGRAM'],['WhatsApp','WHATSAPP'],['X','X'],['LinkedIn','LINKEDIN'],['YouTube','YOUTUBE']];
- const links=networks.map(([label,key])=>{const url=process.env['OASIS_SOCIAL_'+key]||'';return /^https:\/\//i.test(url)?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`:'';}).filter(Boolean).join('');
- return `<div class="home-social-menus"><details class="social-dropdown"><summary>↗ Partager</summary><div class="social-dropdown-panel social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}"><strong>Partager OASIS</strong><a data-network="facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(path)}" target="_blank" rel="noopener noreferrer">${facebook} Facebook</a><a data-network="whatsapp" href="https://wa.me/?text=${encodeURIComponent(title+' '+path)}" target="_blank" rel="noopener noreferrer">${whatsapp} WhatsApp</a><a data-network="x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}" target="_blank" rel="noopener noreferrer">${x} X</a><button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details><details class="social-dropdown"><summary>♡ Suivez-nous</summary><div class="social-dropdown-panel follow-links"><strong>Retrouvez OASIS</strong>${links||'<p>Nos liens vers les réseaux sociaux seront disponibles prochainement.</p>'}</div></details></div>`;
+ const links=networks.map(([label,key])=>{const url=process.env['OASIS_SOCIAL_'+key]||'';return /^https:\/\//i.test(url)?`<a class="social-circle" data-brand="${key.toLowerCase()}" aria-label="${label}" title="${label}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${socialIcon(key.toLowerCase())}</a>`:'';}).filter(Boolean).join('');
+ return `<div class="home-social-menus"><details class="social-dropdown"><summary>↗ Partager</summary><div class="social-dropdown-panel social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}"><strong>Partager OASIS</strong><a class="social-circle" data-network="facebook" aria-label="Partager sur facebook" title="facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('facebook')}</a><a class="social-circle" data-network="whatsapp" aria-label="Partager sur whatsapp" title="whatsapp" href="https://wa.me/?text=${encodeURIComponent(title+' '+path)}" target="_blank" rel="noopener noreferrer">${socialIcon('whatsapp')}</a><a class="social-circle" data-network="x" aria-label="Partager sur x" title="x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}" target="_blank" rel="noopener noreferrer">${socialIcon('x')}</a><button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details><details class="social-dropdown"><summary>♡ Suivez-nous</summary><div class="social-dropdown-panel follow-links"><strong>Retrouvez OASIS</strong>${links||'<p>Nos liens vers les réseaux sociaux seront disponibles prochainement.</p>'}</div></details></div>`;
  }
  return `<details class="social-dropdown course-share-menu"><summary>↗ Partager</summary><div class="social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}" aria-label="Options de partage">
- <a data-network="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${facebook}<span>Facebook</span></a>
- <a data-network="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${whatsapp}<span>WhatsApp</span></a>
- <a data-network="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${x}<span>X</span></a>
- <a data-network="linkedin" href="${esc(path)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
- <a data-network="telegram" href="${esc(path)}" target="_blank" rel="noopener noreferrer">Telegram</a>
+ <a class="social-circle" data-network="facebook" aria-label="Partager sur facebook" title="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('facebook')}</a>
+ <a class="social-circle" data-network="whatsapp" aria-label="Partager sur whatsapp" title="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('whatsapp')}</a>
+ <a class="social-circle" data-network="x" aria-label="Partager sur x" title="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('x')}</a>
+ <a class="social-circle" data-network="linkedin" aria-label="Partager sur linkedin" title="linkedin" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('linkedin')}</a>
+ <a class="social-circle" data-network="telegram" aria-label="Partager sur telegram" title="telegram" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('telegram')}</a>
  <button type="button" data-native-share>Autres applications</button>
  <button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details>`;
 }
@@ -565,7 +574,7 @@ function carteCours(c, user = null, demarrer = false) {
       </div>
       ${note ? `<div class="note">${etoiles(note)} ${note} <span style="color:var(--sourd);font-weight:500">(${count})</span></div>` : ''}
       <div class="prix">${c.prix === 0 ? '<span style="color:var(--vert)">Gratuit</span>' : fmtHTG(c.prix)}${c.prixBarre ? `<s>${fmtHTG(c.prixBarre)}</s>` : ''}</div>
-    </div></a><div class="course-share">${demarrer ? `<a class="btn course-start" href="/acheter/${esc(c.id)}" aria-label="Démarrer la formation ${esc(c.titre)}">Démarrer →</a>` : ''}${partage('/formation/' + c.id+'?partage=2', require('../lib/partage-formation').text(c))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
+    </div></a><div class="course-share">${demarrer ? `<a class="btn course-start" href="/acheter/${esc(c.id)}" aria-label="Démarrer la formation ${esc(c.titre)}">Démarrer →</a>` : ''}${partage(require('../lib/image-partage').sharePath(c), require('../lib/partage-formation').text(c))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
 }
 
 function formationTicker(courses) {
@@ -635,7 +644,7 @@ function landing(courses, stats, user) {
   </div>
 
   <h2>Catégories populaires <a href="/formations" style="font-size:13.5px;font-weight:600;margin-left:8px">Voir toutes</a></h2>
-  <div class="grille g4">${CATEGORIES.slice(0, 8).map(cat => `
+  <div class="grille g4">${categories().slice(0, 8).map(cat => `
     <a class="catbox" href="/formations?categorie=${cat.id}" style="text-decoration:none">
       <span class="em">${cat.emoji}</span><b>${esc(cat.label)}</b>
       <span>${nbParCat(courses, cat.id)} formation(s)</span></a>`).join('')}
@@ -679,7 +688,7 @@ function catalogue(courses, { cat, q, fmt, mod }, user) {
       <input name="q" value="${esc(q || '')}" placeholder="Un métier, une compétence…"></div>
     <div style="flex:1;min-width:175px"><label>Domaine métier</label>
       <select name="categorie"><option value="">Tous les domaines</option>
-      ${CATEGORIES.map(c => `<option value="${c.id}" ${cat === c.id ? 'selected' : ''}>${c.emoji} ${esc(c.label)}</option>`).join('')}</select></div>
+      ${categories().map(c => `<option value="${c.id}" ${cat === c.id ? 'selected' : ''}>${c.emoji} ${esc(c.label)}</option>`).join('')}</select></div>
     <div style="flex:1;min-width:165px"><label>Durée du parcours</label>
       <select name="format"><option value="">Toutes durées</option>
       ${FORMATS.map(f => `<option value="${f.id}" ${fmt === f.id ? 'selected' : ''}>${esc(f.label)} (${esc(f.duree)})</option>`).join('')}</select></div>
@@ -724,14 +733,14 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
           </div>
           <div class="fiche-share">
             <span style="font-size:13px;color:var(--sourd);font-weight:700">PARTAGER :</span>
-            <a class="btn petit" style="background:#25D366" target="_blank" rel="noopener"
-              href="https://wa.me/?text=${texte}%20${lien}">WhatsApp</a>
-            <a class="btn petit" style="background:#1877F2" target="_blank" rel="noopener"
-              href="https://www.facebook.com/sharer/sharer.php?u=${lien}">Facebook</a>
-            <a class="btn petit" style="background:#0F172A" target="_blank" rel="noopener"
-              href="https://twitter.com/intent/tweet?text=${texte}&url=${lien}">X</a>
-            <a class="btn petit" style="background:#0A66C2" target="_blank" rel="noopener"
-              href="https://www.linkedin.com/sharing/share-offsite/?url=${lien}">LinkedIn</a>
+            <a class="social-circle" data-brand="whatsapp" aria-label="Partager sur WhatsApp" title="WhatsApp" style="background:#25D366" target="_blank" rel="noopener"
+              href="https://wa.me/?text=${texte}%20${lien}">${socialIcon('whatsapp')}</a>
+            <a class="social-circle" data-brand="facebook" aria-label="Partager sur Facebook" title="Facebook" style="background:#1877F2" target="_blank" rel="noopener"
+              href="https://www.facebook.com/sharer/sharer.php?u=${lien}">${socialIcon('facebook')}</a>
+            <a class="social-circle" data-brand="x" aria-label="Partager sur X" title="X" style="background:#0F172A" target="_blank" rel="noopener"
+              href="https://twitter.com/intent/tweet?text=${texte}&url=${lien}">${socialIcon('x')}</a>
+            <a class="social-circle" data-brand="linkedin" aria-label="Partager sur LinkedIn" title="LinkedIn" style="background:#0A66C2" target="_blank" rel="noopener"
+              href="https://www.linkedin.com/sharing/share-offsite/?url=${lien}">${socialIcon('linkedin')}</a>
             <button class="btn ligne petit" onclick="navigator.clipboard.writeText(decodeURIComponent('${lien}')).then(()=>this.textContent='Copié ✓')">🔗 Copier le lien</button>
           </div>
           <h2>Description</h2><p>${esc(c.description)}</p>
@@ -1219,14 +1228,11 @@ function contactPage(user, sent, programme) {
   <div class="grille" style="grid-template-columns:.8fr 1.4fr;align-items:start">
     <div class="carte">
       <h2 style="margin-top:0">Nos coordonnées</h2>
-      <p>📧 <b>Email</b><br>support@oasis.ht<br><small class="aide">Nous répondons sous 24 h</small></p>
-      <p style="margin-top:12px">📞 <b>Téléphone / WhatsApp</b><br>+509 xx xx xxxx<br><small class="aide">Lun – Ven : 9h00 – 17h00</small></p>
-      <p style="margin-top:12px">💬 <b>Chat en direct</b><br>Disponible sur la plateforme</p>
-      <p style="margin-top:12px">📍 <b>Adresse</b><br>Oasis Centre Numérique de Formation Professionnelle, Port-au-Prince, Haïti</p>
+      ${require('../lib/contact-settings').display()}
     </div>
     <div class="carte">
       <h2 style="margin-top:0">Envoyez-nous un message</h2>
-      ${sent ? '<div class="alerte ok">Merci ! Votre message a bien été envoyé — nous répondons sous 24 h.</div>' : ''}
+      ${sent ? '<div class="alerte ok">Merci ! Votre message a bien été envoyé. '+esc(require('../lib/contact-settings').config().delai)+'</div>' : ''}
       <form method="POST" action="/contact">
         <div class="grille g2">
           <div><label>Nom complet *</label><input name="nom" required value="${esc(user ? user.name : '')}"></div>

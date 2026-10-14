@@ -41,7 +41,7 @@ function ressourcesLecon(c,m,l,user){return `        <div class="panneau" style=
    ============================================================ */
 const P = require('../lib/progression');
 const { esc, fmtHTG } = require('../lib/utils');
-const { CATEGORIES, FORMATS, MODALITES, SOCLE_TRANSVERSAL, categorie, format: fmtDe, modalite: modDe, noteCours, nbInscrits, nbLecons, epreuvesDe, TYPES_EPREUVES } = require('../lib/db');
+const { categories, FORMATS, MODALITES, SOCLE_TRANSVERSAL, categorie, format: fmtDe, modalite: modDe, noteCours, nbInscrits, nbLecons, epreuvesDe, TYPES_EPREUVES } = require('../lib/db');
 const { layout, avatarHtml, etoiles } = require('./views');
 
 /* ---------- Coquille à barre latérale ---------- */
@@ -49,7 +49,7 @@ function shell(title, user, menu, activeHref, content, { sombre = false, sousTit
   const espaceMenuBase = user.role === 'admin' && menu === MENU_F
     ? [...MENU_F, ['/admin', '⚙️', 'Administration générale'], ['/admin/parametres', '⚙️', 'Paramètres'], ['/gestion', '🏛️', 'Gestion de l’institution']]
     : menu;
-  const espaceMenu=user.role==='admin'?[['/','🏠','Accueil'],['/formations','🔎','Catalogue'],...espaceMenuBase]:espaceMenuBase;
+  const espaceMenu=user.role==='admin'?[['/','🏠','Accueil'],['/formations','🔎','Catalogue'],['https://oasis-centre-num-rique-d-apprentissage.onrender.com/','📖','Bibliothèque'],...espaceMenuBase]:espaceMenuBase;
   const activityCounts=require('../lib/espace-activites').counts(user);
   const inner = `
   <div class="shell ${horizontal?'shell-horizontal':''}">
@@ -75,7 +75,7 @@ const MENU_F = [
   ['/formateur/taches', '✅', 'Tâches à faire'],
   ['/formateur/rendez-vous', '📅', 'Rendez-vous'],
   ['/formateur/outils', '🛠️', 'Outils'],
-  ['/formateur/jeux', '🎮', 'Jeux et simulations'],
+  ['/formateur/jeux', '🎮', 'Tester vos connaissances'],
   ['/formateur/revenus', '💰', 'Mes revenus'],
   ['/formateur/abonnes', '👥', 'Abonnés'],
   ['/formateur/avis', '⭐', 'Avis & évaluations'],
@@ -91,7 +91,7 @@ const MENU_A = [
   ['/apprenant/rendez-vous', '📅', 'Rendez-vous'],
   ['/apprenant/outils', '🛠️', 'Outils'],
   ['/apprenant/progression', '🏅', 'Badges et missions'],
-  ['/apprenant/jeux', '🎮', 'Jeux et simulations'],
+  ['/apprenant/jeux', '🎮', 'Tester vos connaissances'],
   ['/apprenant/certificats', '🎖️', 'Mes certificats']
 ];
 const MENU_ADMIN = [
@@ -209,7 +209,7 @@ function creerFormation(user, error, programmeLong=false) {
         <div class="grille g2">
           <div><label>Catégorie *</label><select name="categorie" required onchange="ap()">
             <option value="">Sélectionnez une catégorie</option>
-            ${CATEGORIES.map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('')}</select></div>
+            ${categories().map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('')}</select></div>
           <div><label>Niveau *</label><select name="niveau" required onchange="ap()">
             <option value="">Sélectionnez le niveau</option>
             <option>Débutant</option><option>Intermédiaire</option><option>Avancé</option><option>Tous niveaux</option></select></div>
@@ -271,7 +271,7 @@ function creerFormation(user, error, programmeLong=false) {
     </div>
   </div>
   <script>
-  const EMO=${JSON.stringify(Object.fromEntries(CATEGORIES.map(c => [c.id, c.emoji])))};
+  const EMO=${JSON.stringify(Object.fromEntries(categories().map(c => [c.id, c.emoji])))};
   function ap(){const f=document.getElementById('f');
   document.getElementById('apTitre').textContent=f.titre.value||'Titre de votre formation apparaîtra ici';
   document.getElementById('apSous').textContent=f.sousTitre.value||'Votre sous-titre apparaîtra ici';
@@ -1218,6 +1218,8 @@ function adminParametres(user, p, flash) {
   ${require('../lib/institutions-confiance').admin(user)}
   ${require('../lib/travaux-outils').toolsAdmin(user)}
   ${require('../lib/ludification').admin(user)}
+  ${require('../lib/categories-admin').admin(user)}
+  ${require('../lib/contact-settings').admin(user)}
   ${require('../lib/certification').settings(user)}
   <h2>Institution et certificats</h2>
   ${flash ? `<div class="alerte ok">${esc(flash)}</div>` : ''}

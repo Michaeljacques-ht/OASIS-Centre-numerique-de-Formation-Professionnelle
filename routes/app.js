@@ -259,7 +259,7 @@ function statsPubliques(db) {
   };
 }
 
-function socialHead(c, base){const title=c?c.titre:'OASIS — Centre numérique de formation professionnelle';const description=c?(c.description||c.sousTitre||''):'Découvrez nos formations professionnelles et développez vos compétences avec OASIS.';const url=base+(c?'/formation/'+c.id:'/');const image=new URL(c&&c.image||'/assets/banniere-oasis.png',base).href;return `<meta property="og:title" content="${U.esc(title)}"><meta property="og:description" content="${U.esc(description)}"><meta property="og:image" content="${U.esc(image)}"><meta property="og:url" content="${U.esc(url)}"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${U.esc(title)}"><meta name="twitter:description" content="${U.esc(description)}"><meta name="twitter:image" content="${U.esc(image)}">`;}
+function socialHead(c, base){const title=c?c.titre:'OASIS — Centre numérique de formation professionnelle';const description=c?(c.description||c.sousTitre||''):'Découvrez nos formations professionnelles et développez vos compétences avec OASIS.';const url=base+(c?'/formation/'+c.id:'/');const image=c?require('../lib/image-partage').url(c,base):require('../lib/image-partage').siteImage(base);return `<meta property="og:title" content="${U.esc(title)}"><meta property="og:description" content="${U.esc(description)}"><meta property="og:image" content="${U.esc(image)}"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${U.esc(title)}"><meta property="og:url" content="${U.esc(url)}"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${U.esc(title)}"><meta name="twitter:description" content="${U.esc(description)}"><meta name="twitter:image" content="${U.esc(image)}">`;}
 
 async function handle(req, res) {
   const db = get();
@@ -267,6 +267,9 @@ async function handle(req, res) {
   const method = req.method;
   const user = currentUser(req);
   if(await require('../lib/image-partage').handle(req,res))return;
+  if(await require('../lib/connaissances').handle(req,res,user))return;
+  if(await require('../lib/contact-settings').handle(req,res,user))return;
+  if(await require('../lib/categories-admin').handle(req,res,user))return;
   if(await require('../lib/ludification').handle(req,res,user))return;
   if(await require('../lib/travaux-outils').handle(req,res,user))return;
   if(await require('../lib/espace-activites').handle(req,res,user))return;
@@ -363,7 +366,7 @@ async function handle(req, res) {
     }));
     const dejaInscrit = user && db.enrollments.some(e => e.userId === user.id && e.courseId === c.id);
     return U.sendHTML(res, 200, V.ficheCours(c, formateur, avisList, dejaInscrit, user,
-      U.baseUrl(req) + '/formation/' + c.id+'?partage=2'));
+      U.baseUrl(req) + require('../lib/image-partage').sharePath(c)));
   }
 
   if (path === '/tarifs' && method === 'GET') {
@@ -1335,7 +1338,7 @@ async function handle(req, res) {
     const c = {
       id: U.rid('crs', 6), formateurId: u.id, parcoursType:programmeLong?'programme_long':'formation',
       titre: String(data.titre).slice(0, 100), sousTitre: String(data.sousTitre || '').slice(0, 150),
-      categorie: DB.CATEGORIES.some(x => x.id === data.categorie) ? data.categorie : 'numerique',
+      categorie: DB.categories().some(x => x.id === data.categorie) ? data.categorie : 'numerique',
       format: DB.FORMATS.some(f => f.id === data.format) ? data.format : 'certificat_pro',
       modalite: DB.MODALITES.some(m => m.id === data.modalite) ? data.modalite : 'en_ligne',
       lieuPratique: String(data.lieuPratique || '').slice(0, 120) || null,
