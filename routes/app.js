@@ -11,9 +11,7 @@ const PP = require('../lib/plopplop');
 const QR = require('../lib/qrcode');
 const F = require('../lib/files');
 const GEST = require('./gestion');
-const MAIL = require('../lib/notifications-email');
 
-const P = require('../lib/progression');
 /* ---------- Aides quiz & complétion ---------- */
 function lireQuestion(data) {
   const options = [data.opt1, data.opt2, data.opt3, data.opt4]
@@ -26,7 +24,7 @@ function lireQuestion(data) {
 function corrigerQuiz(quiz, data) {
   let score = 0;
   for (const q of quiz.questions) {
-    if (String(data['q_' + q.id] ?? '').trim() !== '' && Number(data['q_' + q.id]) === q.bonne) score++;
+    if (Number(data['q_' + q.id]) === q.bonne) score++;
   }
   const total = quiz.questions.length;
   const pct = total ? Math.round(100 * score / total) : 0;
@@ -49,7 +47,7 @@ function bilanNotes(enr, c) {
   const evals = (enr && enr.evaluations) || {};
   const soum = (enr && enr.soumissions) || {};
   const cfg = configEvaluation(c);
-  const modulesQuiz = c.modules.filter(m => m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length));
+  const modulesQuiz = c.modules.filter(m => m.quiz && m.quiz.questions && m.quiz.questions.length);
   const epreuves = DB.epreuvesDe(c);
   const lignes = modulesQuiz.map(m => ({
     cible: m.id, libelle: 'Quiz — ' + m.titre,
@@ -82,7 +80,7 @@ function bilanNotes(enr, c) {
   } else if (moyQuiz !== null) note = moyQuiz;
   else if (pctExam !== null) note = pctExam;
   const aEvaluations = note !== null;
-  const reussi = P.finaleOuverte(c, enr || {}) && (!aEvaluations || (note >= cfg.seuil && examFait && (!aExam || pctExam >= cfg.seuil)));
+  const reussi = !aEvaluations || (note >= cfg.seuil && examFait);
   return { cfg, lignes, lignesExam, epreuves, moyQuiz, pctExam, aExam, examFait, note, aEvaluations, reussi };
 }
 /* Correction d'un texte à trous : {{mot}} → comparaison insensible à la casse. */
@@ -110,8 +108,8 @@ function bilanCompetences(enr, c) {
   const evals = (enr && enr.evaluations) || {};
   return c.modules.map((m, i) => {
     const lecOk = m.lecons.length > 0 && m.lecons.every(l => done.has(l.id));
-    const aQuiz = m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length);
-    const quizOk = !aQuiz || (evals[m.id] && evals[m.id].pct >= P.seuil(c));
+    const aQuiz = m.quiz && m.quiz.questions && m.quiz.questions.length;
+    const quizOk = !aQuiz || (evals[m.id] && evals[m.id].reussi);
     const commence = m.lecons.some(l => done.has(l.id)) || (aQuiz && evals[m.id]);
     return {
       module: m, index: i,
@@ -139,7 +137,7 @@ function releveDeNotes(enr, c) {
 
   const modules = c.modules.map((m, i) => {
     const r = evals[m.id] || null;
-    const aQuiz = !!(m.quiz && (m.quiz.html || m.quiz.questions && m.quiz.questions.length));
+    const aQuiz = !!(m.quiz && m.quiz.questions && m.quiz.questions.length);
     const lecFaites = m.lecons.filter(l => done.has(l.id)).length;
     const cm = comp[i] || { competences: [], statut: 'a_venir' };
     return {
@@ -148,11 +146,10 @@ function releveDeNotes(enr, c) {
       lecons: m.lecons.length, lecFaites,
       aQuiz,
       note: r ? r.score : null,
-      sur: r ? r.total : (aQuiz ? (m.quiz.html ? null : m.quiz.questions.length) : null),
+      sur: r ? r.total : (aQuiz ? m.quiz.questions.length : null),
       pct: r ? r.pct : (aQuiz ? 0 : null),
       statut: cm.statut,
       competences: cm.competences,
-      grilleCompetences: require('../lib/module-competences').grille(m),
       acquises: cm.statut === 'acquise' ? cm.competences : []
     };
   });
@@ -177,7 +174,9 @@ function releveDeNotes(enr, c) {
   const totalComp = modules.reduce((n, m) => n + m.competences.length, 0);
   const totalAcq = modules.reduce((n, m) => n + m.acquises.length, 0);
   const note = bilan.note;
-  const mention = require('../lib/certification').mention(note,bilan.cfg.seuil);
+  const mention = note === null ? '—'
+    : note >= 90 ? 'Excellent' : note >= 80 ? 'Très bien' : note >= 70 ? 'Bien'
+    : note >= 60 ? 'Assez bien' : note >= bilan.cfg.seuil ? 'Passable' : 'Insuffisant';
   const heures = c.modules.reduce((t, m) => t + m.lecons.reduce((x, l) => x + (Number(l.duree) || 0), 0), 0);
 
   return { code, modules, epreuves, bilan, mention, totalComp, totalAcq,
@@ -202,14 +201,8 @@ function parametresCertificat(db) {
     signatureUrl: p.signatureUrl || '/assets/signature.png',
     signataireNom: p.signataireNom || 'Michael Jacques',
     signataireTitre: p.signataireTitre || 'Directeur général — Oasis',
-    villeCertificat: p.villeCertificat || 'Port-au-Prince, Haïti',
-    institutionWeb: p.institutionWeb || process.env.BASE_URL || '',
-    institutionEmail: p.institutionEmail || process.env.MAIL_FROM || '',
-    institutionTelephone: p.institutionTelephone || ''
+    villeCertificat: p.villeCertificat || 'Port-au-Prince, Haïti'
   };
-}
-function urlVerification(req, enrId) {
-  return U.baseUrl(req) + '/v/' + encodeURIComponent(enrId);
 }
 /* Accès aux espaces communautaires d'une formation (forum, annonces). */
 function accesCours(db, u, c) {
@@ -253,91 +246,26 @@ function pctEnrollment(e, course) {
 function statsPubliques(db) {
   return {
     nbCours: db.courses.filter(c => c.statut === 'publiee').length,
-    nbApprenants: db.users.filter(u => u.role === 'apprenant').length,
-    nbFormateurs: db.users.filter(u => u.role === 'formateur').length,
-    nbEntreprises: db.users.filter(u => u.role === 'entreprise').length
+    nbApprenants: db.users.filter(u => u.role === 'apprenant').length + 15200,
+    nbFormateurs: db.users.filter(u => u.role === 'formateur').length + 420,
+    nbEntreprises: db.users.filter(u => u.role === 'entreprise').length + 200
   };
 }
-
-function socialHead(c, base){const title=c?c.titre:'OASIS — Centre numérique de formation professionnelle';const description=c?(c.description||c.sousTitre||''):'Découvrez nos formations professionnelles et développez vos compétences avec OASIS.';const url=base+(c?'/formation/'+c.id:'/');const image=c?require('../lib/image-partage').url(c,base):require('../lib/image-partage').siteImage(base);return `<meta property="og:title" content="${U.esc(title)}"><meta property="og:description" content="${U.esc(description)}"><meta property="og:image" content="${U.esc(image)}"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${U.esc(title)}"><meta property="og:url" content="${U.esc(url)}"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${U.esc(title)}"><meta name="twitter:description" content="${U.esc(description)}"><meta name="twitter:image" content="${U.esc(image)}">`;}
 
 async function handle(req, res) {
   const db = get();
   const path = req.pathname;
   const method = req.method;
   const user = currentUser(req);
-  if(await require('../lib/image-partage').handle(req,res))return;
-  if(await require('../lib/connaissances').handle(req,res,user))return;
-  if(await require('../lib/contact-settings').handle(req,res,user))return;
-  if(await require('../lib/categories-admin').handle(req,res,user))return;
-  if(await require('../lib/ludification').handle(req,res,user))return;
-  if(await require('../lib/travaux-outils').handle(req,res,user))return;
-  if(await require('../lib/espace-activites').handle(req,res,user))return;
-  if(await require('../lib/institutions-confiance').handle(req,res,user))return;
-  const admission=require('../lib/admissions');
-  if(await admission.handle(req,res,user))return;
-  const admissionAccess=path.match(/^\/(?:acheter|apprenant\/cours)\/(crs_[a-z0-9]+)(?:\/|$)/i);
-  if(user&&admissionAccess){const c=db.courses.find(c=>c.id===admissionAccess[1]);if(c&&!admission.approved(user,c))return U.redirect(res,'/admission/'+c.id);}
-  if(user&&path.startsWith('/fichiers/')){const name=path.split('/').pop(),c=db.courses.find(c=>c.parcoursType==='programme_long'&&JSON.stringify(c.modules||[]).includes(name));if(c&&user.role!=='admin'&&c.formateurId!==user.id&&!admission.approved(user,c))return U.sendHTML(res,403,'Admission requise.');}
-  if(await require('../lib/certification').handle(req,res,user))return;
-  if(await require('../lib/diagnostique').handle(req,res,user))return;
-  if(await require('../lib/evaluation-ia').handle(req,res,user))return;
-  if(await require('../lib/rencontres-outils').handle(req,res,user))return;
   const flash = req.query.get('ok');
   let m;
-
-  const S = require('../lib/security');
-  const page = (title, content, status=200) => {res.setHeader('Cache-Control','no-store');return U.sendHTML(res,status,V.securityPage(title,content,user));};
-  const form = (action, fields, label) => `<form method="POST" action="${action}">${fields}<button class="btn" style="margin-top:16px">${label}</button></form>`;
-  if(path === '/assets/graduation.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript; charset=utf-8');res.setHeader('Cache-Control','no-cache');return res.end(require('fs').readFileSync(require('path').join(__dirname,'../assets/graduation.js')));}
-  if(path === '/assets/social.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript; charset=utf-8');return res.end(require('fs').readFileSync(require('path').join(__dirname,'../assets/social.js')));}
-  if(path === '/manifest.webmanifest' && method === 'GET') {res.setHeader('Content-Type','application/manifest+json');return res.end(JSON.stringify({name:'OASIS Centre numérique de formation professionnelle',short_name:'OASIS',start_url:'/',scope:'/',display:'standalone',background_color:'#ffffff',theme_color:'#145da0',icons:[{src:'/assets/pwa-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'/assets/pwa-512.png',sizes:'512x512',type:'image/png',purpose:'any'}]}));}
-  if(path === '/sw.js' && method === 'GET') {res.setHeader('Content-Type','application/javascript');res.setHeader('Cache-Control','no-cache');return res.end(require('fs').readFileSync(require('path').join(__dirname,'../assets/pwa-sw.js')));}
-  if(path === '/mot-de-passe-oublie') {
-    if(method==='GET')return page('Mot de passe oublié',form(path,'<label>Adresse email</label><input type="email" name="email" required autocomplete="email">','Envoyer le lien de réinitialisation'));
-    if(method!=='POST')return page('Méthode non autorisée','',405);
-    if(S.limited('reset:'+req.socket.remoteAddress,5))return page('Veuillez patienter','<p>Réessayez dans 10 minutes.</p>',429);
-    if(!process.env.BREVO_API_KEY||!process.env.MAIL_FROM)return page('Envoi de courriel indisponible','<p>Contactez le support. Le service de réinitialisation par courriel doit être configuré.</p><a href="/contact">Contacter OASIS</a>',503);
-    const {data}=await U.readBody(req);const u=db.users.find(x=>x.email===String(data.email||'').trim().toLowerCase());
-    if(u){const t=S.token();u.reset={hash:S.digest(t),expires:Date.now()+1800000};save();try{await S.sendReset(u.email,U.baseUrl(req)+'/reinitialiser?token='+t);}catch(e){delete u.reset;save();console.error('[OASIS] Échec envoi réinitialisation');return page('Envoi indisponible','<p>Réessayez plus tard ou contactez le support.</p>',503);}}
-    return page('Vérifiez votre messagerie','<p>Si cette adresse correspond à un compte, un lien de réinitialisation vous a été envoyé. Vérifiez aussi vos courriels indésirables.</p>');
-  }
-  if(path === '/reinitialiser') {
-    res.setHeader('Referrer-Policy','no-referrer');
-    const data=method==='POST'?(await U.readBody(req)).data:{};const t=String(data.token||req.query.get('token')||'');
-    const u=db.users.find(x=>x.reset&&x.reset.expires>Date.now()&&x.reset.hash===S.digest(t));
-    if(!u)return page('Lien expiré ou invalide','<a href="/mot-de-passe-oublie">Demander un nouveau lien</a>',400);
-    if(method==='GET')return page('Nouveau mot de passe',form(path,`<input type="hidden" name="token" value="${U.esc(t)}"><label>Nouveau mot de passe</label><input type="password" name="password" minlength="8" required autocomplete="new-password"><label>Confirmer</label><input type="password" name="confirm" minlength="8" required autocomplete="new-password">`,'Enregistrer'));
-    if(method!=='POST')return page('Méthode non autorisée','',405);
-    if(String(data.password||'').length<8||data.password!==data.confirm)return page('Mot de passe invalide','<p>Utilisez au moins 8 caractères et deux valeurs identiques.</p>',400);
-    u.pass=U.hashPassword(data.password);delete u.reset;db.sessions=db.sessions.filter(s=>s.userId!==u.id);save();return page('Mot de passe modifié','<a class="btn" href="/login">Se connecter</a>');
-  }
-  if(path === '/securite/2fa') {
-    if(!user)return U.redirect(res,'/login?suite='+encodeURIComponent(path));
-    if(user.totpSecret)return page('Authentification à deux facteurs','<p>La double authentification est activée. Saisissez le code de votre application à chaque connexion.</p>');
-    if(method==='GET'){
-      if(!user.totpPending||user.totpPending.expires<Date.now()){user.totpPending={secret:S.secret(),csrf:S.token(),expires:Date.now()+600000};save();}
-      const key=user.totpPending.secret;const uri='otpauth://totp/'+encodeURIComponent('OASIS:'+user.email)+'?secret='+key+'&issuer=OASIS&digits=6&period=30';
-      return page('Activer l’authentification à deux facteurs',`<p>Scannez ce QR code avec Google Authenticator, Microsoft Authenticator ou une application compatible.</p>${QR.qrSvg(uri,{taille:220})}<p>Clé manuelle : <code>${key}</code></p><p>Conservez cette clé dans un endroit sûr pour récupérer l’accès en cas de perte du téléphone.</p>`+form(path,`<input type="hidden" name="csrf" value="${user.totpPending.csrf}"><label>Mot de passe actuel</label><input name="password" type="password" required autocomplete="current-password"><label>Code à six chiffres</label><input name="otp" inputmode="numeric" pattern="[0-9]{6}" required autocomplete="one-time-code">`,'Confirmer l’activation'));
-    }
-    if(method!=='POST')return page('Méthode non autorisée','',405);
-    if(S.limited('setup:'+user.id))return page('Veuillez patienter','<p>Réessayez dans 10 minutes.</p>',429);
-    const {data}=await U.readBody(req);const pending=user.totpPending;
-    const step=pending&&pending.expires>Date.now()&&data.csrf===pending.csrf&&U.verifyPassword(data.password||'',user.pass)?S.verify(pending.secret,data.otp):null;
-    if(step===null||step===false||step===undefined)return page('Activation non confirmée','<p>Vérifiez votre mot de passe et votre code.</p><a href="/securite/2fa">Réessayer</a>',400);
-    user.totpSecret=pending.secret;user.totpLastStep=step;delete user.totpPending;db.sessions=db.sessions.filter(s=>s.userId!==user.id);save();return openSession(res,user.id,'/securite/2fa');
-  }
-
-  if (await require('./evaluations-html').handle(req,res,user,majCompletion)) return;
-  if (await require('./suppression-formations').handle(req,res,user)) return;
-  if (await require('./programmes').handle(req, res, user)) return;
 
   /* ================= PUBLIC ================= */
   m = path.match(/^\/fichiers\/([a-z0-9_.-]+)$/i);
   if (m && method === 'GET') return F.serve(req, res, m[1]);
 
   if (path === '/' && method === 'GET') {
-    return U.sendHTML(res, 200, V.landing(db.courses, statsPubliques(db), user).replace('</head>', socialHead(null, U.baseUrl(req)) + '</head>'));
+    return U.sendHTML(res, 200, V.landing(db.courses, statsPubliques(db), user));
   }
 
   if (path === '/formations' && method === 'GET') {
@@ -346,7 +274,6 @@ async function handle(req, res) {
     const mod = req.query.get('modalite') || '';
     const q = (req.query.get('q') || '').toLowerCase();
     let list = db.courses.filter(c => c.statut === 'publiee');
-    if(req.query.get('nouveautes')==='1')list=list.filter(c=>Date.parse(c.publishedAt||c.createdAt||'')>=Date.now()-30*86400000).sort((a,b)=>Date.parse(b.publishedAt||b.createdAt)-Date.parse(a.publishedAt||a.createdAt));
     if (cat) list = list.filter(c => c.categorie === cat);
     if (fmt) list = list.filter(c => (c.format || 'certificat_pro') === fmt);
     if (mod) list = list.filter(c => (c.modalite || 'en_ligne') === mod);
@@ -366,7 +293,7 @@ async function handle(req, res) {
     }));
     const dejaInscrit = user && db.enrollments.some(e => e.userId === user.id && e.courseId === c.id);
     return U.sendHTML(res, 200, V.ficheCours(c, formateur, avisList, dejaInscrit, user,
-      U.baseUrl(req) + require('../lib/image-partage').sharePath(c)));
+      U.baseUrl(req) + '/formation/' + c.id));
   }
 
   if (path === '/tarifs' && method === 'GET') {
@@ -384,19 +311,9 @@ async function handle(req, res) {
     return U.redirect(res, dest + '?ok=' + encodeURIComponent('Votre plan a été mis à jour : ' + data.plan + '.'));
   }
 
-  if (path === '/pour-les-formateurs' && method === 'GET') return U.sendHTML(res, 200, V.pourFormateurs(user));
-  if (path === '/pour-les-entreprises' && method === 'GET') return U.sendHTML(res, 200, V.pourEntreprises(user));
-  if (await require('../lib/graduation-settings').handle(req,res,user)) return;
-  if (await require('../lib/portrait-graduation').handle(req,res,user)) return;
-  if (path === '/certifications' && method === 'GET') return U.sendHTML(res, 200, V.certificationsPage(user));
-  if (path === '/ressources-numeriques' && method === 'GET') return U.sendHTML(res, 200, V.ressourcesNumeriques(user));
-  if (path === '/apprentissage-professionnel' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'apprentissageProfessionnel'));
-  if (path === '/developpement-professionnel' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'developpementProfessionnel'));
-  if (path === '/apprendre-partout' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'apprendrePartout'));
-  if (path === '/evoluer-durablement' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'evoluerDurablement'));
-  if (path === '/construire-parcours' && method === 'GET') return U.sendHTML(res, 200, V.conceptPage(user, 'construireParcours'));
-  if (path === '/faq' && method === 'GET') return U.sendHTML(res, 200, V.faqPage(user));
-  if (path === '/a-propos' && method === 'GET') return U.sendHTML(res, 200, V.aPropos(user, statsPubliques(db)));
+  if (path === '/pour-les-formateurs') return U.sendHTML(res, 200, V.pourFormateurs(user));
+  if (path === '/pour-les-entreprises') return U.sendHTML(res, 200, V.pourEntreprises(user));
+  if (path === '/a-propos') return U.sendHTML(res, 200, V.aPropos(user, statsPubliques(db)));
 
   if (path === '/contact') {
     if (method === 'POST') {
@@ -409,7 +326,7 @@ async function handle(req, res) {
       }
       return U.redirect(res, '/contact?ok=1');
     }
-    return U.sendHTML(res, 200, V.contactPage(user, req.query.get('ok'), (db.programmes||[]).find(p=>p.id===req.query.get('programme')&&(p.statut==='publie'||user&&(user.role==='admin'||user.id===p.ownerId)))));
+    return U.sendHTML(res, 200, V.contactPage(user, req.query.get('ok')));
   }
 
   /* ================= AUTH ================= */
@@ -441,7 +358,6 @@ async function handle(req, res) {
     if (role === 'entreprise') { u.companyName = u.name; u.plan = 'entreprise'; }
     db.users.push(u);
     audit(u.id, 'user.registered', { role });
-    MAIL.compte(u,U.baseUrl(req));
     save();
     const dest = req.query.get('suite') ||
       (role === 'formateur' ? '/formateur' : role === 'entreprise' ? '/entreprise' : '/formations');
@@ -451,15 +367,12 @@ async function handle(req, res) {
   if (path === '/login') {
     if (method === 'GET') return U.sendHTML(res, 200, V.authForm('login', { suite: req.query.get('suite') }));
     const { data } = await U.readBody(req);
-    if(S.limited('login:'+req.socket.remoteAddress)) return U.sendHTML(res,429,V.authForm('login',{error:'Trop de tentatives. Réessayez dans 10 minutes.'}));
     const u = db.users.find(x => x.email === String(data.email || '').trim().toLowerCase());
     if (!u || !U.verifyPassword(data.password || '', u.pass)) {
       return U.sendHTML(res, 401, V.authForm('login', { error: 'Email ou mot de passe incorrect.' }));
     }
-    if(u.totpSecret){const step=S.verify(u.totpSecret,data.otp,u.totpLastStep);if(step===null)return U.sendHTML(res,401,V.authForm('login',{error:'Code de double authentification incorrect, expiré ou déjà utilisé.'}));u.totpLastStep=step;save();}
     let dest = req.query.get('suite') ||
-      ({ formateur: '/formateur', entreprise: '/entreprise', admin: '/formateur' }[u.role] || '/apprenant');
-    if(!dest.startsWith('/')||dest.startsWith('//')||dest.includes('\\'))dest='/';
+      ({ formateur: '/formateur', entreprise: '/entreprise', admin: '/admin/candidatures' }[u.role] || '/apprenant');
     // Formateur dont la candidature n'est pas encore validée → page d'attente
     if (u.role === 'formateur' && u.candidature && u.candidature.statut !== 'approuvee') {
       dest = '/candidature/statut';
@@ -501,8 +414,6 @@ async function handle(req, res) {
     }
     const formateur = c && db.users.find(u2 => u2.id === c.formateurId);
     if (formateur) formateur.balance = (formateur.balance || 0) + order.net;
-    const acheteur=db.users.find(u=>u.id===order.userId);
-    if(c&&acheteur)MAIL.achat(order,c,acheteur,U.baseUrl(req));
     audit(order.userId, 'order.paid', { orderId: order.id, courseId: order.courseId, via: 'plopplop' });
     save();
     return order;
@@ -521,7 +432,6 @@ async function handle(req, res) {
     if (c.prix === 0) {
       db.enrollments.push({ id: U.rid('enr', 6), userId: user.id, courseId: c.id,
         source: 'gratuit', progress: [], completedAt: null, createdAt: new Date().toISOString() });
-      MAIL.gratuit(db.enrollments.find(e=>e.userId===user.id&&e.courseId===c.id),c,user,U.baseUrl(req));
       audit(user.id, 'enrollment.gratuit', { courseId: c.id });
       save();
       return U.redirect(res, '/apprenant/cours/' + c.id + '?ok=' +
@@ -637,7 +547,6 @@ async function handle(req, res) {
       createdAt: new Date().toISOString() };
     db.users.push(u);
     audit(u.id, 'candidature.soumise', null);
-    MAIL.compte(u,U.baseUrl(req));
     save();
     return openSession(res, u.id, '/candidature/statut');
   }
@@ -654,11 +563,6 @@ async function handle(req, res) {
     const traite = await GEST.handle(req, res,
       { need, notFound, flash, user, parametresCertificat });
     if (traite) return;
-  }
-
-  if ((path === '/admin' || path === '/admin/') && method === 'GET') {
-    const a = need(req, res, ['admin']); if (!a) return;
-    return U.sendHTML(res, 200, E.dashAdmin(a, db));
   }
 
   /* ---- Administration : paramètres du certificat (sceau, signature) ---- */
@@ -683,7 +587,6 @@ async function handle(req, res) {
       db.parametres.signataireNom = String(data.signataireNom || '').slice(0, 100);
       db.parametres.signataireTitre = String(data.signataireTitre || '').slice(0, 120);
       db.parametres.villeCertificat = String(data.villeCertificat || '').slice(0, 60);
-      for(const key of ['institutionWeb','institutionEmail','institutionTelephone'])if(data[key]!==undefined)db.parametres[key]=String(data[key]||'').trim().slice(0,key==='institutionTelephone'?60:200);
       audit(a.id, 'parametres.certificat', null);
       save();
       return U.redirect(res, '/admin/parametres?ok=' + encodeURIComponent('Paramètres du certificat enregistrés.'));
@@ -698,7 +601,6 @@ async function handle(req, res) {
       const { data } = await U.readBody(req);
       const c = db.courses.find(x => x.id === data.id && x.statut === 'en_verification');
       if (c && ['publiee', 'brouillon'].includes(data.decision)) {
-        if(data.decision==='publiee'&&!c.publishedAt)c.publishedAt=new Date().toISOString();
         c.statut = data.decision;
         c.moderation = Object.assign({}, c.moderation, {
           decideeLe: new Date().toISOString(),
@@ -873,7 +775,7 @@ async function handle(req, res) {
   }
 
   /* ================= ÉPREUVES DE L'ÉVALUATION FINALE (formateur) ================= */
-  m = path.match(/^\/formateur\/formation\/(crs_[a-z0-9]+)\/epreuve(?:\/(ep_[a-z0-9_]+))?(\/.*)?$/i);
+  m = path.match(/^\/formateur\/formation\/(crs_[a-z0-9]+)\/epreuve(?:\/(ep_[a-z0-9]+))?(\/.*)?$/i);
   if (m && method === 'POST') {
     const u = need(req, res, ['formateur', 'admin']); if (!u) return;
     const c = db.courses.find(x => x.id === m[1] && (x.formateurId === u.id || u.role === 'admin'));
@@ -891,7 +793,6 @@ async function handle(req, res) {
         titre: String(data.titre).slice(0, 120),
         consigne: String(data.consigne || '').slice(0, 2000),
         poids: Math.min(100, Math.max(1, Math.round(Number(data.poids) || 20))) };
-      if(data.type==='html')return U.redirect(res,retour+'?ok='+encodeURIComponent('Utilisez le bouton Importer le fichier HTML dans Évaluation finale.'));
       if (data.type === 'qcm') ep.questions = [];
       if (data.type === 'trous') {
         ep.texte = String(data.texte || '').slice(0, 3000);
@@ -984,20 +885,17 @@ async function handle(req, res) {
     const c = db.courses.find(x => x.id === m[1]);
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, '/apprenant');
-    if (!P.finaleOuverte(c,enr)) return U.redirect(res,P.suite(c,enr));
     return U.sendHTML(res, 200, E.pageExamen(u, c, enr, bilanNotes(enr, c), flash));
   }
 
-  m = path.match(/^\/apprenant\/cours\/(crs_[a-z0-9]+)\/epreuve\/(ep_[a-z0-9_]+)$/i);
+  m = path.match(/^\/apprenant\/cours\/(crs_[a-z0-9]+)\/epreuve\/(ep_[a-z0-9]+)$/i);
   if (m) {
     const u = need(req, res); if (!u) return;
     const c = db.courses.find(x => x.id === m[1]);
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, '/apprenant');
-    if (!P.finaleOuverte(c,enr)) return U.redirect(res,P.suite(c,enr));
     const ep = DB.epreuvesDe(c).find(e => e.id === m[2]);
     if (!ep) return U.redirect(res, `/apprenant/cours/${c.id}/examen`);
-    if(ep.type==='html')return U.redirect(res,'/apprenant/cours/'+c.id+'/html/'+ep.id);
     enr.soumissions = enr.soumissions || {};
     const cfgEval = configEvaluation(c);
 
@@ -1005,7 +903,6 @@ async function handle(req, res) {
       return U.sendHTML(res, 200, E.pageEpreuve(u, c, ep, enr.soumissions[ep.id] || null, null, cfgEval.melanger));
     }
 
-    if (method !== 'POST') return U.sendHTML(res,405,'Méthode non autorisée');
     // Soumission
     let resultat = null;
     if (ep.type === 'qcm') {
@@ -1065,10 +962,8 @@ async function handle(req, res) {
     const mod = c && c.modules.find(x => x.id === m[2]);
     if (!c || !mod) return notFound(res, u);
     const { data } = await U.readBody(req);
-    if(data.grilleCompetences!==undefined){
-      if(!u.moduleImageCsrf||data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');
-      try{Object.assign(mod,require('../lib/module-competences').parse(data));}catch(error){return U.redirect(res,'/formateur/formation/'+c.id+'?ok='+encodeURIComponent(error.message));}
-    }else{mod.competences=String(data.competences||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,10).map(x=>x.slice(0,100));delete mod.grilleCompetences;}
+    mod.competences = String(data.competences || '').split(',')
+      .map(x => x.trim()).filter(Boolean).slice(0, 10).map(x => x.slice(0, 100));
     save();
     return U.redirect(res, `/formateur/formation/${c.id}?ok=` +
       encodeURIComponent(`Compétences du module enregistrées (${mod.competences.length}).`));
@@ -1123,15 +1018,10 @@ async function handle(req, res) {
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, c ? '/formation/' + c.id : '/formations');
     let leconActive = null;
-    if(require('../lib/diagnostique').active(c)&&!enr.diagnosticResult&&!enr.diagnosticSkippedAt)return U.redirect(res,'/apprenant/cours/'+c.id+'/diagnostique');
     const lid = req.query.get('lecon');
     if (lid) c.modules.forEach((mo, mi) => mo.lecons.forEach(l => {
       if (l.id === lid) leconActive = { m: mo, mi, l };
     }));
-    const etats=P.etats(c,enr);
-    if(leconActive && !etats[leconActive.mi].ouvert)return U.redirect(res,P.suite(c,enr));
-    if(!lid){const suite=P.suite(c,enr);if((suite.includes('/quiz/') || suite.includes('/html/')) || (suite.endsWith('/examen') && !enr.completedAt))return U.redirect(res,suite);}
-    if(!lid && !leconActive){const prochain=etats.find(e=>e.ouvert&&!e.valide);const l=prochain?.m.lecons.find(l=>!(enr.progress||[]).includes(l.id));if(l)leconActive={m:prochain.m,mi:c.modules.indexOf(prochain.m),l};}
     const annonces = db.annonces.filter(a => a.courseId === c.id).slice(-3).reverse();
     return U.sendHTML(res, 200, E.lecteurCours(u, c, enr, leconActive, annonces, bilanNotes(enr, c)));
   }
@@ -1146,10 +1036,7 @@ async function handle(req, res) {
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, '/apprenant');
     const cible = m[2];
-    const etat=P.etats(c,enr).find(e=>e.m.id===cible);
-    if(!etat || !etat.ouvert || !etat.leconsOk)return U.redirect(res,P.suite(c,enr));
     const quiz = (c.modules.find(x => x.id === cible) || {}).quiz;
-    if(quiz?.html)return U.redirect(res,'/apprenant/cours/'+c.id+'/html/'+cible);
     if (!quiz || !quiz.questions || !quiz.questions.length) {
       return U.redirect(res, '/apprenant/cours/' + c.id);
     }
@@ -1159,16 +1046,13 @@ async function handle(req, res) {
       return U.sendHTML(res, 200, E.pageQuiz(u, c, cible, quiz, null, enr.evaluations[cible], melanger));
     }
     const { data } = await U.readBody(req);
-    if(method!=='POST')return U.sendHTML(res,405,'Méthode non autorisée');
     const resultat = corrigerQuiz(quiz, data);
-    resultat.reussi=resultat.pct>=P.seuil(c);
     const precedent = enr.evaluations[cible];
     // Le meilleur score est conservé
     if (!precedent || resultat.pct >= precedent.pct) enr.evaluations[cible] = resultat;
     majCompletion(enr, c); // la note globale dépend de toutes les évaluations
     audit(u.id, 'quiz.soumis', { courseId: c.id, cible, score: resultat.score, total: resultat.total });
     save();
-    if(c.modules.some(m=>m.id===cible) && enr.evaluations[cible].pct>=P.seuil(c))return U.redirect(res,P.suite(c,enr));
     return U.sendHTML(res, 200, E.pageQuiz(u, c, cible, quiz, resultat, enr.evaluations[cible], melanger,
       bilanNotes(enr, c)));
   }
@@ -1180,12 +1064,11 @@ async function handle(req, res) {
     const enr = c && db.enrollments.find(e => e.userId === u.id && e.courseId === c.id);
     if (!c || !enr) return U.redirect(res, '/apprenant');
     const { data } = await U.readBody(req);
-    const valid = P.etats(c,enr).some(e => e.ouvert && e.m.lecons.some(l => l.id === data.lecon));
-    if(!valid)return U.redirect(res,P.suite(c,enr));
+    const valid = c.modules.some(mo => mo.lecons.some(l => l.id === data.lecon));
     if (valid && !enr.progress.includes(data.lecon)) enr.progress.push(data.lecon);
     majCompletion(enr, c);
     save();
-    return U.redirect(res, P.apresLecon(c,enr,data.lecon));
+    return U.redirect(res, '/apprenant/cours/' + c.id);
   }
 
   if (path === '/apprenant/certificats' && method === 'GET') {
@@ -1197,13 +1080,9 @@ async function handle(req, res) {
   }
 
   /* ---- Vérification publique d'un document (cible des QR codes) ---- */
-  m = path.match(/^\/(?:v|verifier|verify|verification)\/(enr_[a-z0-9]+)\/?$/i);
-  if (!m && path === '/verifier' && req.query.get('ref')) {
-    m = [null, req.query.get('ref')];
-  }
+  m = path.match(/^\/verifier\/(enr_[a-z0-9]+)$/i);
   if (m && method === 'GET') {
-    const ref = String(m[1] || '').trim().toLowerCase();
-    const enr = db.enrollments.find(e => e.id.toLowerCase() === ref);
+    const enr = db.enrollments.find(e => e.id === m[1]);
     const cours = enr && db.courses.find(c => c.id === enr.courseId);
     const titulaire = enr && db.users.find(x => x.id === enr.userId);
     if (!enr || !cours || !titulaire) {
@@ -1212,8 +1091,6 @@ async function handle(req, res) {
     const formateur = db.users.find(x => x.id === cours.formateurId) || { name: 'Oasis' };
     const bilan = bilanNotes(enr, cours);
     const rel = releveDeNotes(enr, cours);
-    const cert=require('../lib/certification').record(enr,cours);
-    if(cert&&cert.status!=='valide')return U.sendHTML(res,200,V.securityPage('Vérification', '<h1>'+ (cert.status==='revoque'?'Certificat révoqué':'Certification en attente')+'</h1>',user));
     return U.sendHTML(res, 200, V.verification({
       id: enr.id,
       titulaire: titulaire.name,
@@ -1245,10 +1122,10 @@ async function handle(req, res) {
     if (!autorise || !cours) return notFound(res, u);
     const titulaire = db.users.find(x => x.id === enr.userId);
     const formateur = db.users.find(x => x.id === cours.formateurId) || { name: 'Oasis' };
-    const urlVerif = urlVerification(req, enr.id);
+    const urlVerif = U.baseUrl(req) + '/verifier/' + enr.id;
     return U.sendHTML(res, 200, E.releveNotes(enr, cours, titulaire, formateur,
-      releveDeNotes(enr, cours), { ...parametresCertificat(db), institutionWeb: db.parametres?.institutionWeb || U.baseUrl(req) },
-      { svg: QR.qrSvg(urlVerif, { taille: 132, couleur: '#000000' }), url: urlVerif }));
+      releveDeNotes(enr, cours), parametresCertificat(db),
+      { svg: QR.qrSvg(urlVerif, { taille: 118 }), url: urlVerif }));
   }
 
   m = path.match(/^\/certificat\/(enr_[a-z0-9]+)$/i);
@@ -1259,12 +1136,10 @@ async function handle(req, res) {
     const titulaire = db.users.find(u2 => u2.id === enr.userId);
     const formateur = db.users.find(u2 => u2.id === (cours || {}).formateurId) || { name: 'Oasis' };
     if (!cours || !titulaire) return notFound(res, user);
-    const cert = require('../lib/certification').record(enr,cours);
-    if(cert.status!=='valide')return U.sendHTML(res,403,V.securityPage('Certification',cert.status==='revoque'?'<h1>Certificat révoqué</h1>':'<h1>Certification en attente d’approbation administrative</h1>',user));
-    const urlV = urlVerification(req, enr.id);
+    const urlV = U.baseUrl(req) + '/verifier/' + enr.id;
     return U.sendHTML(res, 200, E.certificat(enr, cours, titulaire, formateur,
-      bilanNotes(enr, cours), { certification:cert,mention:releveDeNotes(enr,cours).mention, ...parametresCertificat(db), institutionWeb: db.parametres?.institutionWeb || U.baseUrl(req) },
-      { svg: QR.qrSvg(urlV, { taille: 132, couleur: '#000000' }), url: urlV }));
+      bilanNotes(enr, cours), parametresCertificat(db),
+      { svg: QR.qrSvg(urlV, { taille: 108 }), url: urlV }));
   }
 
   /* ================= ESPACE FORMATEUR ================= */
@@ -1299,25 +1174,23 @@ async function handle(req, res) {
   }
   if (path === '/formateur/formations' && method === 'GET') {
     const u = need(req, res, ['formateur', 'admin']); if (!u) return;
-    return U.sendHTML(res, 200, E.mesFormationsF(u, db.courses.filter(c => u.role === 'admin' || c.formateurId === u.id), flash));
+    return U.sendHTML(res, 200, E.mesFormationsF(u, db.courses.filter(c => c.formateurId === u.id), flash));
   }
 
   if (path === '/formateur/creer') {
-    const programmeLong=req.query.get('type')==='programme_long';
-    const creation=(u,error)=>E.creerFormation(u,error,programmeLong);
     const u = need(req, res, ['formateur', 'admin']); if (!u) return;
-    if (method === 'GET') return U.sendHTML(res, 200, creation(u));
+    if (method === 'GET') return U.sendHTML(res, 200, E.creerFormation(u));
 
     // Le formulaire envoie du multipart (image de couverture facultative)
     let data, imageMeta = null;
     if ((req.headers['content-type'] || '').startsWith('multipart/')) {
       const mp = await U.parseMultipart(req).catch(() => null);
-      if (!mp) return U.sendHTML(res, 422, creation(u, 'Envoi invalide ou fichier trop volumineux.'));
+      if (!mp) return U.sendHTML(res, 422, E.creerFormation(u, 'Envoi invalide ou fichier trop volumineux.'));
       data = mp.fields;
       const img = mp.files.find(f => f.field === 'image' && f.filename);
       if (img) {
         const r = F.saveUpload(img, ['image']);
-        if (!r.ok) return U.sendHTML(res, 422, creation(u, r.error));
+        if (!r.ok) return U.sendHTML(res, 422, E.creerFormation(u, r.error));
         imageMeta = r.fichier;
       }
     } else {
@@ -1327,18 +1200,18 @@ async function handle(req, res) {
     const plan = DB.PLANS.find(p => p.id === (u.plan || 'gratuit')) || DB.PLANS[0];
     const nb = db.courses.filter(c => c.formateurId === u.id).length;
     if (nb >= plan.maxFormations) {
-      return U.sendHTML(res, 403, creation(u,
+      return U.sendHTML(res, 403, E.creerFormation(u,
         `Votre plan « ${plan.label} » est limité à ${plan.maxFormations} formation(s). Passez à un plan supérieur dans « Tarifs ».`));
     }
     const prix = Number(data.prix);
     if (!data.titre || !data.categorie || !data.niveau || !data.description ||
         !Number.isFinite(prix) || prix < 0) {
-      return U.sendHTML(res, 422, creation(u, 'Veuillez remplir tous les champs obligatoires (*).'));
+      return U.sendHTML(res, 422, E.creerFormation(u, 'Veuillez remplir tous les champs obligatoires (*).'));
     }
     const c = {
-      id: U.rid('crs', 6), formateurId: u.id, parcoursType:programmeLong?'programme_long':'formation',
+      id: U.rid('crs', 6), formateurId: u.id,
       titre: String(data.titre).slice(0, 100), sousTitre: String(data.sousTitre || '').slice(0, 150),
-      categorie: DB.categories().some(x => x.id === data.categorie) ? data.categorie : 'numerique',
+      categorie: DB.CATEGORIES.some(x => x.id === data.categorie) ? data.categorie : 'numerique',
       format: DB.FORMATS.some(f => f.id === data.format) ? data.format : 'certificat_pro',
       modalite: DB.MODALITES.some(m => m.id === data.modalite) ? data.modalite : 'en_ligne',
       lieuPratique: String(data.lieuPratique || '').slice(0, 120) || null,
@@ -1351,7 +1224,6 @@ async function handle(req, res) {
       examenFinal: { questions: [] },
       modules: [], createdAt: new Date().toISOString()
     };
-    require('../lib/formation-details').apply(c, data);
     db.courses.push(c);
     audit(u.id, 'course.created', { id: c.id, image: !!imageMeta });
     save();
@@ -1387,18 +1259,6 @@ async function handle(req, res) {
       return U.redirect(res, `/formateur/formation/${c.id}?ok=` + encodeURIComponent('Image de couverture enregistrée.'));
     }
 
-    const moduleImage=sub.match(/^\/module\/(mod_[a-z0-9]+)\/image(\/supprimer)?$/i);
-    if(moduleImage && method==='POST'){
-      const mod=c.modules.find(m=>m.id===moduleImage[1]);if(!mod)return notFound(res,u);
-      let data,img;
-      if(moduleImage[2])data=(await U.readBody(req)).data;
-      else{const mp=await U.parseMultipart(req).catch(()=>null);data=mp?.fields||{};img=mp?.files.find(f=>f.field==='image'&&f.filename);}
-      if(!u.moduleImageCsrf||data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré. Rechargez la page.');
-      if(moduleImage[2])delete mod.image;
-      else{if(!img)return U.sendHTML(res,422,'Choisissez une image.');const r=F.saveUpload(img,['image']);if(!r.ok)return U.sendHTML(res,422,U.esc(r.error));mod.image=r.fichier.url;}
-      audit(u.id,'module.vignette',{courseId:c.id,moduleId:mod.id});save();return U.redirect(res,'/formateur/formation/'+c.id+'?ok='+encodeURIComponent(moduleImage[2]?'Vignette retirée.':'Vignette du module enregistrée.'));
-    }
-
     /* --- Ressources de module (PDF, image, vidéo, audio) --- */
     let mm2 = sub.match(/^\/module\/(mod_[a-z0-9]+)\/fichier$/i);
     if (mm2 && method === 'POST') {
@@ -1408,12 +1268,9 @@ async function handle(req, res) {
       const fic = mp && mp.files.find(f => f.field === 'fichier' && f.filename);
       if (!fic) return U.redirect(res, `/formateur/formation/${c.id}?ok=` +
         encodeURIComponent('Aucun fichier reçu ou fichier trop volumineux (' + F.LIMITES_LISIBLES + ').'));
-      if(mp.fields.leconId&&!mod.lecons.some(l=>l.id===mp.fields.leconId))return U.sendHTML(res,422,'Leçon invalide.');
-      if(mp.fields.leconId&&mp.fields.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');
       const r = F.saveUpload(fic, ['image', 'pdf', 'video', 'audio']);
       if (!r.ok) return U.redirect(res, `/formateur/formation/${c.id}?ok=` + encodeURIComponent(r.error));
       mod.fichiers = mod.fichiers || [];
-      r.fichier.leconId=mp.fields.leconId||null;
       mod.fichiers.push(r.fichier);
       audit(u.id, 'module.fichier', { module: mod.id, type: r.fichier.type });
       save();
@@ -1425,15 +1282,13 @@ async function handle(req, res) {
       const mod = c.modules.find(x => x.id === mm2[1]);
       if (!mod) return notFound(res, u);
       const { data } = await U.readBody(req);
-      if(data.leconId&&!mod.lecons.some(l=>l.id===data.leconId))return U.sendHTML(res,422,'Leçon invalide.');
-      if(data.leconId&&data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');
       let url;
       try { url = new URL(String(data.url || '').trim()); if (!/^https?:$/.test(url.protocol)) throw 0; }
       catch { return U.redirect(res, `/formateur/formation/${c.id}?ok=` +
         encodeURIComponent('Lien invalide : indiquez une URL complète en http(s)://')); }
       mod.fichiers = mod.fichiers || [];
       mod.fichiers.push({
-        leconId:data.leconId||null, id: U.rid('fic', 9), type: 'lien', url: url.toString().slice(0, 500),
+        id: U.rid('fic', 9), type: 'lien', url: url.toString().slice(0, 500),
         nomOriginal: String(data.titre || url.hostname).slice(0, 120),
         titreAffiche: String(data.titre || '').slice(0, 120) || url.hostname,
         description: String(data.description || '').slice(0, 500),
@@ -1450,7 +1305,6 @@ async function handle(req, res) {
       const fic = mod && (mod.fichiers || []).find(f => f.id === mm2[2]);
       if (!fic) return notFound(res, u);
       const { data } = await U.readBody(req);
-      if(data.leconId!==undefined){if(data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');if(data.leconId&&!mod.lecons.some(l=>l.id===data.leconId))return U.sendHTML(res,422,'Leçon invalide.');fic.leconId=data.leconId||null;}
       fic.titreAffiche = String(data.titre || '').slice(0, 120) || fic.nomOriginal;
       fic.description = String(data.description || '').slice(0, 500);
       save();
@@ -1509,9 +1363,7 @@ async function handle(req, res) {
 
     if (sub === '/module' && method === 'POST') {
       const { data } = await U.readBody(req);
-      let skills={};
-      if(data.grilleCompetences!==undefined){if(!u.moduleImageCsrf||data.csrf!==u.moduleImageCsrf)return U.sendHTML(res,403,'Formulaire expiré.');try{skills=require('../lib/module-competences').parse(data);}catch(error){return U.redirect(res,'/formateur/formation/'+c.id+'?ok='+encodeURIComponent(error.message));}}
-      if (data.titre) c.modules.push({ id: U.rid('mod', 4), titre: String(data.titre).slice(0, 120), lecons: [],...skills });
+      if (data.titre) c.modules.push({ id: U.rid('mod', 4), titre: String(data.titre).slice(0, 120), lecons: [] });
       save();
       return U.redirect(res, `/formateur/formation/${c.id}?ok=` + encodeURIComponent('Module ajouté.'));
     }
@@ -1550,7 +1402,6 @@ async function handle(req, res) {
           return U.redirect(res, back0 + '?ok=' + encodeURIComponent(
             '📋 Formation soumise à vérification — elle sera publiée après validation par l\u2019administration (délai habituel : 48 h).'));
         }
-        if(data.statut==='publiee'&&!c.publishedAt)c.publishedAt=new Date().toISOString();
         c.statut = data.statut;
         audit(u.id, 'course.statut', { id: c.id, statut: c.statut });
         save();
@@ -1569,7 +1420,6 @@ async function handle(req, res) {
       c.modalite = DB.MODALITES.some(x => x.id === data.modalite) ? data.modalite : (c.modalite || 'en_ligne');
       c.lieuPratique = String(data.lieuPratique || '').slice(0, 120) || null;
       c.socle = DB.SOCLE_TRANSVERSAL.filter(b => data['socle_' + b.id] === 'on').map(b => b.id);
-      require('../lib/formation-details').apply(c, data);
       save();
       return U.redirect(res, `/formateur/formation/${c.id}?ok=` + encodeURIComponent('Informations enregistrées.'));
     }

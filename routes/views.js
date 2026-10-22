@@ -6,7 +6,7 @@
    violet #7C3AED (espace formateur), vert #10B981 (entreprise).
    ============================================================ */
 const { esc, fmtHTG } = require('../lib/utils');
-const { categories, FORMATS, MODALITES, SOCLE_TRANSVERSAL, PLANS, categorie, format: fmtDe, modalite: modDe, blocSocle, noteCours, nbInscrits, nbLecons, epreuvesDe, TYPES_EPREUVES } = require('../lib/db');
+const { CATEGORIES, FORMATS, MODALITES, SOCLE_TRANSVERSAL, PLANS, categorie, format: fmtDe, modalite: modDe, blocSocle, noteCours, nbInscrits, nbLecons, epreuvesDe, TYPES_EPREUVES } = require('../lib/db');
 const PP = require('../lib/plopplop');
 
 const CSS = `
@@ -22,63 +22,34 @@ const CSS = `
 --degrade:linear-gradient(90deg,#001C4A 0%,#0166C2 100%);
 --degrade-accent:linear-gradient(90deg,#001C4A 0%,#0166C2 42%,#06C994 76%,#FC9F1E 100%)}
 *{box-sizing:border-box;margin:0;padding:0}
-html{overflow-x:hidden}
 body{font-family:'Inter','Segoe UI',Roboto,-apple-system,BlinkMacSystemFont,Arial,sans-serif;
 background:var(--fond);color:var(--texte);font-size:15px;line-height:1.6;
--webkit-font-smoothing:antialiased;overflow-x:hidden}
+-webkit-font-smoothing:antialiased}
 a{color:var(--bleu);text-decoration:none;font-weight:600}a:hover{text-decoration:underline}
 
 /* ---- Barre latérale verticale (navigation principale) ---- */
 .cadre{display:grid;grid-template-columns:262px 1fr;min-height:100vh;position:relative;z-index:1}
-.rail{background:linear-gradient(180deg,#fff 0%,#F8FBFF 100%);border-right:1px solid var(--ligne);
-padding:18px 14px 18px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;
-height:100vh;overflow-y:auto}
+.rail{background:#fff;border-right:1px solid var(--ligne);padding:20px 14px 18px;
+display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
 .colonne{display:flex;flex-direction:column;min-width:0}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;padding:10px;border:1px solid var(--ligne);
-border-radius:18px;background:linear-gradient(135deg,#fff 0%,#EFF6FF 100%);box-shadow:0 8px 24px rgba(0,28,74,.06)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;padding:0 6px}
 .logo:hover{text-decoration:none}
 .logo-img{width:44px;height:44px;object-fit:contain;display:block;flex:0 0 auto}
 .logo-txt{line-height:1.12;min-width:0}
 .logo .l1{color:var(--marine);font-weight:800;font-size:19px;letter-spacing:.01em;display:block}
 .logo .l2{color:var(--bleu);font-size:8.4px;letter-spacing:.04em;display:block;font-weight:700;
 text-transform:uppercase}
-.rail-nav{display:flex;flex-direction:column;gap:13px;flex:1}
-.nav-group{display:flex;flex-direction:column;gap:5px}
-.nav-title{font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#7A8AA0;
-padding:0 10px 2px}
-.rail-nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:15px;color:var(--texte);
-font-weight:700;font-size:13.8px;text-decoration:none;position:relative;transition:background .15s,box-shadow .15s,transform .15s,color .15s}
-.rail-nav a .ic{font-size:15px;width:30px;height:30px;border-radius:12px;text-align:center;flex:0 0 auto;
-display:inline-flex;align-items:center;justify-content:center;background:#F0F6FF;box-shadow:inset 0 0 0 1px rgba(1,102,194,.06)}
-.rail-nav a:hover{background:#fff;color:var(--marine);text-decoration:none;box-shadow:0 8px 20px rgba(0,28,74,.08);
-transform:translateX(2px)}
-.rail-nav a.on{background:var(--degrade);color:#fff;box-shadow:0 12px 26px rgba(0,28,74,.24)}
-.rail-nav a.on .ic{background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.24)}
-.rail-bas{border-top:1px solid var(--ligne);padding-top:14px;background:#fff;border-radius:18px;padding:14px;
-box-shadow:0 8px 22px rgba(0,28,74,.06)}
+.rail-nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.rail-nav a{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:var(--r-pilule);
+color:var(--texte);font-weight:650;font-size:14.5px;text-decoration:none}
+.rail-nav a .ic{font-size:16px;width:20px;text-align:center;flex:0 0 auto}
+.rail-nav a:hover{background:var(--bleu-pale);color:var(--marine);text-decoration:none}
+.rail-nav a.on{background:var(--marine);color:#fff;box-shadow:0 6px 16px rgba(0,28,74,.26)}
+.rail-bas{border-top:1px solid var(--ligne);padding-top:14px}
 .rail-moi{display:flex;align-items:center;gap:10px;margin-bottom:11px}
 .rail-moi b{font-size:14px;color:var(--encre);display:block;line-height:1.25}
 .rail-moi small{font-size:11px;color:var(--sourd);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 .rail-quitter{display:block;text-align:center;margin-top:9px;font-size:12.5px;color:var(--sourd)}
-
-/* ---- Barre supérieure façon portail EDUCA ---- */
-.topbar{height:76px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--ligne);
-display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 26px;
-position:sticky;top:0;z-index:35;backdrop-filter:saturate(160%) blur(10px)}
-.topbar .titre-page{display:flex;align-items:center;gap:12px;min-width:0}
-.topbar .titre-page img{width:40px;height:40px;object-fit:contain}
-.topbar .titre-page strong{display:block;color:var(--marine);font-size:16px;line-height:1.2}
-.topbar .titre-page span{display:block;color:var(--sourd);font-size:12px;font-weight:650}
-.topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-.topbar-actions .btn{box-shadow:none}
-.avatar{width:38px;height:38px;border-radius:14px;color:#fff;display:inline-flex;align-items:center;
-justify-content:center;font-weight:800;font-size:13px;box-shadow:0 8px 18px rgba(0,28,74,.16);
-flex:0 0 auto}
-.page-head{background:#fff;border:1px solid var(--ligne);border-radius:18px;padding:22px 24px;
-box-shadow:var(--ombre);margin-bottom:18px;position:relative;overflow:hidden}
-.page-head::before{content:'';position:absolute;inset:0 auto 0 0;width:5px;background:var(--degrade-accent)}
-.page-head h1{font-size:28px}
-.page-head .sous{margin-bottom:0}
 
 /* ---- En-tête compacte sur mobile ---- */
 .barre-mobile{display:none;align-items:center;gap:12px;background:#fff;
@@ -129,31 +100,6 @@ letter-spacing:.01em}
 .b-orange{background:var(--orange-pale);color:#C4520E}
 .b-violet{background:#EDEAFB;color:#3C2F8F}
 .b-rouge{background:#FDEBEB;color:#B02121}
-.concept-hero{background:linear-gradient(135deg,#fff 0%,#EFF6FF 54%,#FFF4E3 100%);border:1px solid var(--ligne);
-border-radius:24px;padding:34px;box-shadow:var(--ombre);display:grid;grid-template-columns:1.15fr .85fr;
-gap:24px;align-items:center;overflow:hidden;position:relative}
-.concept-hero::after{content:'';position:absolute;right:-70px;bottom:-90px;width:240px;height:240px;border-radius:50%;
-background:radial-gradient(circle,rgba(6,201,148,.18),rgba(1,102,194,0));pointer-events:none}
-.concept-card{background:#fff;border:1px solid var(--ligne);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(0,28,74,.06)}
-.concept-card b{color:var(--encre)}
-.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
-.doc-preview{background:#fff;border:1px solid #D9E4F2;border-radius:18px;padding:24px;box-shadow:var(--ombre);position:relative;overflow:hidden}
-.doc-preview::before{content:'';position:absolute;inset:0 auto 0 0;width:6px;background:var(--degrade-accent)}
-.doc-watermark{position:absolute;right:18px;top:16px;color:rgba(0,28,74,.07);font-size:62px;font-weight:900;line-height:1}
-.doc-head{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--ligne);padding-bottom:12px;margin-bottom:16px}
-.doc-head img{width:48px;height:48px;object-fit:contain}
-.doc-title{font-size:22px;color:var(--marine);font-weight:900;letter-spacing:.04em;text-transform:uppercase}
-.doc-line{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed #EDF2F7;font-size:13px}
-.doc-line span:first-child{color:var(--sourd);font-weight:700}
-.qr-demo{width:76px;height:76px;border:9px solid #111;background:linear-gradient(90deg,#111 18%,transparent 18% 36%,#111 36% 54%,transparent 54% 72%,#111 72%);
-border-radius:8px}
-.faq-list{display:grid;gap:10px}
-.faq-item{background:#fff;border:1px solid var(--ligne);border-radius:16px;box-shadow:0 8px 22px rgba(0,28,74,.05);overflow:hidden}
-.faq-item summary{cursor:pointer;padding:16px 18px;font-weight:800;color:var(--encre);list-style:none}
-.faq-item summary::-webkit-details-marker{display:none}
-.faq-item summary::after{content:'+';float:right;color:var(--bleu);font-size:20px;line-height:1}
-.faq-item[open] summary::after{content:'–'}
-.faq-item p{padding:0 18px 18px;color:var(--texte)}
 .b-gris{background:#F1F4F9;color:var(--sourd)}
 
 /* ---- Formulaires ---- */
@@ -178,48 +124,6 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 footer{text-align:center;color:var(--sourd);font-size:13px;padding:28px;border-top:1px solid var(--ligne);
 background:#fff}
 
-/* ---- Accueil : bannière maîtrisée + actions cliquables ---- */
-.banniere-bloc{background:linear-gradient(135deg,#EFF6FF 0%,#fff 58%,#FFF7EA 100%);
-border:1px solid var(--ligne);border-radius:24px;padding:18px;box-shadow:var(--ombre);
-margin-bottom:22px;position:relative;overflow:hidden}
-.banniere-wrap{position:relative;border-radius:18px;overflow:hidden;background:#fff;max-height:520px;
-display:flex;align-items:center;justify-content:center}
-.banniere{display:block;width:100%;height:auto;max-height:520px;object-fit:contain}
-.banniere-spot{position:absolute;border-radius:18px;outline:2px solid transparent;
-transition:background .15s,outline-color .15s,box-shadow .15s}
-.banniere-spot:hover,.banniere-spot:focus-visible{background:rgba(1,102,194,.12);
-outline-color:rgba(1,102,194,.45);box-shadow:0 0 0 6px rgba(255,255,255,.45);text-decoration:none}
-.spot-formations{left:6.4%;top:58%;width:7.7%;height:19%}
-.spot-certificats{left:16.4%;top:58%;width:7.2%;height:19%}
-.spot-ressources{left:25.9%;top:58%;width:7.2%;height:19%}
-.spot-flexible{left:35.1%;top:58%;width:7.4%;height:19%}
-.spot-developpement{left:44.6%;top:58%;width:7.5%;height:19%}
-.spot-apprendre{left:21%;top:85%;width:13.2%;height:10.5%}
-.spot-evoluer{left:38.3%;top:85%;width:11.8%;height:10.5%}
-.spot-construire{left:57%;top:85%;width:14.6%;height:10.5%}
-.spot-commencer{left:75.8%;top:85.6%;width:20.5%;height:9.2%;border-radius:999px}
-.banner-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:12px}
-.banner-actions a{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:11px 12px;
-color:var(--encre);box-shadow:0 8px 20px rgba(0,28,74,.06);display:flex;align-items:center;
-gap:9px;text-decoration:none;font-size:13.5px}
-.banner-actions a:hover{border-color:var(--bleu);transform:translateY(-1px);box-shadow:var(--ombre)}
-.banner-actions i{width:31px;height:31px;border-radius:11px;display:inline-flex;align-items:center;
-justify-content:center;background:var(--bleu-pale);font-style:normal;flex:0 0 auto}
-.formation-marquee{border:1px solid var(--ligne);background:#fff;border-radius:18px;box-shadow:var(--ombre);
-overflow:hidden;margin:0 0 24px;display:grid;grid-template-columns:auto 1fr;align-items:center}
-.formation-marquee .marquee-label{height:100%;background:var(--marine);color:#fff;padding:13px 16px;
-font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center}
-.marquee-window{overflow:hidden;min-width:0}
-.marquee-track{display:flex;gap:12px;width:max-content;animation:defilementOasis 32s linear infinite;
-padding:10px 12px}
-.formation-marquee:hover .marquee-track{animation-play-state:paused}
-.marquee-item{display:flex;align-items:center;gap:9px;min-width:260px;background:var(--fond);
-border:1px solid var(--ligne);border-radius:999px;padding:8px 12px;color:var(--encre);text-decoration:none}
-.marquee-item:hover{background:var(--bleu-pale);text-decoration:none}
-.marquee-item b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:176px}
-.marquee-item small{color:var(--sourd);font-weight:700;white-space:nowrap}
-@keyframes defilementOasis{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
 /* ---- Héros : signature « barre dégradée + titre dégradé » ---- */
 .hero{background:#fff;border:1px solid var(--ligne);border-radius:24px;padding:46px 42px;
 display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center;margin-bottom:28px;
@@ -233,8 +137,8 @@ background-clip:text;color:transparent}
 .eyebrow{display:inline-block;background:var(--bleu-pale);border:0;border-radius:99px;
 padding:6px 15px;font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--marine);
 margin-bottom:18px;text-transform:uppercase}
-.stats-h{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px}
-.stats-h>div{min-width:0;padding:14px 10px;background:#f3f8fb;border:1px solid #e1eaf0;border-radius:14px;text-align:center}.stats-h b{overflow-wrap:anywhere}.trust-section{margin-top:22px}.trust-section h2{font-size:16px;color:var(--sourd)}.trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.trust-grid>div{padding:16px;background:#f3f8fb;border-radius:12px;font-weight:700;overflow-wrap:anywhere;text-align:center}@media(max-width:480px){.stats-h{gap:6px}.stats-h>div{padding:12px 4px}.stats-h b{font-size:21px}.stats-h span{font-size:11px}.trust-grid{grid-template-columns:1fr}}
+.stats-h{display:flex;gap:32px;margin-top:28px;flex-wrap:wrap}
+.stats-h>div{margin-right:30px;min-width:92px}
 .stats-h b{font-size:24px;color:var(--marine);font-weight:800;display:block}
 .stats-h span{display:block;font-size:13px;color:var(--sourd)}
 
@@ -257,20 +161,7 @@ box-shadow:0 2px 8px rgba(0,28,74,.16)}
 .cours .e-mod.atelier{background:var(--orange-pale);color:#9A5200}
 .cours .prix{margin-top:auto;font-weight:800;font-size:18px;color:var(--marine)}
 .cours .prix s{color:var(--sourd);font-weight:500;font-size:13px;margin-left:7px}
-.note{color:var(--orange);font-weight:700;font-size:13px}
-.fiche-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.9fr);gap:24px;
-align-items:start}
-.fiche-layout>div{min-width:0}
-.fiche-cover{height:190px;display:flex;align-items:center;justify-content:center;font-size:68px}
-.fiche-body{padding:22px}
-.fiche-title{margin:8px 0 4px;overflow-wrap:anywhere}
-.fiche-meta{font-size:13.5px;color:var(--sourd)}
-.fiche-share{margin:10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.fiche-share .btn{white-space:nowrap}
-.fiche-achat{position:sticky;top:94px}
-.fiche-prix{font-size:30px;font-weight:800;line-height:1.2}
-.formateur-mini{display:flex;gap:10px;align-items:center;margin-top:8px}
-.formateur-mini span{min-width:0}.formateur-mini a,.formateur-mini small{overflow-wrap:anywhere}
+.note{color:var(--ambre);font-weight:700;font-size:13px}
 .catbox{display:flex;flex-direction:column;align-items:flex-start;gap:7px;background:#fff;
 border:1px solid var(--ligne);border-radius:var(--r-champ);padding:16px;box-shadow:var(--ombre);
 transition:transform .15s,box-shadow .15s}
@@ -285,20 +176,6 @@ border:1px solid var(--ligne);border-radius:var(--r-champ);padding:10px 12px}
 .parcours-info .pi-em{font-size:18px;line-height:1.2;flex:0 0 auto}
 .parcours-info b{display:block;font-size:13px;color:var(--encre);line-height:1.3}
 .parcours-info small{display:block;font-size:11.5px;color:var(--sourd);line-height:1.5;margin-top:2px}
-.parcours-info>div{padding:16px;border-radius:16px;background:linear-gradient(145deg,#f1f8fc,#fff);border-color:#dcebf3;gap:12px}
-.parcours-info .pi-em{display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#e0f1fa;border-radius:11px;font-size:22px}
-.parcours-info .pi-copy{min-width:0;flex:1}
-.parcours-info b{font-size:14px}.parcours-info small{font-size:12px;overflow-wrap:anywhere}
-.pedagogie-details{margin-top:22px;border-left:4px solid var(--orange)}
-.pedagogie-details>h2{margin:0 0 18px}
-.pedagogie-grille{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
-.pedagogie-bloc{display:grid;grid-template-columns:minmax(180px,28%) minmax(0,1fr);align-items:start;gap:24px;background:#fff;border:1px solid var(--ligne);border-left:4px solid #f08b28;border-radius:14px;padding:22px;min-width:0}
-.pedagogie-entete{display:flex;align-items:flex-start;gap:12px}.pedagogie-contenu{border-left:1px solid var(--ligne);padding-left:24px}
-.pedagogie-icon{font-size:24px;flex:0 0 auto}.pedagogie-bloc>div{min-width:0}
-.pedagogie-bloc h3{font-size:15px;line-height:1.5;color:var(--encre);margin:0}
-.pedagogie-bloc p,.pedagogie-bloc ul{font-size:15px;line-height:1.75;margin:0;color:var(--encre);overflow-wrap:anywhere}
-.pedagogie-bloc ul{padding-left:18px}.pedagogie-bloc li+li{margin-top:6px}.pedagogie-bloc li::marker{color:#b57616}
-@media(max-width:700px){.pedagogie-bloc{grid-template-columns:minmax(0,1fr);gap:14px;padding:18px}.pedagogie-contenu{border-left:0;border-top:1px solid var(--ligne);padding:14px 0 0}}
 /* ---- Socle transversal ---- */
 .carte.socle{border-left:4px solid var(--orange)}
 .socle-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:9px}
@@ -310,11 +187,11 @@ border-radius:var(--r-champ);padding:9px 11px}
 .catbox b{font-size:14px;color:var(--encre)}.catbox span{font-size:12px;color:var(--sourd)}
 
 /* ---- Barre latérale ---- */
-.shell{display:grid;grid-template-columns:262px minmax(0,1fr);gap:24px;align-items:start}
+.shell{display:grid;grid-template-columns:262px 1fr;gap:24px;align-items:start}
 /* Sans min-width:0, une piste 1fr se laisse élargir par son contenu
    (tableau large, URL insécable) et déborde de la colonne. */
 .shell>section{min-width:0}
-.shell>section .grille{min-width:0}.shell>section .grille>*{min-width:0}
+.shell>section .grille{min-width:0}
 /* Un tableau trop large défile horizontalement plutôt que de couper les mots. */
 .shell>section .carte{overflow-x:auto}
 aside.side{background:#fff;border:1px solid var(--ligne);border-radius:var(--r-carte);padding:18px 14px;
@@ -371,47 +248,12 @@ border:1px solid var(--ligne);border-radius:var(--r-champ);margin:7px 0;backgrou
 
 @media(max-width:980px){
   .cadre{grid-template-columns:1fr}
-  .topbar{display:none}
   .rail{position:fixed;top:0;left:0;bottom:0;width:272px;z-index:50;transform:translateX(-100%);
   transition:transform .22s ease;box-shadow:0 0 40px rgba(0,28,74,.18)}
   .barre-mobile{display:flex}
   .shell{grid-template-columns:1fr}aside.side{position:static}
-  .fiche-layout{display:block}
-  .fiche-achat{position:static;margin-top:18px}
   .hero{grid-template-columns:1fr;padding:30px 22px}.hero h1{font-size:30px}
-  .concept-hero{grid-template-columns:1fr;padding:24px}
-  .doc-grid{grid-template-columns:1fr}
   main{padding:20px 16px 60px}
-  .banner-actions{grid-template-columns:1fr 1fr}
-  .formation-marquee{grid-template-columns:1fr}
-  .formation-marquee .marquee-label{justify-content:center}
-  .banniere-wrap{max-height:none;aspect-ratio:2.45}
-  .banniere{height:100%;max-height:none;object-fit:cover;object-position:center bottom}
-  .banniere-spot{display:none}
-}
-@media(max-width:620px){
-  .grille{grid-template-columns:1fr!important}
-  .banniere-bloc{padding:14px;border-radius:22px;margin-bottom:18px}
-  .banniere-wrap{aspect-ratio:2.22;border-radius:16px}
-  .banner-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
-  .banner-actions a{min-height:56px;padding:9px 8px;border-radius:14px;gap:7px;font-size:12.2px;line-height:1.18}
-  .banner-actions i{width:28px;height:28px;border-radius:10px;font-size:14px}
-  .marquee-item{min-width:230px}
-  .page-head{padding:18px}.page-head h1{font-size:24px}
-  .concept-hero{padding:20px;border-radius:20px}
-  .doc-preview{padding:18px}
-  .doc-title{font-size:18px}
-  .doc-line{grid-template-columns:1fr;gap:2px}
-  .fiche-cover{height:150px;font-size:52px}
-  .fiche-body{padding:16px}
-  .fiche-title{font-size:25px;line-height:1.16}
-  .fiche-meta{font-size:12.5px;line-height:1.55}
-  .parcours-info{grid-template-columns:1fr}
-  .parcours-info>div{padding:11px}
-  .fiche-share .btn{flex:1 1 135px;text-align:center}
-  .fiche-achat .btn{padding:12px 14px}
-  .fiche-prix{font-size:28px}
-  .lecon-row{align-items:flex-start;flex-direction:column}
 }
 @media(prefers-reduced-motion:reduce){.rail{transition:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -427,144 +269,66 @@ function etoiles(n) {
   return '★'.repeat(v) + '☆'.repeat(5 - v);
 }
 
-function layout(title, content, { user = null, active = '', social = null, workspace = false } = {}) {
+function layout(title, content, { user = null, active = '' } = {}) {
   const roleDest = { formateur: '/formateur', entreprise: '/entreprise', apprenant: '/apprenant', admin: '/formateur' };
-  const groupes = [
-    { titre: 'Plateforme', liens: [
-      ['/', '🏠', 'Accueil'],
-      ['/formations', '📚', 'Formations'],
-      ['https://oasis-centre-num-rique-d-apprentissage.onrender.com/', '📖', 'Bibliothèque'],
-      ['/programmes', '🎓', 'Programmes longs'],
-      ['/certifications', '🏅', 'Documents officiels'],
-      ['/ressources-numeriques', '🧰', 'Ressources']
-    ] },
-    { titre: 'Espaces', liens: [
-      ['/pour-les-formateurs', '🎓', 'Formateurs'],
-      ['/pour-les-entreprises', '🏢', 'Entreprises'],
-      ['/tarifs', '💳', 'Tarifs']
-    ] },
-    ...(user?.role==='admin'?[{titre:'Administration',liens:[['/admin/parametres','⚙️','Paramètres']]}]:[]),
-    { titre: 'Institution & aide', liens: [
-      ['/a-propos', 'ℹ️', 'À propos'],
-      ['/recrutement', '📬', 'Recrutement'],
-      ['/faq', '❔', 'FAQ'],
-      ['/contact', '✉️', 'Contact']
-    ] }
+  const liens = [
+    ['/', '🏠', 'Accueil'],
+    ['/formations', '📚', 'Les formations'],
+    ['/pour-les-formateurs', '🎓', 'Pour les formateurs'],
+    ['/pour-les-entreprises', '🏢', 'Pour les entreprises'],
+    ['/tarifs', '💳', 'Tarifs'],
+    ['/a-propos', 'ℹ️', 'À propos'],
+    ['/recrutement', '📬', 'Recrutement'],
+    ['/contact', '✉️', 'Contact']
   ];
   return `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)} — Oasis</title>
-<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#145da0">
-${social ? `<link rel="canonical" href="${esc(social.url)}"><meta name="description" content="${esc(social.description)}"><meta property="og:type" content="website"><meta property="og:site_name" content="OASIS"><meta property="og:title" content="${esc(social.title)}"><meta property="og:description" content="${esc(social.description)}"><meta property="og:url" content="${esc(social.url)}"><meta property="og:image" content="${esc(social.image)}"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(social.title)}"><meta name="twitter:image:alt" content="${esc(social.title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(social.title)}"><meta name="twitter:description" content="${esc(social.description)}"><meta name="twitter:image" content="${esc(social.image)}">` : ''}
-<style>${CSS}
-.social-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.social-actions a,.social-actions button{font:inherit;font-size:12px;border:1px solid #dce3ed;border-radius:8px;padding:7px 9px;background:white;color:#145da0;cursor:pointer;text-decoration:none}.course-share{padding:10px 14px;border-top:1px solid #e5e7eb} .cours{border-radius:20px;min-width:0;box-shadow:0 5px 22px #1232510b}.cours .visuel{height:160px}.cours-link{flex:1;display:flex!important;flex-direction:column}.cours .titre{font-size:16px;min-height:44px;height:auto;white-space:normal;overflow:visible;overflow-wrap:anywhere}.cours .corps{height:auto}.cours .meta{white-space:normal;overflow:visible}.cours .meta{line-height:1.6}.cours .prix{padding-top:12px}.cours a.cours-link:hover{text-decoration:none}.course-share{background:#f7fafc;margin-top:auto;padding:14px 18px}.course-start{display:block;text-align:center;margin-bottom:10px;width:100%;box-sizing:border-box}.course-share-menu summary{text-align:center;width:100%;box-sizing:border-box}.course-share-menu .social-actions{padding-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-share-menu .social-actions>*{min-width:0;text-align:center;justify-content:center;overflow-wrap:anywhere}.course-share-menu [data-copy]{grid-column:1/-1}.course-share-menu [hidden]{display:none!important}.cours-link{display:block;color:inherit;text-decoration:none}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}@media(max-width:800px){.mobile-share{padding:8px 12px;background:white}}@media(min-width:801px){.mobile-share{display:none}}
-
-/* Boutons de partage : couleurs, contraste et zones tactiles */
-.course-share{padding:14px!important;background:#f5f8fc;border-top:1px solid #e0e8f1!important}
-.home-social-menus{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.social-dropdown{position:relative}.social-dropdown summary{list-style:none;cursor:pointer;background:#e7f2fa;color:#14557c;border:1px solid #cddfea;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700}.social-dropdown:first-child summary{background:linear-gradient(125deg,#123251,#009fc1);color:#fff;border-color:transparent}.social-dropdown summary::-webkit-details-marker{display:none}.social-dropdown summary:focus-visible{outline:3px solid #e89619;outline-offset:3px}.social-dropdown[open] summary{box-shadow:0 0 0 3px #00a6ce22}.social-dropdown-panel{position:absolute;right:0;top:calc(100% + 10px);z-index:100;width:245px;max-width:calc(100vw - 32px);padding:16px;background:#fff;border:1px solid #dce7ef;border-radius:16px;box-shadow:0 16px 38px #12325124;display:grid!important;grid-template-columns:1fr 1fr;gap:9px}.social-dropdown-panel strong{grid-column:1/-1;font-size:13px;color:#123251;margin-bottom:3px}.follow-links a{display:block;padding:10px;background:#edf5fa;border-radius:9px;text-decoration:none;font-size:13px;color:#14557c;font-weight:700}.follow-links p{grid-column:1/-1;font-size:13px;line-height:1.6;margin:0;color:#64748b}@media(max-width:480px){.home-social-menus{justify-content:center;width:100%}.social-dropdown-panel{right:auto;left:0}}
-.social-actions.social-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.social-actions a,.social-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:9px 10px!important;border:0!important;border-radius:11px!important;font-size:12px!important;font-weight:700!important;line-height:1.2;text-decoration:none!important;box-sizing:border-box;box-shadow:0 3px 8px #13375214;transition:transform .15s,box-shadow .15s;cursor:pointer}
-.social-actions a[data-network="facebook"]{background:#1877f2!important;color:white!important}
-.social-actions a[data-network="whatsapp"]{background:#128c52!important;color:white!important}
-.social-actions a[data-network="x"]{background:#111827!important;color:white!important}
-.social-actions button[data-copy]{background:#e4eef8!important;color:#174d78!important;border:1px solid #c6d9eb!important}
-.social-actions button[data-install]{background:#edf4fc!important;color:#174d78!important;border:1px solid #c6d9eb!important}
-.social-actions a:hover,.social-actions button:hover{transform:translateY(-2px);box-shadow:0 5px 12px #13375226}
-.social-actions a:focus-visible,.social-actions button:focus-visible{outline:3px solid #e89619;outline-offset:3px}
-.social-icon{flex:0 0 18px}.social-actions span{overflow-wrap:anywhere}.social-toolbar{gap:7px}.social-toolbar a,.social-toolbar button{min-height:38px}
-@media(max-width:480px){.social-actions a,.social-actions button{min-height:44px}.course-share{padding:12px!important}.social-toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.social-toolbar a,.social-toolbar button{padding:8px 5px!important;gap:4px;font-size:11px!important}}
-@media(prefers-reduced-motion:reduce){.social-actions a,.social-actions button{transition:none;transform:none!important}}
-
-</style>${workspace?'<style>.cadre.workspace-layout{grid-template-columns:minmax(0,1fr)!important}.workspace-layout>.rail{display:none!important}.workspace-layout .barre-mobile .burger{display:none}.workspace-layout main{max-width:none;width:100%;box-sizing:border-box}.workspace-layout .colonne{min-width:0}</style>':''}<style>.banniere-wrap{max-height:none!important;aspect-ratio:auto!important}.banniere{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important}.banniere-spot{display:none!important}</style></head><body>
-<div class="cadre ${workspace?'workspace-layout':''}">
+<title>${esc(title)} — Oasis</title><style>${CSS}</style></head><body>
+<div class="cadre">
   <input type="checkbox" id="ouvrir-menu" class="bascule-menu" hidden>
   <aside class="rail">
     <a class="logo" href="/" aria-label="Oasis, Centre Numérique de Formation Professionnelle — accueil">
       <img src="/assets/logo-oasis.png" alt="" class="logo-img">
       <span class="logo-txt"><span class="l1">OASIS</span><span class="l2">Centre numérique de formation professionnelle</span></span></a>
 
-    <nav class="rail-nav">${groupes.map(g => `<div class="nav-group">
-      <span class="nav-title">${esc(g.titre)}</span>
-      ${g.liens.map(([h, ic, l]) =>
-        `<a href="${h}" class="${active === h ? 'on' : ''}"><span class="ic">${ic}</span>${l}</a>`).join('')}
-    </div>`).join('')}</nav>
+    <nav class="rail-nav">${liens.map(([h, ic, l]) =>
+      `<a href="${h}" class="${active === h ? 'on' : ''}"><span class="ic">${ic}</span>${l}</a>`).join('')}</nav>
 
     <div class="rail-bas">${user
       ? `<div class="rail-moi">
            ${avatarHtml(user.name, user.role === 'formateur' ? 'var(--violet)' : user.role === 'entreprise' ? 'var(--vert)' : 'var(--bleu)')}
            <span><b>${esc(user.name)}</b><br><small>${esc(user.role === 'apprenant' ? 'Apprenant' : user.role === 'formateur' ? 'Formateur' : user.role === 'entreprise' ? 'Entreprise' : 'Administration')}</small></span></div>
          <a class="btn petit" style="width:100%;text-align:center" href="${roleDest[user.role] || '/'}">Mon espace</a>
-         <a class="rail-quitter" href="/securite/2fa">Sécurité · Double authentification</a><a class="rail-quitter" href="/logout">Quitter la session</a>`
+         <a class="rail-quitter" href="/logout">Quitter la session</a>`
       : `<a class="btn petit" style="width:100%;text-align:center" href="/register">S'inscrire</a>
          <a class="btn ligne petit" style="width:100%;text-align:center;margin-top:7px" href="/login">Se connecter</a>`}
     </div>
   </aside>
 
   <div class="colonne">
-    <header class="topbar">
-      <div class="titre-page">
-        <img src="/assets/logo-oasis.png" alt="">
-        <span><strong>OASIS Centre numérique</strong><span>Formation professionnelle · Portail en ligne</span></span>
-      </div>
-      <div class="topbar-actions">${active === '/' ? partage(require('../lib/image-partage').sitePath(), 'OASIS — Formation professionnelle', true) : ''}${user
-        ? `${avatarHtml(user.name, user.role === 'formateur' ? 'var(--violet)' : user.role === 'entreprise' ? 'var(--vert)' : 'var(--bleu)')}
-           <a class="btn petit" href="${roleDest[user.role] || '/'}">Mon espace</a>
-           <a class="btn ligne petit" href="/logout">Quitter</a>`
-        : `<a class="btn ligne petit" href="/login">Se connecter</a>
-           <a class="btn petit" href="/register">S'inscrire</a>`}
-      </div>
-    </header>
     <header class="barre-mobile">
       <label for="ouvrir-menu" class="burger" aria-label="Ouvrir le menu">☰</label>
       <a class="logo-mini" href="/"><img src="/assets/logo-oasis.png" alt=""><b>OASIS</b></a>
       ${user ? `<a class="btn petit" href="${roleDest[user.role] || '/'}">Mon espace</a>`
              : `<a class="btn petit" href="/login">Se connecter</a>`}
     </header>
-    ${active === '/' ? `<div class="mobile-share">${partage(require('../lib/image-partage').sitePath(), 'OASIS — Formation professionnelle', true)}</div>` : ''}
     <label for="ouvrir-menu" class="voile"></label>
     <main>${content}</main>
     <footer>© 2026 <b>Oasis</b> · Centre Numérique de Formation Professionnelle — Port-au-Prince, Haïti<br>
     Paiement mobile sécurisé (MonCash · NatCash · Kashpaw) · Certificats vérifiés · Support 24/7</footer>
   </div>
 </div>
-<aside id="cookie-consent" class="cookie-consent" aria-label="Préférences de cookies" hidden><b>Vos préférences de cookies</b><p>Les cookies nécessaires permettent la connexion et la sécurité. Vous pouvez accepter ou refuser les cookies facultatifs. Aucun outil de suivi publicitaire ou statistique n’est actuellement activé.</p><div><button type="button" class="btn petit" data-cookie-choice="accepted">Accepter les cookies facultatifs</button><button type="button" class="btn ligne petit" data-cookie-choice="rejected">Refuser les cookies facultatifs</button></div></aside><style>.cookie-consent[hidden]{display:none}.cookie-consent{position:fixed;bottom:65px;left:16px;z-index:150;width:420px;max-width:calc(100vw - 32px);box-sizing:border-box;background:white;border:1px solid #d8e6ef;border-radius:18px;padding:20px;box-shadow:0 12px 45px #12325130}.cookie-consent p{font-size:13px;line-height:1.6;color:#52677c}.cookie-consent>div{display:flex;gap:8px;flex-wrap:wrap}</style><style>
-.social-actions,.course-share-menu .social-actions,.social-dropdown-panel,.follow-links{grid-template-columns:none!important;display:flex!important;flex-wrap:wrap;gap:12px;align-items:center;justify-content:flex-start}
-.social-dropdown-panel strong,.social-dropdown-panel p{flex-basis:100%}
-.social-circle,.social-actions a.social-circle,.follow-links a.social-circle,.fiche-share a.social-circle{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 46px;width:46px!important;height:46px!important;min-width:46px;box-sizing:border-box;padding:0!important;border:0!important;border-radius:50%!important;color:white!important;background:#123251;font-size:0;box-shadow:0 4px 12px #12325122;text-decoration:none}
-.social-circle svg{width:23px;height:23px;flex-shrink:0}.social-circle:hover{transform:translateY(-2px)}.social-circle:focus-visible{outline:3px solid #f08b28;outline-offset:3px}
-.social-circle[data-network="facebook"],.social-circle[data-brand="facebook"]{background:#1877f2!important}.social-circle[data-network="whatsapp"],.social-circle[data-brand="whatsapp"]{background:#128c7e!important}.social-circle[data-network="x"],.social-circle[data-brand="x"]{background:#111827!important}.social-circle[data-network="linkedin"],.social-circle[data-brand="linkedin"]{background:#0a66c2!important}.social-circle[data-network="telegram"]{background:#229ed9!important}.social-circle[data-brand="instagram"]{background:linear-gradient(45deg,#f9a23b,#df287c,#7046c8)!important}.social-circle[data-brand="youtube"]{background:#ff0033!important}
-.fiche-share{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.fiche-share>*{width:auto}.fiche-share button{flex:0 1 auto!important;width:auto!important}.social-actions [data-copy]{flex-basis:100%}
-</style><script src="/assets/social.js" defer></script></body></html>`;
+</body></html>`;
 }
 
 /* ---------- Carte formation ---------- */
-function socialIcon(name){const paths={facebook:'<path d="M14 22v-9h3l.5-4H14V7c0-1 .3-2 2-2h2V1h-3c-4 0-5 2-5 6v2H7v4h3v9z"/>',whatsapp:'<path fill="none" stroke="currentColor" stroke-width="1.8" d="M20 11.5a8.5 8.5 0 0 1-12.8 7.3L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 7c-2 3 4 9 7 7l-2-2-1 1-2-2 1-1z"/>',x:'<path fill="none" stroke="currentColor" stroke-width="2" d="M4 3l16 18M20 3L4 21M4 3h5l11 18h-5z"/>',linkedin:'<path d="M3 8h4v13H3zM3 3h4v4H3zM10 8h4v2c1-3 8-3 8 3v8h-4v-7c0-3-4-3-4 0v7h-4z"/>',telegram:'<path d="M22 3L2 11l7 3 3 7 3-5 5 4z"/>',instagram:'<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="6" r="1"/>',youtube:'<rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 8l6 4-6 4z" fill="#ff0033"/>'};return `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">${paths[name]||''}</svg>`;}
-function partage(path, title, install = false) {
- const icon=(body)=>`<svg class="social-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">${body}</svg>`;
- const facebook=icon('<path fill="currentColor" d="M14 22v-9h3l.5-4H14V7c0-1 .3-2 2-2h2V1h-3c-4 0-5 2-5 6v2H7v4h3v9z"/>');
- const whatsapp=icon('<path fill="none" stroke="currentColor" stroke-width="1.8" d="M20 11.5a8.5 8.5 0 0 1-12.8 7.3L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 7c-2 3 4 9 7 7l-2-2-1 1-2-2 1-1z"/>');
- const x=icon('<path fill="none" stroke="currentColor" stroke-width="2" d="M4 3l16 18M20 3L4 21M4 3h5l11 18h-5z"/>');
- const copy=icon('<rect x="8" y="8" width="12" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 5V3H3v13h2" fill="none" stroke="currentColor" stroke-width="1.8"/>');
- if(install){
- const networks=[['Facebook','FACEBOOK'],['Instagram','INSTAGRAM'],['WhatsApp','WHATSAPP'],['X','X'],['LinkedIn','LINKEDIN'],['YouTube','YOUTUBE']];
- const links=networks.map(([label,key])=>{const url=process.env['OASIS_SOCIAL_'+key]||'';return /^https:\/\//i.test(url)?`<a class="social-circle" data-brand="${key.toLowerCase()}" aria-label="${label}" title="${label}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${socialIcon(key.toLowerCase())}</a>`:'';}).filter(Boolean).join('');
- return `<div class="home-social-menus"><details class="social-dropdown"><summary>↗ Partager</summary><div class="social-dropdown-panel social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}"><strong>Partager OASIS</strong><a class="social-circle" data-network="facebook" aria-label="Partager sur facebook" title="facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('facebook')}</a><a class="social-circle" data-network="whatsapp" aria-label="Partager sur whatsapp" title="whatsapp" href="https://wa.me/?text=${encodeURIComponent(title+' '+path)}" target="_blank" rel="noopener noreferrer">${socialIcon('whatsapp')}</a><a class="social-circle" data-network="x" aria-label="Partager sur x" title="x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}" target="_blank" rel="noopener noreferrer">${socialIcon('x')}</a><button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details><details class="social-dropdown"><summary>♡ Suivez-nous</summary><div class="social-dropdown-panel follow-links"><strong>Retrouvez OASIS</strong>${links||'<p>Nos liens vers les réseaux sociaux seront disponibles prochainement.</p>'}</div></details></div>`;
- }
- return `<details class="social-dropdown course-share-menu"><summary>↗ Partager</summary><div class="social-actions" data-share-path="${esc(path)}" data-share-title="${esc(title)}" aria-label="Options de partage">
- <a class="social-circle" data-network="facebook" aria-label="Partager sur facebook" title="facebook" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('facebook')}</a>
- <a class="social-circle" data-network="whatsapp" aria-label="Partager sur whatsapp" title="whatsapp" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('whatsapp')}</a>
- <a class="social-circle" data-network="x" aria-label="Partager sur x" title="x" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('x')}</a>
- <a class="social-circle" data-network="linkedin" aria-label="Partager sur linkedin" title="linkedin" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('linkedin')}</a>
- <a class="social-circle" data-network="telegram" aria-label="Partager sur telegram" title="telegram" href="${esc(path)}" target="_blank" rel="noopener noreferrer">${socialIcon('telegram')}</a>
- <button type="button" data-native-share>Autres applications</button>
- <button type="button" data-copy>${copy}<span>Copier le lien</span></button></div></details>`;
-}
-
-function carteCours(c, user = null, demarrer = false) {
+function carteCours(c) {
   const cat = categorie(c.categorie);
   const { note, count } = noteCours(c.id);
-  return `<article class="cours"><a class="cours-link" href="/formation/${esc(c.id)}">
-    ${c.image?`<div class="visuel course-image-complete" style="height:auto;display:block;background:#f3f7fb;position:relative"><img src="${esc(c.image)}" alt="Présentation de ${esc(c.titre)}" loading="lazy" style="display:block;width:100%;height:auto;object-fit:contain">${c.badge?`<span class="badge" style="position:static;margin:8px 12px">${esc(c.badge)}</span>`:''}</div>`:`<div class="visuel" style="background:linear-gradient(135deg,${cat.deg})">${c.badge?`<span class="badge">${esc(c.badge)}</span>`:''}${cat.emoji}</div>`}
+  return `<a class="cours" href="/formation/${esc(c.id)}" style="text-decoration:none">
+    <div class="visuel" style="background:linear-gradient(135deg,${cat.deg})${c.image ? `;background-image:url('${esc(c.image)}');background-size:cover;background-position:center` : ''}">
+      ${c.badge ? `<span class="badge ${c.badge === 'Bestseller' ? 'b-orange' : c.badge === 'Nouveau' ? 'b-vert' : 'b-violet'}">${esc(c.badge)}</span>` : ''}
+      ${c.image ? '' : cat.emoji}</div>
     <div class="corps">
       <div class="titre">${esc(c.titre)}</div>
       <div class="meta">${esc(cat.label)} · ${esc(c.niveau)} · ${esc(c.duree)}</div>
@@ -574,51 +338,17 @@ function carteCours(c, user = null, demarrer = false) {
       </div>
       ${note ? `<div class="note">${etoiles(note)} ${note} <span style="color:var(--sourd);font-weight:500">(${count})</span></div>` : ''}
       <div class="prix">${c.prix === 0 ? '<span style="color:var(--vert)">Gratuit</span>' : fmtHTG(c.prix)}${c.prixBarre ? `<s>${fmtHTG(c.prixBarre)}</s>` : ''}</div>
-    </div></a><div class="course-share">${demarrer ? `<a class="btn course-start" href="/acheter/${esc(c.id)}" aria-label="Démarrer la formation ${esc(c.titre)}">Démarrer →</a>` : ''}${partage(require('../lib/image-partage').sharePath(c), require('../lib/partage-formation').text(c))}${user&&(user.role==='admin'||user.role==='formateur'&&c.formateurId===user.id)?`<a class="btn ligne petit" style="display:block;margin-top:10px;text-align:center" href="/formateur/formation/${esc(c.id)}">Gérer la formation</a>`:''}</div></article>`;
-}
-
-function formationTicker(courses) {
-  const recentes = courses.filter(c => c.statut === 'publiee').slice(0, 8);
-  if (!recentes.length) return '';
-  const items = recentes.concat(recentes).map(c => {
-    const cat = categorie(c.categorie);
-    return `<a class="marquee-item" href="/formation/${esc(c.id)}">
-      <span>${cat.emoji}</span><b>${esc(c.titre)}</b><small>${c.prix === 0 ? 'Gratuit' : fmtHTG(c.prix)}</small></a>`;
-  }).join('');
-  return `<section class="formation-marquee" aria-label="Nouvelles formations disponibles">
-    <div class="marquee-label">Nouvelles formations</div>
-    <div class="marquee-window"><div class="marquee-track">${items}</div></div>
-  </section>`;
+    </div></a>`;
 }
 
 /* ---------- Accueil ---------- */
 function landing(courses, stats, user) {
   return layout('Accueil', `
   <div class="banniere-bloc">
-    <div class="banniere-wrap">
-      <img class="banniere" src="/assets/banniere-oasis.png"
-        alt="Oasis, Centre Numérique de Formation Professionnelle — Des compétences aujourd'hui pour un meilleur demain. Formations en ligne, certifications reconnues, ressources numériques, apprentissage flexible, développement professionnel.">
-      <a class="banniere-spot spot-formations" href="/formations" aria-label="Formations en ligne"></a>
-      <a class="banniere-spot spot-certificats" href="/certifications" aria-label="Certifications reconnues"></a>
-      <a class="banniere-spot spot-ressources" href="/ressources-numeriques" aria-label="Ressources numériques"></a>
-      <a class="banniere-spot spot-flexible" href="/apprentissage-professionnel" aria-label="Apprentissage professionnel"></a>
-      <a class="banniere-spot spot-developpement" href="/developpement-professionnel" aria-label="Développement professionnel"></a>
-      <a class="banniere-spot spot-apprendre" href="/apprendre-partout" aria-label="Apprendre partout"></a>
-      <a class="banniere-spot spot-evoluer" href="/evoluer-durablement" aria-label="Évoluer durablement"></a>
-      <a class="banniere-spot spot-construire" href="/construire-parcours" aria-label="Construire votre parcours"></a>
-      <a class="banniere-spot spot-commencer" href="/formations" aria-label="Commencez dès maintenant"></a>
-    </div>
-    <div class="banner-actions">
-      <a href="/ressources-numeriques"><i>📚</i><span>Ressources numériques</span></a>
-      <a href="/apprentissage-professionnel"><i>🌐</i><span>Apprentissage professionnel</span></a>
-      <a href="/developpement-professionnel"><i>📈</i><span>Développement professionnel</span></a>
-      <a href="/apprendre-partout"><i>🎓</i><span>Apprendre partout</span></a>
-      <a href="/evoluer-durablement"><i>⚙️</i><span>Évoluer durablement</span></a>
-      <a href="/construire-parcours"><i>🤝</i><span>Construire votre parcours</span></a>
-    </div>
+    <img class="banniere" src="/assets/banniere-oasis.png"
+      alt="Oasis, Centre Numérique de Formation Professionnelle — Des compétences aujourd'hui pour un meilleur demain. Formations en ligne, certifications reconnues, ressources numériques, apprentissage flexible, développement professionnel.">
+    <a class="banniere-cta" href="/formations" aria-label="Commencez dès maintenant : voir les formations"></a>
   </div>
-
-  ${formationTicker(courses)}
 
   <div class="hero">
     <div>
@@ -628,9 +358,9 @@ function landing(courses, stats, user) {
       ressources numériques : montez en compétences à votre rythme, où que vous soyez, et faites-les valoir
       auprès des employeurs.</p>
       <div class="stats-h">
-        <div><b>${stats.nbCours}</b><span>Formations</span></div>
-        <div><b>${stats.nbApprenants}</b><span>Apprenants</span></div>
-        <div><b>${stats.nbFormateurs}</b><span>Formateurs</span></div>
+        <div><b>${stats.nbCours}+</b><span>Formations</span></div>
+        <div><b>${stats.nbApprenants}+</b><span>Apprenants</span></div>
+        <div><b>${stats.nbFormateurs}+</b><span>Formateurs</span></div>
       </div>
     </div>
     <div>
@@ -644,15 +374,14 @@ function landing(courses, stats, user) {
   </div>
 
   <h2>Catégories populaires <a href="/formations" style="font-size:13.5px;font-weight:600;margin-left:8px">Voir toutes</a></h2>
-  <div class="grille g4">${categories().slice(0, 8).map(cat => `
+  <div class="grille g4">${CATEGORIES.slice(0, 8).map(cat => `
     <a class="catbox" href="/formations?categorie=${cat.id}" style="text-decoration:none">
       <span class="em">${cat.emoji}</span><b>${esc(cat.label)}</b>
       <span>${nbParCat(courses, cat.id)} formation(s)</span></a>`).join('')}
   </div>
 
-  <section aria-label="Nouveautés" style="margin:26px 0"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h2>✨ Nouveautés</h2><a class="btn ligne petit" href="/formations?nouveautes=1">Voir les nouvelles formations →</a></div><p class="aide">Les formations publiées au cours des 30 derniers jours.</p><div class="grille g4">${courses.filter(c=>c.statut==='publiee'&&Date.parse(c.publishedAt||c.createdAt||'')>=Date.now()-30*86400000).sort((a,b)=>Date.parse(b.publishedAt||b.createdAt)-Date.parse(a.publishedAt||a.createdAt)).slice(0,4).map(c=>carteCours(c,user,true)).join('')||'<p>Aucune nouvelle formation publiée récemment.</p>'}</div></section>
   <h2>Formations à la une</h2>
-  <div class="grille g4">${courses.filter(c => c.statut === 'publiee').slice(0, 4).map(c=>carteCours(c,user,true)).join('')}</div>
+  <div class="grille g4">${courses.filter(c => c.statut === 'publiee').slice(0, 4).map(carteCours).join('')}</div>
 
   <div class="grille g2" style="margin-top:26px">
     <div class="carte" style="background:linear-gradient(135deg,#F5F3FF,#fff)">
@@ -669,7 +398,11 @@ function landing(courses, stats, user) {
     </div>
   </div>
 
-  ${require('../lib/institutions-confiance').publicBlock()}`, { user, active: '/' });
+  <div class="carte" style="margin-top:22px;display:flex;gap:26px;flex-wrap:wrap;justify-content:space-between;align-items:center">
+    <span style="color:var(--sourd);font-size:13px;font-weight:700">ILS NOUS FONT CONFIANCE</span>
+    <b>SOGEBANK</b><b style="color:#E4002B">Digicel</b><b style="color:var(--bleu)">UNIBANK</b>
+    <b>BRH</b><b>Ministère de l'Éducation</b><b style="color:#0072BC">USAID</b>
+  </div>`, { user, active: '/' });
 }
 function nbParCat(courses, catId) {
   return courses.filter(c => c.statut === 'publiee' && c.categorie === catId).length;
@@ -678,17 +411,14 @@ function nbParCat(courses, catId) {
 /* ---------- Catalogue ---------- */
 function catalogue(courses, { cat, q, fmt, mod }, user) {
   return layout('Les formations', `
-  <div class="page-head">
-    <span class="eyebrow">CATALOGUE</span>
-    <h1>Les formations</h1>
-    <p class="sous">${courses.length} formation(s)${cat ? ' — ' + esc(categorie(cat).label) : ''}${fmt ? ' · ' + esc(fmtDe(fmt).label) : ''}${mod ? ' · ' + esc(modDe(mod).label) : ''}</p>
-  </div>
+  <h1>Les formations</h1>
+  <p class="sous">${courses.length} formation(s)${cat ? ' — ' + esc(categorie(cat).label) : ''}${fmt ? ' · ' + esc(fmtDe(fmt).label) : ''}${mod ? ' · ' + esc(modDe(mod).label) : ''}</p>
   <form method="GET" action="/formations" class="carte" style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:18px">
     <div style="flex:2;min-width:190px"><label>Rechercher</label>
       <input name="q" value="${esc(q || '')}" placeholder="Un métier, une compétence…"></div>
     <div style="flex:1;min-width:175px"><label>Domaine métier</label>
       <select name="categorie"><option value="">Tous les domaines</option>
-      ${categories().map(c => `<option value="${c.id}" ${cat === c.id ? 'selected' : ''}>${c.emoji} ${esc(c.label)}</option>`).join('')}</select></div>
+      ${CATEGORIES.map(c => `<option value="${c.id}" ${cat === c.id ? 'selected' : ''}>${c.emoji} ${esc(c.label)}</option>`).join('')}</select></div>
     <div style="flex:1;min-width:165px"><label>Durée du parcours</label>
       <select name="format"><option value="">Toutes durées</option>
       ${FORMATS.map(f => `<option value="${f.id}" ${fmt === f.id ? 'selected' : ''}>${esc(f.label)} (${esc(f.duree)})</option>`).join('')}</select></div>
@@ -697,7 +427,7 @@ function catalogue(courses, { cat, q, fmt, mod }, user) {
       ${MODALITES.map(m => `<option value="${m.id}" ${mod === m.id ? 'selected' : ''}>${m.emoji} ${esc(m.label)}</option>`).join('')}</select></div>
     <button class="btn">Filtrer</button>
   </form>
-  <div class="grille g4">${courses.map(c=>carteCours(c,user,true)).join('') ||
+  <div class="grille g4">${courses.map(carteCours).join('') ||
     '<p style="color:var(--sourd)">Aucune formation ne correspond à votre recherche.</p>'}</div>`,
   { user, active: '/formations' });
 }
@@ -707,45 +437,43 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
   const cat = categorie(c.categorie);
   const { note, count } = noteCours(c.id);
   const lien = encodeURIComponent(shareUrl || '');
-  const texte = encodeURIComponent(require('../lib/partage-formation').text(c));
+  const texte = encodeURIComponent(`Découvrez la formation « ${c.titre} » sur Oasis`);
   const nbQuiz = (c.modules || []).filter(m => m.quiz && m.quiz.questions && m.quiz.questions.length).length;
   const epreuves = epreuvesDe(c);
   const aExamen = epreuves.length;
   return layout(c.titre, `
-  <div class="fiche-layout">
+  <div class="grille" style="grid-template-columns:1.6fr .9fr;align-items:start">
     <div>
       <div class="carte" style="padding:0;overflow:hidden">
-        ${c.image?`<div class="fiche-cover" style="height:auto;display:block;background:#f3f7fb"><img src="${esc(c.image)}" alt="Présentation complète de ${esc(c.titre)}" style="display:block;width:100%;height:auto;object-fit:contain"></div>`:`<div class="fiche-cover" style="background:linear-gradient(135deg,${cat.deg})">${cat.emoji}</div>`}
-        <div class="fiche-body">
+        <div style="height:190px;background:linear-gradient(135deg,${cat.deg})${c.image ? `;background-image:url('${esc(c.image)}');background-size:cover;background-position:center` : ''};display:flex;align-items:center;justify-content:center;font-size:68px">${c.image ? '' : cat.emoji}</div>
+        <div style="padding:22px">
           ${c.badge ? `<span class="badge b-orange">${esc(c.badge)}</span>` : ''}
-          <h1 class="fiche-title">${esc(c.titre)}</h1>
+          <h1 style="margin:8px 0 4px">${esc(c.titre)}</h1>
           <p class="sous" style="margin-bottom:8px">${esc(c.sousTitre || '')}</p>
-          <p class="fiche-meta">${esc(cat.label)} · Niveau ${esc(c.niveau)} · ${esc(c.langue)} · ${esc(c.duree)}
+          <p style="font-size:13.5px;color:var(--sourd)">${esc(cat.label)} · Niveau ${esc(c.niveau)} · ${esc(c.langue)} · ${esc(c.duree)}
           ${note ? ` · <span class="note">${etoiles(note)} ${note} (${count} avis)</span>` : ''} · ${nbInscrits(c.id)} inscrit(s)</p>
 
           <div class="parcours-info">
             <div><span class="pi-em">${fmtDe(c.format).emoji}</span>
-              <div class="pi-copy"><b>${esc(fmtDe(c.format).label)}</b><small>${esc(fmtDe(c.format).duree)} · ${esc(fmtDe(c.format).description)}</small></div></div>
+              <b>${esc(fmtDe(c.format).label)}</b><small>${esc(fmtDe(c.format).duree)} · ${esc(fmtDe(c.format).description)}</small></div>
             <div><span class="pi-em">${modDe(c.modalite).emoji}</span>
-              <div class="pi-copy"><b>${esc(modDe(c.modalite).label)}</b><small>${esc(modDe(c.modalite).description)}</small></div></div>
+              <b>${esc(modDe(c.modalite).label)}</b><small>${esc(modDe(c.modalite).description)}</small></div>
             ${c.lieuPratique ? `<div><span class="pi-em">📍</span>
-              <div class="pi-copy"><b>Lieu de pratique</b><small>${esc(c.lieuPratique)}</small></div></div>` : ''}
+              <b>Lieu de pratique</b><small>${esc(c.lieuPratique)}</small></div>` : ''}
           </div>
-          <div class="fiche-share">
+          <div style="margin:10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <span style="font-size:13px;color:var(--sourd);font-weight:700">PARTAGER :</span>
-            <a class="social-circle" data-brand="whatsapp" aria-label="Partager sur WhatsApp" title="WhatsApp" style="background:#25D366" target="_blank" rel="noopener"
-              href="https://wa.me/?text=${texte}%20${lien}">${socialIcon('whatsapp')}</a>
-            <a class="social-circle" data-brand="facebook" aria-label="Partager sur Facebook" title="Facebook" style="background:#1877F2" target="_blank" rel="noopener"
-              href="https://www.facebook.com/sharer/sharer.php?u=${lien}">${socialIcon('facebook')}</a>
-            <a class="social-circle" data-brand="x" aria-label="Partager sur X" title="X" style="background:#0F172A" target="_blank" rel="noopener"
-              href="https://twitter.com/intent/tweet?text=${texte}&url=${lien}">${socialIcon('x')}</a>
-            <a class="social-circle" data-brand="linkedin" aria-label="Partager sur LinkedIn" title="LinkedIn" style="background:#0A66C2" target="_blank" rel="noopener"
-              href="https://www.linkedin.com/sharing/share-offsite/?url=${lien}">${socialIcon('linkedin')}</a>
+            <a class="btn petit" style="background:#25D366" target="_blank" rel="noopener"
+              href="https://wa.me/?text=${texte}%20${lien}">WhatsApp</a>
+            <a class="btn petit" style="background:#1877F2" target="_blank" rel="noopener"
+              href="https://www.facebook.com/sharer/sharer.php?u=${lien}">Facebook</a>
+            <a class="btn petit" style="background:#0F172A" target="_blank" rel="noopener"
+              href="https://twitter.com/intent/tweet?text=${texte}&url=${lien}">X</a>
+            <a class="btn petit" style="background:#0A66C2" target="_blank" rel="noopener"
+              href="https://www.linkedin.com/sharing/share-offsite/?url=${lien}">LinkedIn</a>
             <button class="btn ligne petit" onclick="navigator.clipboard.writeText(decodeURIComponent('${lien}')).then(()=>this.textContent='Copié ✓')">🔗 Copier le lien</button>
           </div>
           <h2>Description</h2><p>${esc(c.description)}</p>
-          ${require('../lib/formation-details').display(c)}
-          ${require('./programmes').coursePublic(c,user)}
           <h2>Programme — ${c.modules.length} module(s), ${nbLecons(c)} leçon(s)${nbQuiz ? `, ${nbQuiz} quiz` : ''}${aExamen ? ', évaluation finale certifiante' : ''}</h2>
           ${c.modules.map((m, i) => `<div class="carte" style="padding:14px;margin-bottom:10px">
             <b>Module ${i + 1} — ${esc(m.titre)}</b>
@@ -773,9 +501,8 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
       </div>
     </div>
     <div>
-      <div class="carte fiche-achat">
-        ${require('./suppression-formations').button(c,user)}
-        <div class="fiche-prix" style="color:${c.prix === 0 ? 'var(--vert)' : 'var(--encre)'}">${c.prix === 0 ? 'Gratuit' : fmtHTG(c.prix)}
+      <div class="carte" style="position:sticky;top:80px">
+        <div style="font-size:30px;font-weight:800;color:${c.prix === 0 ? 'var(--vert)' : 'var(--encre)'}">${c.prix === 0 ? 'Gratuit' : fmtHTG(c.prix)}
           ${c.prixBarre ? `<s style="font-size:16px;color:var(--sourd);font-weight:500">${fmtHTG(c.prixBarre)}</s>` : ''}</div>
         <p class="aide" style="margin:6px 0 14px">Accès illimité · Certificat de réussite · Support formateur</p>
         ${dejaInscrit
@@ -788,14 +515,14 @@ function ficheCours(c, formateur, avisList, dejaInscrit, user, shareUrl) {
         <p class="aide" style="text-align:center;margin-top:10px">🔒 Paiement MonCash · NatCash · Kashpaw</p>
         <hr style="border:none;border-top:1px solid var(--ligne);margin:16px 0">
         <b>Formateur</b>
-        <div class="formateur-mini">
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
           ${formateur.photo ? `<img src="${esc(formateur.photo)}" alt="" style="width:44px;height:44px;border-radius:99px;object-fit:cover">` : avatarHtml(formateur.name, 'var(--violet)')}
           <span><b><a href="/formateurs/${esc(formateur.id || '')}">${esc(formateur.name)}</a></b>${formateur.verified ? ' <span class="badge b-violet">Vérifié ✓</span>' : ''}
           <br><small style="color:var(--sourd)">${esc(formateur.titrePro || formateur.bio || '')}</small>
           <br><a href="/formateurs/${esc(formateur.id || '')}" style="font-size:12.5px">Voir le profil complet →</a></span></div>
       </div>
     </div>
-  </div>`, { user, active: '/formations', social: { title: c.titre, description: require('../lib/partage-formation').description(c), url: shareUrl, image: require('../lib/image-partage').url(c,new URL(shareUrl).origin) } });
+  </div>`, { user, active: '/formations' });
 }
 
 /* ---------- Checkout d'achat (passerelle PLOP PLOP) ---------- */
@@ -892,12 +619,9 @@ function paiementAttente(c, order, urlPaiement, user) {
 /* ---------- Tarifs ---------- */
 function tarifs(user, planActuel) {
   return layout('Tarifs', `
-  <div class="page-head">
-    <span class="eyebrow">ABONNEMENTS</span>
-    <h1>Tarifs</h1>
-    <p class="sous">Choisissez le plan formateur qui correspond le mieux à vos besoins.
-    <span class="badge b-bleu">Garantie satisfait ou remboursé — 30 jours</span></p>
-  </div>
+  <h1>Tarifs</h1>
+  <p class="sous">Choisissez le plan formateur qui correspond le mieux à vos besoins.
+  <span class="badge b-bleu">Garantie satisfait ou remboursé — 30 jours</span></p>
   <div class="grille g4" style="align-items:stretch">
     ${PLANS.map(p => `<div class="plan ${p.reco ? 'reco' : ''}">
       ${p.reco ? '<span class="ruban">★ Recommandé</span>' : ''}
@@ -981,207 +705,17 @@ function pourEntreprises(user) {
   </div>`, { user, active: '/pour-les-entreprises' });
 }
 
-/* ---------- Pages de concepts publics ---------- */
-function certificationsPage(user) {
-  return layout('Documents officiels', `
-  <div class="page-head">
-    <span class="eyebrow">DOCUMENTS OFFICIELS</span>
-    <h1>Certificat et relevé de notes Oasis</h1>
-    <p class="sous" style="max-width:720px">Chaque parcours réussi peut générer deux documents officiels :
-    un certificat de réussite et un relevé de notes vérifiable par QR code.</p>
-  </div>
-  <div class="doc-grid">
-    <div class="doc-preview">
-      <div class="doc-watermark">OASIS</div>
-      <div class="doc-head">
-        <img src="/assets/logo-oasis.png" alt="">
-        <div><b>OASIS</b><br><small class="aide">Centre numérique de formation professionnelle</small></div>
-      </div>
-      <div class="doc-title">Certificat de réussite</div>
-      <p class="sous">Ce modèle atteste officiellement qu'un apprenant a complété un parcours de formation.</p>
-      <div class="doc-line"><span>Titulaire</span><b>Nom de l'apprenant</b></div>
-      <div class="doc-line"><span>Formation</span><b>Mécanique moto et automobile</b></div>
-      <div class="doc-line"><span>Mention</span><b>Très bien</b></div>
-      <div class="doc-line"><span>Référence</span><code>ENR-OASIS-2026</code></div>
-      <div style="display:flex;justify-content:space-between;gap:16px;align-items:end;margin-top:18px">
-        <div><small class="aide">Signature, sceau, date de délivrance et code de vérification.</small></div>
-        <div class="qr-demo" aria-label="Exemple de QR code"></div>
-      </div>
-    </div>
-    <div class="doc-preview">
-      <div class="doc-watermark">NOTES</div>
-      <div class="doc-head">
-        <img src="/assets/sceau-oasis.png" alt="">
-        <div><b>Registre académique</b><br><small class="aide">Relevé officiel des modules et évaluations</small></div>
-      </div>
-      <div class="doc-title">Relevé de notes</div>
-      <p class="sous">Le relevé détaille les modules suivis, les évaluations et les compétences validées.</p>
-      <table>
-        <tr><th>Élément</th><th>Note</th><th>Statut</th></tr>
-        <tr><td>Module 1 · Fondamentaux</td><td>86 %</td><td>Acquis</td></tr>
-        <tr><td>Module 2 · Pratique guidée</td><td>91 %</td><td>Acquis</td></tr>
-        <tr><td>Examen final</td><td>88 %</td><td>Réussi</td></tr>
-      </table>
-      <p class="aide" style="margin-top:14px">Chaque relevé est relié au même registre de vérification que le certificat.</p>
-    </div>
-  </div>
-  <div class="grille g3" style="margin-top:18px">
-    <div class="concept-card"><b>QR code vérifiable</b><p class="aide">Le scan ouvre une page publique indiquant si le document est authentique.</p></div>
-    <div class="concept-card"><b>Signature et sceau</b><p class="aide">Les documents utilisent l'identité officielle du centre et les paramètres administratifs.</p></div>
-    <div class="concept-card"><b>Traçabilité</b><p class="aide">La référence relie le document à l'inscription, aux notes et à la progression réelle.</p></div>
-  </div>`, { user, active: '/certifications' });
-}
-
-function ressourcesNumeriques(user) {
-  return layout('Ressources numériques', `
-  <div class="concept-hero">
-    <div>
-      <span class="eyebrow">PLATEFORME EN CONSTRUCTION</span>
-      <h1>Oasis Centre numérique d'apprentissage</h1>
-      <p class="sous" style="font-size:16px;margin-top:12px">Cette nouvelle plateforme regroupera les ressources
-      numériques utiles aux apprenants, formateurs et institutions : documents, guides, médias éducatifs,
-      exercices, fiches métiers et outils pratiques.</p>
-      <a class="btn" href="/formations">Voir les formations actuelles</a>
-      <a class="btn ligne" href="/contact" style="margin-left:8px">Être informé du lancement</a>
-    </div>
-    <div class="concept-card">
-      <b>Ce qui sera disponible</b>
-      <ul style="margin-top:10px;padding-left:18px">
-        <li>Bibliothèque de documents professionnels</li>
-        <li>Vidéothèque et audiothèque pédagogiques</li>
-        <li>Fiches pratiques par métier</li>
-        <li>Banque d'exercices et mini-évaluations</li>
-        <li>Ressources adaptées aux usages mobiles</li>
-      </ul>
-    </div>
-  </div>`, { user, active: '/ressources-numeriques' });
-}
-
-const CONCEPTS = {
-  apprentissageProfessionnel: {
-    titre: 'Apprentissage professionnel',
-    accroche: 'Apprendre un métier avec des contenus structurés, des tâches pratiques et des preuves de compétence.',
-    emoji: '🧭',
-    cta: '/formations',
-    items: [
-      ['Compétences métier', 'Chaque parcours vise des savoir-faire concrets reliés à un emploi ou une activité professionnelle.'],
-      ['Preuves de progression', 'Les leçons, quiz, travaux et évaluations permettent de suivre ce qui est réellement acquis.'],
-      ['Accompagnement', 'Le formateur peut guider, corriger et orienter l’apprenant vers la pratique.']
-    ]
-  },
-  developpementProfessionnel: {
-    titre: 'Développement professionnel',
-    accroche: 'Actualiser ses compétences pour rester utile, performant et prêt pour de nouvelles responsabilités.',
-    emoji: '📈',
-    cta: '/formations',
-    items: [
-      ['Montée en compétence', 'Les formations courtes aident à améliorer un poste, une activité ou un projet.'],
-      ['Culture de formation continue', 'L’apprenant peut revenir régulièrement pour compléter son profil professionnel.'],
-      ['Valeur pour les entreprises', 'Les organisations peuvent former leurs équipes et suivre leur progression.']
-    ]
-  },
-  apprendrePartout: {
-    titre: 'Apprendre partout',
-    accroche: 'Rendre la formation accessible depuis un téléphone, à la maison, au travail ou en déplacement.',
-    emoji: '🎓',
-    cta: '/formations',
-    items: [
-      ['Mobile d’abord', 'Les parcours sont pensés pour être consultés facilement sur téléphone.'],
-      ['Rythme flexible', 'L’apprenant avance selon ses disponibilités et peut reprendre son parcours.'],
-      ['Accessibilité', 'L’objectif est de réduire les barrières de distance, de temps et de lieu.']
-    ]
-  },
-  evoluerDurablement: {
-    titre: 'Évoluer durablement',
-    accroche: 'Construire des compétences solides, utiles aujourd’hui et adaptables aux changements de demain.',
-    emoji: '⚙️',
-    cta: '/formations',
-    items: [
-      ['Progression continue', 'Les parcours encouragent une évolution par étapes, pas seulement une formation isolée.'],
-      ['Employabilité', 'Les compétences validées renforcent le profil de l’apprenant sur le marché du travail.'],
-      ['Autonomie', 'L’apprenant développe des méthodes pour continuer à apprendre après la formation.']
-    ]
-  },
-  construireParcours: {
-    titre: 'Construire votre parcours',
-    accroche: 'Choisir une trajectoire claire : découvrir, apprendre, pratiquer, certifier et valoriser ses compétences.',
-    emoji: '🤝',
-    cta: '/register',
-    items: [
-      ['Orientation', 'Identifier le domaine, le niveau et le type de formation qui correspondent au projet.'],
-      ['Plan personnel', 'Assembler plusieurs formations pour construire un vrai parcours métier.'],
-      ['Valorisation', 'Utiliser les certificats, relevés et compétences acquises pour avancer professionnellement.']
-    ]
-  }
-};
-
-function conceptPage(user, key) {
-  const c = CONCEPTS[key] || CONCEPTS.apprentissageProfessionnel;
-  return layout(c.titre, `
-  <div class="concept-hero">
-    <div>
-      <h1>${esc(c.titre)}</h1>
-      <p class="sous" style="font-size:16px;margin-top:12px">${esc(c.accroche)}</p>
-      <a class="btn" href="${esc(c.cta)}">${key === 'construireParcours' ? 'Créer mon compte' : 'Explorer les formations'}</a>
-      <a class="btn ligne" href="/contact" style="margin-left:8px">Demander conseil</a>
-    </div>
-    <div class="concept-card" style="text-align:center">
-      <div style="font-size:68px;line-height:1">${c.emoji}</div>
-      <h2 style="margin-top:10px">${esc(c.titre)}</h2>
-      <p class="aide">Une approche pensée pour relier apprentissage, compétence et projet professionnel.</p>
-    </div>
-  </div>
-  <div class="grille g3" style="margin-top:18px">
-    ${c.items.map(([t, p]) => `<div class="concept-card"><b>${esc(t)}</b><p class="aide">${esc(p)}</p></div>`).join('')}
-  </div>
-  <div class="carte" style="margin-top:18px">
-    <h2 style="margin-top:0">Comment Oasis l'applique</h2>
-    <p>Le concept se traduit par des formations modulaires, des évaluations progressives, un suivi de la
-    progression et des documents de certification vérifiables. L’objectif est de rendre chaque parcours
-    compréhensible, mesurable et utile pour la vie professionnelle.</p>
-  </div>`, { user });
-}
-
-function faqPage(user) {
-  const questions = [
-    ['Comment s’inscrire sur Oasis ?', 'Cliquez sur S’inscrire, choisissez votre profil puis complétez le formulaire. Après connexion, vous pourrez accéder à votre espace personnel.'],
-    ['Comment acheter une formation ?', 'Ouvrez la fiche d’une formation, cliquez sur le bouton d’achat ou d’inscription, puis choisissez le moyen de paiement disponible.'],
-    ['Les certificats sont-ils vérifiables ?', 'Oui. Les certificats et relevés de notes contiennent une référence et un QR code qui renvoient vers le registre public de vérification.'],
-    ['À quoi sert le relevé de notes ?', 'Il présente les modules suivis, les évaluations, la note globale, la mention et les compétences acquises pendant le parcours.'],
-    ['Puis-je apprendre depuis mon téléphone ?', 'Oui. L’interface est pensée pour les usages mobiles afin de permettre l’apprentissage à distance et selon le rythme de chacun.'],
-    ['Une entreprise peut-elle former ses employés ?', 'Oui. L’espace entreprise permet de suivre les collaborateurs, les formations assignées et la progression.']
-  ];
-  return layout('FAQ', `
-  <div class="page-head">
-    <span class="eyebrow">AIDE RAPIDE</span>
-    <h1>Questions fréquentes</h1>
-    <p class="sous">Les réponses essentielles pour comprendre le fonctionnement d'Oasis.</p>
-  </div>
-  <div class="faq-list">
-    ${questions.map(([q, r], i) => `<details class="faq-item" ${i === 0 ? 'open' : ''}>
-      <summary>${esc(q)}</summary><p>${esc(r)}</p>
-    </details>`).join('')}
-  </div>
-  <div class="carte" style="margin-top:18px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap">
-    <span>Vous avez une autre question ?</span>
-    <a class="btn" href="/contact">Contacter Oasis</a>
-  </div>`, { user, active: '/faq' });
-}
-
 /* ---------- À propos ---------- */
 function aPropos(user, stats) {
   return layout('À propos', `
-  <div class="page-head">
-    <span class="eyebrow">NOTRE MISSION</span>
-    <h1>À propos d'Oasis</h1>
-    <p class="sous" style="max-width:640px">Oasis est une plateforme de formation en ligne qui connecte
-    formateurs, apprenants et entreprises pour développer les compétences de demain.</p>
-  </div>
+  <h1>À propos d'Oasis</h1>
+  <p class="sous" style="max-width:640px">Oasis est une plateforme de formation en ligne qui connecte
+  formateurs, apprenants et entreprises pour développer les compétences de demain.</p>
   <div class="grille g4">
-    <div class="carte stat-carte"><span class="val">${stats.nbApprenants}</span><span class="lib">Apprenants nous font confiance</span></div>
-    <div class="carte stat-carte"><span class="val">${stats.nbFormateurs}</span><span class="lib">Formateurs experts partagent leur savoir</span></div>
-    <div class="carte stat-carte"><span class="val">${stats.nbEntreprises}</span><span class="lib">Entreprises nous accompagnent</span></div>
-    <div class="carte stat-carte"><span class="val">${stats.nbCours}</span><span class="lib">Formations en ligne disponibles</span></div>
+    <div class="carte stat-carte"><span class="val">${stats.nbApprenants}+</span><span class="lib">Apprenants nous font confiance</span></div>
+    <div class="carte stat-carte"><span class="val">${stats.nbFormateurs}+</span><span class="lib">Formateurs experts partagent leur savoir</span></div>
+    <div class="carte stat-carte"><span class="val">${stats.nbEntreprises}+</span><span class="lib">Entreprises nous accompagnent</span></div>
+    <div class="carte stat-carte"><span class="val">${stats.nbCours}+</span><span class="lib">Formations en ligne disponibles</span></div>
   </div>
   <div class="grille g2" style="margin-top:18px">
     <div class="carte">
@@ -1217,22 +751,22 @@ function aPropos(user, stats) {
 }
 
 /* ---------- Contact ---------- */
-function contactPage(user, sent, programme) {
+function contactPage(user, sent) {
   return layout('Contact', `
-  <div class="page-head">
-    <span class="eyebrow">ASSISTANCE</span>
-    <h1>Contactez-nous</h1>
-    <p class="sous">Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner
-    dans votre expérience sur Oasis.</p>
-  </div>
+  <h1>Contactez-nous</h1>
+  <p class="sous">Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner
+  dans votre expérience sur Oasis.</p>
   <div class="grille" style="grid-template-columns:.8fr 1.4fr;align-items:start">
     <div class="carte">
       <h2 style="margin-top:0">Nos coordonnées</h2>
-      ${require('../lib/contact-settings').display()}
+      <p>📧 <b>Email</b><br>support@oasis.ht<br><small class="aide">Nous répondons sous 24 h</small></p>
+      <p style="margin-top:12px">📞 <b>Téléphone / WhatsApp</b><br>+509 xx xx xxxx<br><small class="aide">Lun – Ven : 9h00 – 17h00</small></p>
+      <p style="margin-top:12px">💬 <b>Chat en direct</b><br>Disponible sur la plateforme</p>
+      <p style="margin-top:12px">📍 <b>Adresse</b><br>Oasis Centre Numérique de Formation Professionnelle, Port-au-Prince, Haïti</p>
     </div>
     <div class="carte">
       <h2 style="margin-top:0">Envoyez-nous un message</h2>
-      ${sent ? '<div class="alerte ok">Merci ! Votre message a bien été envoyé. '+esc(require('../lib/contact-settings').config().delai)+'</div>' : ''}
+      ${sent ? '<div class="alerte ok">Merci ! Votre message a bien été envoyé — nous répondons sous 24 h.</div>' : ''}
       <form method="POST" action="/contact">
         <div class="grille g2">
           <div><label>Nom complet *</label><input name="nom" required value="${esc(user ? user.name : '')}"></div>
@@ -1240,11 +774,11 @@ function contactPage(user, sent, programme) {
         </div>
         <label>Sujet *</label>
         <select name="sujet" required><option value="">Sélectionnez un sujet</option>
-          <option ${programme?'selected':''}>Question sur une formation</option><option>Devenir formateur</option>
+          <option>Question sur une formation</option><option>Devenir formateur</option>
           <option>Offre entreprise</option><option>Paiement / facturation</option>
           <option>Signaler un problème</option><option>Partenariats</option></select>
         <label>Message *</label>
-        <textarea name="message" rows="5" required maxlength="1000" placeholder="Décrivez votre demande en détail…">${programme?esc('Je souhaite obtenir les informations et les modalités d’inscription au programme « '+programme.titre+' » ('+(programme.code||programme.id)+').'):''}</textarea>
+        <textarea name="message" rows="5" required maxlength="1000" placeholder="Décrivez votre demande en détail…"></textarea>
         <div style="margin-top:16px"><button class="btn">📨 Envoyer le message</button></div>
       </form>
     </div>
@@ -1318,13 +852,13 @@ function authForm(kind, { error, role, suite } = {}) {
           document.getElementById('champsEntreprise').style.display = this.value === 'entreprise' ? 'block' : 'none';});</script>` : ''}
         <label>Adresse email</label><input name="email" type="email" required>
         <label>Mot de passe</label><input name="password" type="password" required minlength="8">
-        ${isReg ? '<p class="aide">8 caractères minimum.</p>' : '<label>Code de double authentification (si activée)</label><input name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code"><div class="actions-h" style="margin-top:14px"><a class="btn ligne petit" href="/mot-de-passe-oublie">Mot de passe oublié</a><a class="btn ligne petit" href="/securite/2fa">Activer l’authentification à deux facteurs</a></div>'}
+        ${isReg ? '<p class="aide">8 caractères minimum.</p>' : ''}
         <div style="margin-top:18px"><button class="btn" style="width:100%">${isReg ? "S'inscrire" : 'Se connecter'}</button></div>
       </form>
     </div>
     <p style="text-align:center">${isReg
       ? 'Déjà inscrit ? <a href="/login">Se connecter</a>'
-      : `Pas de compte ? <a href="/register">S'inscrire</a>`}</p>
+      : `Pas de compte ? <a href="/register">S'inscrire</a> · Démo : jean@oasis.ht / marie@oasis.ht / academie@digicel.ht`}</p>
   </div>`, { });
 }
 
@@ -1487,13 +1021,6 @@ function verification(d) {
 module.exports = {
   CSS, layout, avatarHtml, etoiles, carteCours,
   landing, catalogue, ficheCours, checkoutCours, paiementAttente, tarifs,
-  pourFormateurs, pourEntreprises, certificationsPage, ressourcesNumeriques, conceptPage,
-  faqPage, aPropos, contactPage, authForm,
+  pourFormateurs, pourEntreprises, aPropos, contactPage, authForm,
   profilFormateurPublic, candidatureForm, candidatureStatut, verification
 };
-
-module.exports.securityPage = (title, content, user) => layout(title, '<div class="carte" style="max-width:560px;margin:24px auto"><h1>' + esc(title) + '</h1>' + content + '</div>', {user});
-
-module.exports.carteCours=carteCours;
-
-module.exports.partage=partage;
