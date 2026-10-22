@@ -17,7 +17,7 @@ const MENU_G = [
   ['/gestion/compta', '📘', 'Comptabilité'],
   ['/gestion/compta/journal', '📝', 'Journal'],
   ['/gestion/compta/etats', '📊', 'États financiers'],
-  ['/admin/candidatures', '↩️', 'Retour administration']
+  ['/admin', '↩️', 'Tableau de bord administration']
 ];
 
 function shell(title, user, active, content, flash) {

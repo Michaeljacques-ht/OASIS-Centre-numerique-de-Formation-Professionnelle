@@ -15,6 +15,7 @@ const { sendJSON } = require('./lib/utils');
 
 const PORT = Number(process.env.PORT || 3001);
 init();
+require('./lib/notifications-email').start();
 
 const server = http.createServer(async (req, res) => {
   try {

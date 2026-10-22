@@ -1,0 +1,12 @@
+# Configurer H5P dans OASIS
+
+1. Remplacer les fichiers du projet avec cette version, y compris package.json et package-lock.json. La commande de build Render doit être `npm install` (ou `npm ci`) et le démarrage `npm start`.
+2. Conserver DATA_DIR sur le disque persistant. Les paquets, bibliothèques et fichiers sont enregistrés dans ce dossier. Les dépendances npm adm-zip et h5p-standalone sont installées par le build, sans CDN.
+3. Ouvrir Administration → Paramètres → Lecteur H5P. Activer la lecture locale et définir les options. Valeurs initiales : paquet 20 Mo, décompression 200 Mo, plein écran, cadre et crédits activés.
+4. Dans Tester vos connaissances, importer un paquet .h5p complet. Configurer catégorie, métier et niveau, puis publier. Les paquets contenant des scripts de serveur, des chemins interdits, des dépendances manquantes ou trop de données sont refusés.
+5. Si une bibliothèque manque, importer dans Paramètres → Bibliothèques partagées un paquet contenant la bibliothèque et ses dépendances. OASIS affiche le nom et la version manquants. Réimporter ensuite l’activité. Les fichiers H5P exportés sans bibliothèques peuvent nécessiter cette étape.
+6. Depuis un compte apprenant, lancer le contenu et terminer une activité notée. Un score final xAPI compatible est sauvegardé dans les résultats d’entraînement. Les contenus non notés peuvent fonctionner sans score. Les notes certificatives et les XP restent indépendants.
+
+Les ressources sont servies par des liens temporaires signés. Le lecteur utilise un cadre isolé et une politique de sandbox pour empêcher les fichiers importés d’accéder aux sessions OASIS. Limites : 5 000 entrées d’archive, 50 Mo par fichier extrait, total décompressé configurable. Bibliothèques issues uniquement de paquets que l’administrateur ou le formateur est autorisé à utiliser ; l’éditeur de création H5P et un catalogue automatique de téléchargement de bibliothèques ne sont pas intégrés.
+
+Vérifications effectuées : import d’un paquet de test, refus des dépendances manquantes, installation de bibliothèques partagées, accès aux ressources du lecteur, expiration par révision et blocage de traversée de chemins ; régression du parcours de certification. La compatibilité visuelle de vos types H5P et l’émission de leurs événements de score doivent être vérifiées après déploiement avec vos vrais fichiers. Les tests locaux ne couvrent pas tous les types de contenu H5P.
